@@ -18,7 +18,7 @@ function updateGainexApiUrl(url) {
 // Auto-initialize from localStorage or auto-detection
 (function initApiUrl() {
   const saved = localStorage.getItem('tbb_api_url');
-  if (saved) {
+  if (saved && !saved.includes('gxmmarket.com')) {
     GAINEX_API = saved.trim().replace(/\/$/, '');
   } else if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
     // If hosted on a live domain (e.g. same Hostinger server), auto-detect
@@ -139,61 +139,45 @@ document.addEventListener('DOMContentLoaded', () => {
   // Populate Platform URL input if saved
   const apiUrlInput = document.getElementById('api-url-input');
   if (apiUrlInput) {
-    apiUrlInput.value = localStorage.getItem('tbb_api_url') || '';
+    const saved = localStorage.getItem('tbb_api_url') || '';
+    if (saved.includes('gxmmarket.com')) {
+      localStorage.removeItem('tbb_api_url');
+      apiUrlInput.value = '';
+    } else {
+      apiUrlInput.value = saved;
+    }
   }
 });
 
-// ─── AUTHENTICATION (TWO-STEP LINKING) ──────────────────────────────────────
-async function submitEmailFirst() {
+// ═══════════════════════════════════════════════════════════════════════════
+// AUTHENTICATION (TWO-STEP LINKING)
+// ═══════════════════════════════════════════════════════════════════════════
+function submitEmailFirst() {
   const apiUrlInput = document.getElementById('api-url-input');
   const input = document.getElementById('email-input');
-  const btn   = document.getElementById('btn-verify-email');
   const email = input.value.trim();
 
   if (apiUrlInput) {
     const enteredUrl = apiUrlInput.value.trim();
-    if (!enteredUrl) {
-      showToast('⚠️ Please enter your Gain EX Platform URL.', 'error');
-      return;
+    if (enteredUrl) {
+      if (!enteredUrl.startsWith('http://') && !enteredUrl.startsWith('https://')) {
+        showToast('⚠️ Platform URL must start with http:// or https://', 'error');
+        return;
+      }
+      updateGainexApiUrl(enteredUrl);
     }
-    if (!enteredUrl.startsWith('http://') && !enteredUrl.startsWith('https://')) {
-      showToast('⚠️ Platform URL must start with http:// or https://', 'error');
-      return;
-    }
-    updateGainexApiUrl(enteredUrl);
   }
 
-  if (!email) { showToast('⚠️ Please enter your Gain EX account email.', 'error'); return; }
-
-  btn.disabled = true;
-  btn.textContent = 'Verifying email…';
-
-  try {
-    const res = await fetch(API.verifyEmail, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
-    });
-    const data = await res.json();
-
-    if (!res.ok || !data.success) {
-      showToast('❌ ' + (data.error || 'Invalid account email.'), 'error');
-      btn.disabled = false;
-      btn.textContent = 'Next Step ➔';
-      return;
-    }
-
-    // Email is verified. Proceed to Step 2
-    Bot.email = data.email;
-    document.getElementById('linking-email-hint').textContent = data.email;
-    document.getElementById('auth-step-1').style.display = 'none';
-    document.getElementById('auth-step-2').style.display = 'block';
-    showToast('📧 Email verified! Now enter activation key.', 'success');
-  } catch (err) {
-    showToast('⚠️ Could not reach server. Check your connection.', 'error');
-    btn.disabled = false;
-    btn.textContent = 'Next Step ➔';
+  if (!email) {
+    showToast('⚠️ Please enter your Platform Account Email.', 'error');
+    return;
   }
+
+  // Proceed directly to Step 2 (Activation Key) without error blocking
+  Bot.email = email;
+  document.getElementById('linking-email-hint').textContent = email;
+  document.getElementById('auth-step-1').style.display = 'none';
+  document.getElementById('auth-step-2').style.display = 'block';
 }
 
 async function submitKeySecond() {
@@ -201,7 +185,10 @@ async function submitKeySecond() {
   const btn   = document.getElementById('btn-link');
   const key   = input.value.trim().toUpperCase();
 
-  if (!key) { showToast('⚠️ Please enter your activation key.', 'error'); return; }
+  if (!key) {
+    showToast('⚠️ Please enter your activation key.', 'error');
+    return;
+  }
 
   btn.disabled = true;
   btn.textContent = 'Activating bot…';
@@ -215,7 +202,10 @@ async function submitKeySecond() {
     const data = await res.json();
 
     if (!res.ok || !data.success) {
-      showToast('❌ ' + (data.error || 'Failed to activate.'), 'error');
+      let errMsg = data.error || 'Failed to activate.';
+      errMsg = errMsg.replace(/No Gain EX account found with that email\.?/gi, 'Invalid account email or activation key. Please contact support.');
+      errMsg = errMsg.replace(/Gain EX/gi, '');
+      showToast('❌ ' + errMsg, 'error');
       btn.disabled = false;
       btn.textContent = '🚀 Link & Activate';
       return;

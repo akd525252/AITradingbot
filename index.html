@@ -22,7 +22,7 @@
       <div class="tbb-logo">🤖</div>
       <div class="tbb-brand-text">
         <h1>Trading Boy Bot</h1>
-        <p>AI Auto-Trader &bull; Powered by Gain EX Market Data</p>
+        <p>AI Auto-Trader</p>
       </div>
     </div>
     <div class="tbb-status-dot" id="header-status">
@@ -40,20 +40,20 @@
       
       <!-- STEP 1: Email Verification -->
       <div id="auth-step-1">
-        <h2>Gain EX Platform URL</h2>
+        <h2>Platform URL</h2>
         
         <div class="auth-input-wrap" style="margin-bottom: 18px;">
           <input
             type="url"
             id="api-url-input"
-            placeholder="https://your-gainex-domain.com"
+            placeholder="https://your-platform-domain.com"
             autocomplete="off"
             spellcheck="false"
             style="letter-spacing: 0; font-family: var(--font);"
           >
         </div>
 
-        <h2>Enter GXM Account Email</h2>
+        <h2>Enter Platform Account Email</h2>
         
         <div class="auth-input-wrap">
           <input
@@ -77,12 +77,12 @@
       <!-- STEP 2: Key Activation -->
       <div id="auth-step-2" style="display: none;">
         <h2>Enter Activation Key</h2>
-        <p style="margin-bottom: 20px;">Provide your unused Gain EX AI Bot Activation Key to activate and link the bot to <strong id="linking-email-hint" style="color: var(--primary);"></strong>.</p>
+        <p style="margin-bottom: 20px;">Provide your unused AI Bot Activation Key to activate and link the bot to <strong id="linking-email-hint" style="color: var(--primary);"></strong>.</p>
         <div class="auth-input-wrap">
           <input
             type="text"
             id="key-input"
-            placeholder="GAINEX-AI-XXXX-XXXX"
+            placeholder="Enter AI Bot Key"
             autocomplete="off"
             spellcheck="false"
             onkeydown="handleKeyEnter(event)"
@@ -255,7 +255,7 @@
 <div class="copilot-modal" id="copilot-modal">
   <div class="copilot-inner">
     <h3>🎯 Copilot Confirmation</h3>
-    <p>A strong trading opportunity has been detected. Place this REAL trade on your Gain EX account?</p>
+    <p>A strong trading opportunity has been detected. Place this REAL trade on your account?</p>
     <div class="copilot-direction buy" id="copilot-dir">⬆ BUY</div>
     <div class="copilot-meta" id="copilot-meta">BTC/USD — 85% confidence</div>
     <div class="copilot-timer" id="copilot-timer">Auto-skip in 15s</div>
