@@ -2,270 +2,421 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Trading Boy Bot — AI Signal Engine</title>
-  <meta name="description" content="Trading Boy Bot — Smart AI trading signals and automated execution powered by real market data.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TradingBoy AI — Next-Gen Quantitative Algorithmic Trading Platform</title>
+  <meta name="description" content="Institutional-grade automated AI trading bots for Quotex, MT5, GXM, Deriv, Bybit, and Binance. High-frequency precision algorithms and micro-latency execution.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="bot.css">
 </head>
-<body>
+<body class="theme-cyber">
+  <div class="cyber-bg-glow glow-1"></div>
+  <div class="cyber-bg-glow glow-2"></div>
+  <div class="cyber-grid-pattern"></div>
 
-<div id="tbb-toast-container"></div>
-
-<div class="app-wrap">
-
-  <!-- ─── HEADER ─── -->
-  <header class="tbb-header">
-    <div class="tbb-brand">
-      <div class="tbb-logo">🤖</div>
-      <div class="tbb-brand-text">
-        <h1>Trading Boy Bot</h1>
-        <p>AI Auto-Trader</p>
+  
+<header class="cyber-header">
+  <div class="nav-container">
+    <a href="/" class="brand-logo">
+      <div class="logo-icon-wrap">
+        <svg class="logo-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
       </div>
-    </div>
-    <div class="tbb-status-dot" id="header-status">
-      <div class="dot"></div>
-      <span>Stopped</span>
-    </div>
-  </header>
+      <span class="brand-name">TradingBoy<span class="brand-accent">AI</span></span>
+    </a>
 
-  <!-- ═══════════════════════════════════════════════════
-       AUTH SCREEN (TWO-STEP ACCOUNT LINKING)
-  ════════════════════════════════════════════════════ -->
-  <div id="screen-auth">
-    <div class="auth-card">
-      <div class="auth-icon">🔑</div>
-      
-      <!-- STEP 1: Email Verification -->
-      <div id="auth-step-1">
-        <h2>Platform URL</h2>
-        
-        <div class="auth-input-wrap" style="margin-bottom: 18px;">
-          <input
-            type="url"
-            id="api-url-input"
-            placeholder="https://gainexmarket.com"
-            autocomplete="off"
-            spellcheck="false"
-            style="letter-spacing: 0; font-family: var(--font);"
-          >
-        </div>
+    <nav class="cyber-nav" id="cyberNav">
+      <a href="/" class="nav-link active">Home</a>
+      <a href="/services" class="nav-link ">Services</a>
+      <a href="/pricing" class="nav-link ">Pricing</a>
+      <a href="/about" class="nav-link ">About</a>
+      <a href="/faq" class="nav-link ">FAQ</a>
+      <a href="/contact" class="nav-link ">Contact</a>
+    </nav>
 
-        <h2>Enter Platform Account Email</h2>
-        
-        <div class="auth-input-wrap">
-          <input
-            type="email"
-            id="email-input"
-            placeholder="your-account-email@domain.com"
-            autocomplete="off"
-            spellcheck="false"
-            onkeydown="handleEmailEnter(event)"
-            style="letter-spacing: 0; font-family: var(--font);"
-          >
-        </div>
-        <div class="auth-hint">
-          💡 The bot will check if your account is active and eligible for linking.
-        </div>
-        <button class="btn-primary" id="btn-verify-email" onclick="submitEmailFirst()">
-          Next Step ➔
-        </button>
-      </div>
-
-      <!-- STEP 2: Key Activation -->
-      <div id="auth-step-2" style="display: none;">
-        <h2>Enter Activation Key</h2>
-        <p style="margin-bottom: 20px;">Provide your unused AI Bot Activation Key to activate and link the bot to <strong id="linking-email-hint" style="color: var(--primary);"></strong>.</p>
-        <div class="auth-input-wrap">
-          <input
-            type="text"
-            id="key-input"
-            placeholder="Enter AI Bot Key"
-            autocomplete="off"
-            spellcheck="false"
-            onkeydown="handleKeyEnter(event)"
-          >
-        </div>
-        
-        <div style="display: flex; gap: 10px; margin-top: 20px;">
-          <button class="btn-logout" style="height: 48px; flex: 1; justify-content: center;" onclick="goToAuthStep1()">
-            Back
-          </button>
-          <button class="btn-primary" style="flex: 2;" id="btn-link" onclick="submitKeySecond()">
-            🚀 Link &amp; Activate
-          </button>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════
-       BOT SCREEN
-  ════════════════════════════════════════════════════ -->
-  <div id="screen-bot">
-
-    <!-- Key & Email Badge -->
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; flex-wrap: wrap; gap: 8px;">
-      <div style="display:flex; flex-direction:column; gap:2px; font-size:12px; color:var(--text-muted);">
-        <div>🔑 Key: <span class="auth-key-badge" id="key-display-badge">—</span></div>
-        <div style="margin-top: 4px;">👤 Linked: <strong style="color: var(--text);" id="linked-account-display">—</strong></div>
-        <div style="margin-top: 4px;">💰 Balance: <strong style="color: var(--primary);" id="linked-balance-display">$0.00</strong></div>
-      </div>
-      <button class="btn-logout" onclick="logout()">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
-        Unlink Account
+    <div class="header-actions">
+      <a href="/checkout" class="btn btn-outline btn-sm ">
+        <span>Get Access</span>
+      </a>
+      <a href="/app" class="btn btn-primary btn-sm">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <span>Launch Bot</span>
+      </a>
+      <button class="mobile-toggle" id="mobileMenuBtn" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
       </button>
     </div>
-
-    <!-- Price Ticker -->
-    <div class="ticker-bar" id="ticker-bar"></div>
-
-    <!-- Stats Row -->
-    <div class="stats-row">
-      <div class="stat-card wins">
-        <div class="stat-val" id="stat-wins">0</div>
-        <div class="stat-lbl">Wins</div>
-      </div>
-      <div class="stat-card losses">
-        <div class="stat-val" id="stat-losses">0</div>
-        <div class="stat-lbl">Losses</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val" id="stat-signals">0</div>
-        <div class="stat-lbl">Trades</div>
-      </div>
-      <div class="stat-card profit">
-        <div class="stat-val positive" id="stat-profit">+$0.00</div>
-        <div class="stat-lbl">Real P&amp;L</div>
-      </div>
-    </div>
-
-    <!-- ─── Config Card ─── -->
-    <div class="config-card">
-      <div class="config-card-header">
-        <div class="config-card-title">
-          <span class="icon">⚙️</span> Bot Configuration
-        </div>
-        <button onclick="resetStats()" style="background:none;border:none;color:var(--text-muted);font-size:11px;cursor:pointer;padding:4px 8px;border-radius:4px;" title="Reset stats">↺ Reset Stats</button>
-      </div>
-
-      <!-- Mode Tabs -->
-      <div class="mode-tabs">
-        <div class="mode-tab active" data-mode="autopilot" onclick="setMode('autopilot')">
-          <strong>🚀 Autopilot</strong>
-          <small>Auto place real trades</small>
-        </div>
-        <div class="mode-tab" data-mode="copilot" onclick="setMode('copilot')">
-          <strong>🎯 Copilot</strong>
-          <small>Confirm before real trade</small>
-        </div>
-      </div>
-
-      <!-- Config Grid -->
-      <div class="config-grid">
-        <div class="config-field">
-          <label>Asset to Monitor</label>
-          <select id="bot-asset-select" class="disable-when-active">
-            <!-- Filled by bot.js -->
-          </select>
-        </div>
-        
-        <div class="config-field">
-          <label>Trade Duration</label>
-          <select id="bot-duration-select" class="disable-when-active">
-            <option value="10">10 Seconds</option>
-            <option value="30">30 Seconds</option>
-            <option value="60" selected>60 Seconds (1m)</option>
-            <option value="90">90 Seconds</option>
-            <option value="120">120 Seconds (2m)</option>
-            <option value="180">180 Seconds (3m)</option>
-          </select>
-        </div>
-
-        <div class="config-field">
-          <label>Trade Stake ($)</label>
-          <select id="bot-stake-select" class="disable-when-active">
-            <option value="1">$1.00 USD</option>
-            <option value="5">$5.00 USD</option>
-            <option value="10" selected>$10.00 USD</option>
-            <option value="20">$20.00 USD</option>
-            <option value="50">$50.00 USD</option>
-            <option value="100">$100.00 USD</option>
-            <option value="200">$200.00 USD</option>
-            <option value="500">$500.00 USD</option>
-          </select>
-        </div>
-
-        <div class="config-field">
-          <label>Min Confidence %</label>
-          <input type="number" id="bot-confidence" value="60" min="50" max="95" class="disable-when-active">
-        </div>
-      </div>
-
-      <!-- Controls -->
-      <div class="bot-controls">
-        <button class="btn-start" id="btn-start" onclick="startBot()">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          Start Bot
-        </button>
-        <button class="btn-stop" id="btn-stop" onclick="stopBot()">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M6 6h12v12H6z"/></svg>
-          Stop Bot
-        </button>
-      </div>
-    </div>
-
-    <!-- ─── Live Signals & Autotrades ─── -->
-    <div class="signals-card">
-      <div class="signals-header">
-        <h3>
-          📡 Active Bot Trades &amp; Signals
-          <span class="live-pill hidden" id="live-pill">LIVE</span>
-        </h3>
-        <button onclick="clearSignals(); renderSignals();" style="background:none;border:none;color:var(--text-muted);font-size:11px;cursor:pointer;padding:4px 8px;border-radius:4px;">Clear</button>
-      </div>
-      <div class="signals-list" id="signals-list">
-        <div class="signal-empty">▶ Press <strong>Start Bot</strong> to begin receiving signals and trading.</div>
-      </div>
-    </div>
-
-    <!-- ─── Activity Log ─── -->
-    <div class="log-card">
-      <div class="log-header">
-        <h3>📋 Activity Log</h3>
-        <button class="btn-clear-log" onclick="clearLog()">Clear</button>
-      </div>
-      <div id="bot-log">
-        <div class="log-empty">Bot activity will appear here once started.</div>
-      </div>
-    </div>
-
   </div>
-  <!-- /screen-bot -->
+</header>
 
-</div>
-<!-- /app-wrap -->
 
-<!-- ═══════════════════════════════════════════════════
-     COPILOT TRADE CONFIRMATION MODAL
-════════════════════════════════════════════════════ -->
-<div class="copilot-modal" id="copilot-modal">
-  <div class="copilot-inner">
-    <h3>🎯 Copilot Confirmation</h3>
-    <p>A strong trading opportunity has been detected. Place this REAL trade on your account?</p>
-    <div class="copilot-direction buy" id="copilot-dir">⬆ BUY</div>
-    <div class="copilot-meta" id="copilot-meta">BTC/USD — 85% confidence</div>
-    <div class="copilot-timer" id="copilot-timer">Auto-skip in 15s</div>
-    <div class="copilot-btns">
-      <button class="btn-confirm" onclick="confirmSignal()">✅ Place Trade</button>
-      <button class="btn-skip"    onclick="skipSignal()">⏭ Skip</button>
+  <main>
+    <!-- HERO SECTION -->
+    <section class="hero-section">
+      <div class="hero-container">
+        <div class="hero-badge animate-fade-in">
+          <span class="pulse-ring"></span>
+          <span class="hero-badge-text">⚡ AI 4.8 QUANT CORE ACTIVE • 94.8% WIN PROBABILITY</span>
+        </div>
+
+        <h1 class="hero-title animate-slide-up">
+          Execute With Institutional <br>
+          <span class="gradient-text">Algorithmic Dominance</span>
+        </h1>
+
+        <p class="hero-subtitle animate-slide-up" style="animation-delay: 0.15s;">
+          Autonomous micro-latency neural network algorithms for <strong>Quotex</strong>, <strong>MT5</strong>, <strong>GXM</strong>, <strong>Deriv</strong>, <strong>Bybit</strong>, and <strong>Binance</strong>. Eliminate emotional bias with cold mathematical precision.
+        </p>
+
+        <div class="hero-cta-group animate-slide-up" style="animation-delay: 0.25s;">
+          <a href="/checkout" class="btn btn-primary btn-lg">
+            <span>Unlock Instant License</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="/app" class="btn btn-outline btn-lg">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <span>Launch Live Terminal</span>
+          </a>
+        </div>
+
+        <!-- HERO STATS STRIP -->
+        <div class="hero-stats-grid animate-fade-in" style="animation-delay: 0.35s;">
+          <div class="stat-card">
+            <div class="stat-value">$142.8M+</div>
+            <div class="stat-label">Algorithmic Volume Handled</div>
+          </div>
+          <div class="stat-card highlighted">
+            <div class="stat-value text-accent">94.8%</div>
+            <div class="stat-label">Verified Signal Win-Rate</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">12.4ms</div>
+            <div class="stat-label">Average Server Execution Time</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">6 Major</div>
+            <div class="stat-label">Brokers & Exchanges Integrated</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LIVE TICKER & PROTOCOL STRIP -->
+    <section class="ticker-section">
+      <div class="ticker-wrapper">
+        <div class="ticker-track">
+          <div class="ticker-item"><span class="ticker-dot green"></span> GXM HIGH-FREQ BOT: <strong class="text-accent">+8.42% Today</strong></div>
+          <div class="ticker-item"><span class="ticker-dot green"></span> QUOTEX BINARY ENGINE: <strong class="text-accent">95.2% Session Win</strong></div>
+          <div class="ticker-item"><span class="ticker-dot green"></span> MT5 INSTITUTIONAL: <strong class="text-accent">EUR/USD Long Triggered</strong></div>
+          <div class="ticker-item"><span class="ticker-dot green"></span> BYBIT FUTURES GRID: <strong class="text-accent">BTCUSDT Auto-TP Hit</strong></div>
+          <div class="ticker-item"><span class="ticker-dot green"></span> DERIV SYNTHETIC 100: <strong class="text-accent">Vol Index Spike Captured</strong></div>
+          <div class="ticker-item"><span class="ticker-dot green"></span> BINANCE LIQUIDITY: <strong class="text-accent">Spread Arbitrage Locked</strong></div>
+          <!-- Repeat for smooth loop -->
+          <div class="ticker-item"><span class="ticker-dot green"></span> GXM HIGH-FREQ BOT: <strong class="text-accent">+8.42% Today</strong></div>
+          <div class="ticker-item"><span class="ticker-dot green"></span> QUOTEX BINARY ENGINE: <strong class="text-accent">95.2% Session Win</strong></div>
+          <div class="ticker-item"><span class="ticker-dot green"></span> MT5 INSTITUTIONAL: <strong class="text-accent">EUR/USD Long Triggered</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURED BOTS SHOWCASE -->
+    <section class="section-container">
+      <div class="section-header">
+        <div class="section-badge">SUPPORTED ECOSYSTEM</div>
+        <h2 class="section-title">Institutional Bots Ready For Deployment</h2>
+        <p class="section-subtitle">Engineered specifically for each broker's API and order execution structure to guarantee zero slippage.</p>
+      </div>
+
+      <div class="featured-bots-grid">
+        <!-- 1. GXM BOT (FLAGSHIP HIGHLIGHTED) -->
+        <div class="cyber-card bot-spotlight-card featured">
+          <div class="card-icon-header">
+            <div class="bot-avatar-badge gxm-glow" data-service-icon="gxm_bot"><img src="https://gainexmarket.com/favicon.png" class="service-logo-img" alt="GXM Bot Logo"></div>
+            <span class="pill pill-green">⭐ Flagship Engine</span>
+          </div>
+          <h3 class="bot-card-title">GXM Quantitative Bot</h3>
+          <p class="bot-card-desc">Our flagship proprietary market-making algorithm designed with advanced order book imbalance detection and sub-millisecond automated scalp triggers.</p>
+          
+          <div class="bot-metrics-row">
+            <div class="metric-box">
+              <span class="metric-title">Win Rate</span>
+              <span class="metric-val text-accent">96.4%</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-title">Speed</span>
+              <span class="metric-val">8ms Execution</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-title">Auto Stop-Loss</span>
+              <span class="metric-val text-green">Dynamic</span>
+            </div>
+          </div>
+
+          <div class="card-footer-actions">
+            <a href="/checkout?service=gxm_bot" class="btn btn-primary btn-block">
+              <span>Get GXM Bot License</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- 2. QUOTEX BOT -->
+        <div class="cyber-card">
+          <div class="card-icon-header">
+            <div class="bot-avatar-badge" data-service-icon="quotex_bot"><img src="https://qxbroker.com/favicon.ico" class="service-logo-img" alt="Quotex Logo"></div>
+            <div class="card-meta">
+              <span class="pill pill-blue">Binary Scalper</span>
+            </div>
+          </div>
+          <h3 class="bot-card-title">Quotex Binary Scalper</h3>
+          <p class="bot-card-desc">Predictive 1-minute & 5-minute candle expiration sniper. Uses neural candle pattern classification to trigger instant call/put execution.</p>
+          <div class="bot-metrics-row">
+            <div class="metric-box">
+              <span class="metric-title">Win Rate</span>
+              <span class="metric-val text-accent">93.8%</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-title">Martingale Safe</span>
+              <span class="metric-val">Smart Hedging</span>
+            </div>
+          </div>
+          <div class="card-footer-actions">
+            <a href="/checkout?service=quotex_bot" class="btn btn-outline btn-block">Get Quotex Bot</a>
+          </div>
+        </div>
+
+        <!-- 3. MT5 BOT -->
+        <div class="cyber-card">
+          <div class="card-icon-header">
+            <div class="bot-avatar-badge" data-service-icon="mt5_bot"><img src="https://download.mql5.com/cdn/web/metaquotes.software.corp/mt5/mt5_192.png" class="service-logo-img" alt="MT5 Logo"></div>
+            <div class="card-meta">
+              <span class="pill pill-purple">Forex & Indices</span>
+            </div>
+          </div>
+          <h3 class="bot-card-title">MetaTrader 5 (MT5) Bot</h3>
+          <p class="bot-card-desc">Institutional Expert Advisor (EA) integration supporting Gold (XAUUSD), US30, NAS100, and major Forex pairs with multi-timeframe confirmation.</p>
+          <div class="bot-metrics-row">
+            <div class="metric-box">
+              <span class="metric-title">Win Rate</span>
+              <span class="metric-val text-accent">91.5%</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-title">Risk Ratio</span>
+              <span class="metric-val">1:3.2 Avg</span>
+            </div>
+          </div>
+          <div class="card-footer-actions">
+            <a href="/checkout?service=mt5_bot" class="btn btn-outline btn-block">Get MT5 Bot</a>
+          </div>
+        </div>
+
+        <!-- 4. DERIV BOT -->
+        <div class="cyber-card">
+          <div class="card-icon-header">
+            <div class="bot-avatar-badge" data-service-icon="deriv_bot"><img src="https://deriv.com/static/favicons/favicon-96x96.png" class="service-logo-img" alt="Deriv Logo"></div>
+            <div class="card-meta">
+              <span class="pill pill-orange">24/7 Synthetics</span>
+            </div>
+          </div>
+          <h3 class="bot-card-title">Deriv Synthetic Indices</h3>
+          <p class="bot-card-desc">24/7 continuous trading for Volatility 75, Boom & Crash, and Jump indices with tick-by-tick volatility spike filters.</p>
+          <div class="bot-metrics-row">
+            <div class="metric-box">
+              <span class="metric-title">Win Rate</span>
+              <span class="metric-val text-accent">92.1%</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-title">Trading Hours</span>
+              <span class="metric-val text-green">24/7/365</span>
+            </div>
+          </div>
+          <div class="card-footer-actions">
+            <a href="/checkout?service=deriv_bot" class="btn btn-outline btn-block">Get Deriv Bot</a>
+          </div>
+        </div>
+
+        <!-- 5. BYBIT BOT -->
+        <div class="cyber-card">
+          <div class="card-icon-header">
+            <div class="bot-avatar-badge" data-service-icon="bybit_bot"><img src="https://cryptologos.cc/logos/bybit-bybit-logo.svg?v=035" class="service-logo-img" alt="Bybit Logo"></div>
+            <div class="card-meta">
+              <span class="pill pill-cyan">Futures & Grid</span>
+            </div>
+          </div>
+          <h3 class="bot-card-title">Bybit Futures Sniper</h3>
+          <p class="bot-card-desc">Perpetual USDT swap engine with automated funding rate arbitrage and cross-margin liquidation buffer protection.</p>
+          <div class="bot-metrics-row">
+            <div class="metric-box">
+              <span class="metric-title">Win Rate</span>
+              <span class="metric-val text-accent">94.0%</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-title">Leverage Support</span>
+              <span class="metric-val">1x - 100x</span>
+            </div>
+          </div>
+          <div class="card-footer-actions">
+            <a href="/checkout?service=bybit_bot" class="btn btn-outline btn-block">Get Bybit Bot</a>
+          </div>
+        </div>
+
+        <!-- 6. BINANCE BOT -->
+        <div class="cyber-card">
+          <div class="card-icon-header">
+            <div class="bot-avatar-badge" data-service-icon="binance_bot"><img src="https://cryptologos.cc/logos/binance-coin-bnb-logo.svg?v=035" class="service-logo-img" alt="Binance Logo"></div>
+            <div class="card-meta">
+              <span class="pill pill-yellow">Spot & Margin</span>
+            </div>
+          </div>
+          <h3 class="bot-card-title">Binance Pro Algorithmic</h3>
+          <p class="bot-card-desc">High-liquidity order flow analyzer. Scans 200+ crypto pairs concurrently for volume anomalies and rapid breakout entries.</p>
+          <div class="bot-metrics-row">
+            <div class="metric-box">
+              <span class="metric-title">Win Rate</span>
+              <span class="metric-val text-accent">93.2%</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-title">Pairs Scanned</span>
+              <span class="metric-val">200+ Live</span>
+            </div>
+          </div>
+          <div class="card-footer-actions">
+            <a href="/checkout?service=binance_bot" class="btn btn-outline btn-block">Get Binance Bot</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="center-cta-wrap" style="margin-top: 40px;">
+        <a href="/services" class="btn btn-outline btn-lg">
+          <span>View Detailed Bot Specs & Configurations</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- ARCHITECTURE & SECURITY HIGHLIGHTS -->
+    <section class="section-container" style="background: rgba(10, 15, 29, 0.4); border-radius: 28px; padding: 60px 40px; border: 1px solid var(--border-subtle);">
+      <div class="section-header">
+        <div class="section-badge">PROPRIETARY ARCHITECTURE</div>
+        <h2 class="section-title">Why Professional Traders Run TradingBoy</h2>
+        <p class="section-subtitle">Built with zero compromise on speed, safety, and security.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🛡️</div>
+          <h4 class="feature-title">Non-Custodial & API Safe</h4>
+          <p class="feature-desc">Funds remain 100% inside your broker or exchange. Bots trade strictly via read/trade API permissions with zero withdrawal access.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h4 class="feature-title">Micro-Latency WebSocket Core</h4>
+          <p class="feature-desc">Direct low-latency socket pipelines connected directly to Tier-1 financial nodes in London, Tokyo, and Frankfurt.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🧠</div>
+          <h4 class="feature-title">Neural Pattern Recognition</h4>
+          <p class="feature-desc">Machine learning models continuously adjust stop-losses and take-profit targets dynamically as market volatility changes.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <h4 class="feature-title">Universal Web Terminal</h4>
+          <p class="feature-desc">Run and monitor your bots from any browser, tablet, or smartphone without needing VPS setups or complex installations.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CALL TO ACTION BANNER -->
+    <section class="cta-banner-section">
+      <div class="cta-card">
+        <div class="cta-glow"></div>
+        <h2 class="cta-title">Ready To Automate Your Trading Edge?</h2>
+        <p class="cta-desc">Select your preferred bot, complete direct checkout with Crypto or Local E-Wallets, and receive your instant activation key.</p>
+        <div class="cta-btn-group">
+          <a href="/checkout" class="btn btn-primary btn-lg">
+            <span>Instant Checkout</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="/pricing" class="btn btn-outline btn-lg">
+            <span>Compare Pricing</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  
+<footer class="cyber-footer">
+  <div class="footer-glow"></div>
+  <div class="footer-container">
+    <div class="footer-grid">
+      <div class="footer-brand-col">
+        <a href="/" class="brand-logo">
+          <div class="logo-icon-wrap">
+            <svg class="logo-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          <span class="brand-name">TradingBoy<span class="brand-accent">AI</span></span>
+        </a>
+        <p class="footer-desc">Next-generation high-frequency algorithmic quantitative engine engineered for Quotex, MT5, GXM, Deriv, Bybit, and Binance execution.</p>
+        <div class="system-status-badge">
+          <span class="status-dot"></span>
+          <span>Core Algorithms: Operational (99.98% Uptime)</span>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-title">Trading Bots</h4>
+        <ul class="footer-links">
+          <li><a href="/services">GXM High-Freq Bot <span class="badge-featured" style="font-size:0.65rem; padding: 2px 6px;">Hot</span></a></li>
+          <li><a href="/services">Quotex Binary Bot</a></li>
+          <li><a href="/services">MetaTrader 5 (MT5)</a></li>
+          <li><a href="/services">Deriv Synthetic Bot</a></li>
+          <li><a href="/services">Bybit Futures Bot</a></li>
+          <li><a href="/services">Binance Spot/Futures</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-title">Navigation</h4>
+        <ul class="footer-links">
+          <li><a href="/pricing">Licensing & Plans</a></li>
+          <li><a href="/checkout">Direct Checkout</a></li>
+          <li><a href="/about">Quantitative Model</a></li>
+          <li><a href="/faq">Knowledge Base</a></li>
+          <li><a href="/contact">VIP Support</a></li>
+          <li><a href="/app">Web Terminal</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-title">Security & Protocol</h4>
+        <ul class="footer-links">
+          <li><a href="/faq">AES-256 Key Encryption</a></li>
+          <li><a href="/faq">Zero Balance Access</a></li>
+          <li><a href="/faq">Server Latency Engine</a></li>
+          <li><a href="/contact">Report Vulnerability</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 TradingBoy AI Quantitative Engine. All Rights Reserved.</p>
+      <div class="footer-legal-links">
+        <a href="/faq">Risk Disclosure</a>
+        <a href="/faq">Terms of Protocol</a>
+        <a href="/contact">Support</a>
+      </div>
     </div>
   </div>
-</div>
+</footer>
 
-<script src="bot.js"></script>
+  <script src="bot.js"></script>
 </body>
 </html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VIP Support & Contact — TradingBoy AI</title>
+  <meta name="description" content="Contact TradingBoy AI quant engineering and priority customer support.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="bot.css">
+</head>
+<body class="theme-cyber">
+  <div class="cyber-bg-glow glow-1"></div>
+  <div class="cyber-bg-glow glow-2"></div>
+  <div class="cyber-grid-pattern"></div>
+
+  
+<header class="cyber-header">
+  <div class="nav-container">
+    <a href="/" class="brand-logo">
+      <div class="logo-icon-wrap">
+        <svg class="logo-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+      </div>
+      <span class="brand-name">TradingBoy<span class="brand-accent">AI</span></span>
+    </a>
+
+    <nav class="cyber-nav" id="cyberNav">
+      <a href="/" class="nav-link ">Home</a>
+      <a href="/services" class="nav-link ">Services</a>
+      <a href="/pricing" class="nav-link ">Pricing</a>
+      <a href="/about" class="nav-link ">About</a>
+      <a href="/faq" class="nav-link ">FAQ</a>
+      <a href="/contact" class="nav-link active">Contact</a>
+    </nav>
+
+    <div class="header-actions">
+      <a href="/checkout" class="btn btn-outline btn-sm ">
+        <span>Get Access</span>
+      </a>
+      <a href="/app" class="btn btn-primary btn-sm">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <span>Launch Bot</span>
+      </a>
+      <button class="mobile-toggle" id="mobileMenuBtn" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+
+  <main>
+    <section class="page-hero">
+      <div class="section-container text-center">
+        <div class="section-badge">VIP DESK</div>
+        <h1 class="page-title">Quant Engineering Support</h1>
+        <p class="page-subtitle">Have inquiries regarding custom broker bridge integration, custom lot management, or licensing? Reach out directly.</p>
+      </div>
+    </section>
+
+    <section class="section-container">
+      <div class="contact-center-container">
+        <div class="cyber-card contact-main-card">
+          <div class="card-header text-center" style="margin-bottom: 30px;">
+            <h2 class="card-title">Submit Support Ticket</h2>
+            <p class="card-subtitle">Our engineering team typically responds within 15-30 minutes.</p>
+          </div>
+
+          <form id="contactForm" class="cyber-form">
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="contactName">Full Name <span class="text-danger">*</span></label>
+                <input type="text" id="contactName" class="form-control" placeholder="Alex Morgan" required>
+              </div>
+              <div class="form-group">
+                <label for="contactEmail">Email Address <span class="text-danger">*</span></label>
+                <input type="email" id="contactEmail" class="form-control" placeholder="alex@domain.com" required>
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="contactTopic">Inquiry Category <span class="text-danger">*</span></label>
+                <select id="contactTopic" class="form-control cyber-select" required>
+                  <option value="licensing">Bot License & Key Verification</option>
+                  <option value="gxm">GXM Flagship Engine Inquiries</option>
+                  <option value="mt5">MetaTrader 5 EA Bridge</option>
+                  <option value="quotex">Quotex & Deriv Setup</option>
+                  <option value="crypto">Bybit & Binance API Configuration</option>
+                  <option value="partnership">Custom Institutional Partnership</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="contactPhone">Phone / Telegram Handle (Optional)</label>
+                <input type="text" id="contactPhone" class="form-control" placeholder="@username or +1...">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="contactSubject">Subject <span class="text-danger">*</span></label>
+              <input type="text" id="contactSubject" class="form-control" placeholder="Brief summary of your query" required>
+            </div>
+
+            <div class="form-group">
+              <label for="contactMessage">Message Details <span class="text-danger">*</span></label>
+              <textarea id="contactMessage" rows="5" class="form-control" placeholder="Please provide specific details so our technical team can assist you swiftly..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-block" id="sendContactBtn">
+              <span>Send Priority Ticket</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+          </form>
+
+          <div class="contact-success-alert" id="contactSuccessAlert" style="display: none; margin-top: 20px;">
+            <div class="pill pill-green">✓ Ticket Dispatched</div>
+            <p>Thank you! Your ticket has been logged and assigned to an available quant support technician.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  
+<footer class="cyber-footer">
+  <div class="footer-glow"></div>
+  <div class="footer-container">
+    <div class="footer-grid">
+      <div class="footer-brand-col">
+        <a href="/" class="brand-logo">
+          <div class="logo-icon-wrap">
+            <svg class="logo-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          <span class="brand-name">TradingBoy<span class="brand-accent">AI</span></span>
+        </a>
+        <p class="footer-desc">Next-generation high-frequency algorithmic quantitative engine engineered for Quotex, MT5, GXM, Deriv, Bybit, and Binance execution.</p>
+        <div class="system-status-badge">
+          <span class="status-dot"></span>
+          <span>Core Algorithms: Operational (99.98% Uptime)</span>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-title">Trading Bots</h4>
+        <ul class="footer-links">
+          <li><a href="/services">GXM High-Freq Bot <span class="badge-featured" style="font-size:0.65rem; padding: 2px 6px;">Hot</span></a></li>
+          <li><a href="/services">Quotex Binary Bot</a></li>
+          <li><a href="/services">MetaTrader 5 (MT5)</a></li>
+          <li><a href="/services">Deriv Synthetic Bot</a></li>
+          <li><a href="/services">Bybit Futures Bot</a></li>
+          <li><a href="/services">Binance Spot/Futures</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-title">Navigation</h4>
+        <ul class="footer-links">
+          <li><a href="/pricing">Licensing & Plans</a></li>
+          <li><a href="/checkout">Direct Checkout</a></li>
+          <li><a href="/about">Quantitative Model</a></li>
+          <li><a href="/faq">Knowledge Base</a></li>
+          <li><a href="/contact">VIP Support</a></li>
+          <li><a href="/app">Web Terminal</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-title">Security & Protocol</h4>
+        <ul class="footer-links">
+          <li><a href="/faq">AES-256 Key Encryption</a></li>
+          <li><a href="/faq">Zero Balance Access</a></li>
+          <li><a href="/faq">Server Latency Engine</a></li>
+          <li><a href="/contact">Report Vulnerability</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 TradingBoy AI Quantitative Engine. All Rights Reserved.</p>
+      <div class="footer-legal-links">
+        <a href="/faq">Risk Disclosure</a>
+        <a href="/faq">Terms of Protocol</a>
+        <a href="/contact">Support</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  <script src="bot.js"></script>
+</body>
+</html>

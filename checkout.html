@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Direct Checkout & Bot License Activation — TradingBoy AI</title>
+  <meta name="description" content="Purchase and activate your TradingBoy AI bot license. Fast checkout via Crypto (USDT/BTC) and Local E-Wallets.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="bot.css">
+</head>
+<body class="theme-cyber">
+  <div class="cyber-bg-glow glow-1"></div>
+  <div class="cyber-bg-glow glow-2"></div>
+  <div class="cyber-grid-pattern"></div>
+
+  
+<header class="cyber-header">
+  <div class="nav-container">
+    <a href="/" class="brand-logo">
+      <div class="logo-icon-wrap">
+        <svg class="logo-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+      </div>
+      <span class="brand-name">TradingBoy<span class="brand-accent">AI</span></span>
+    </a>
+
+    <nav class="cyber-nav" id="cyberNav">
+      <a href="/" class="nav-link ">Home</a>
+      <a href="/services" class="nav-link ">Services</a>
+      <a href="/pricing" class="nav-link ">Pricing</a>
+      <a href="/about" class="nav-link ">About</a>
+      <a href="/faq" class="nav-link ">FAQ</a>
+      <a href="/contact" class="nav-link ">Contact</a>
+    </nav>
+
+    <div class="header-actions">
+      <a href="/checkout" class="btn btn-outline btn-sm active">
+        <span>Get Access</span>
+      </a>
+      <a href="/app" class="btn btn-primary btn-sm">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <span>Launch Bot</span>
+      </a>
+      <button class="mobile-toggle" id="mobileMenuBtn" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+
+  <main>
+    <section class="page-hero">
+      <div class="section-container text-center">
+        <div class="section-badge">SECURE CHECKOUT</div>
+        <h1 class="page-title">Unlock Your Bot License</h1>
+        <p class="page-subtitle">Select your bot service, choose a payment method, and submit your transaction proof for instant key activation.</p>
+      </div>
+    </section>
+
+    <section class="section-container">
+      <div class="checkout-layout-grid">
+        
+        <!-- LEFT COLUMN: PAYMENT METHOD & DEPOSIT INSTRUCTIONS -->
+        <div class="checkout-left-col">
+          <div class="cyber-card checkout-card">
+            <h3 class="checkout-card-title">
+              <span class="step-num">1</span>
+              <span>Select Payment Method</span>
+            </h3>
+
+            <!-- PAYMENT TABS (Crypto vs E-Wallet) -->
+            <div class="payment-tabs-nav">
+              <button type="button" class="tab-btn active" id="tabCryptoBtn">Crypto Currency (USDT/BTC)</button>
+              <button type="button" class="tab-btn" id="tabWalletBtn">E-Wallets / Local Bank</button>
+            </div>
+
+            <!-- PAYMENT METHOD SELECTOR CARDS (Dynamically populated from backend) -->
+            <div class="payment-methods-list" id="paymentMethodsList">
+              <div class="loading-state">
+                <div class="spinner"></div>
+                <p>Loading active payment channels...</p>
+              </div>
+            </div>
+
+            <!-- ACTIVE PAYMENT DETAILS CARD -->
+            <div class="active-payment-details-box" id="activePaymentDetails" style="display: none;">
+              <div class="details-header">
+                <span class="details-title" id="selectedMethodTitle">USDT (TRC20) Deposit</span>
+                <span class="pill pill-green" id="selectedMethodType">Crypto</span>
+              </div>
+
+              <div class="instruction-text" id="selectedMethodInstructions">
+                Please transfer the exact amount to the official deposit address below.
+              </div>
+
+              <div class="address-copy-block">
+                <label class="block-label">Deposit Address / Account Number</label>
+                <div class="copy-input-group">
+                  <input type="text" id="depositAddressInput" readonly value="Loading...">
+                  <button type="button" class="btn btn-primary btn-sm" id="copyAddressBtn">
+                    <span id="copyBtnText">Copy Address</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="account-meta-row" id="accountNameRow" style="display: none;">
+                <span class="meta-label">Account Title / Beneficiary:</span>
+                <strong class="meta-val" id="accountNameVal">-</strong>
+              </div>
+
+              <div class="qr-wrap" id="qrContainer" style="display: none;">
+                <img id="qrCodeImg" src="" alt="Payment QR Code" class="qr-image">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: ORDER DETAILS & SUBMISSION FORM -->
+        <div class="checkout-right-col">
+          <div class="cyber-card checkout-card">
+            <h3 class="checkout-card-title">
+              <span class="step-num">2</span>
+              <span>Order Details & Verification</span>
+            </h3>
+
+            <form id="checkoutForm" class="cyber-form">
+              <!-- HIDDEN FIELDS -->
+              <input type="hidden" id="selectedPaymentMethodId" name="payment_method_id" value="">
+              <input type="hidden" id="proofImageData" name="proof_image_data" value="">
+
+              <!-- 1. SERVICE SELECTOR -->
+              <div class="form-group">
+                <label for="serviceSelect">Select Bot Service <span class="text-danger">*</span></label>
+                <select id="serviceSelect" class="form-control cyber-select" required>
+                  <option value="" disabled selected>Loading bot catalog...</option>
+                </select>
+              </div>
+
+              <!-- SERVICE PRICE SUMMARY BOX -->
+              <div class="order-summary-box" id="orderSummaryBox">
+                <div class="summary-line">
+                  <span class="summary-label">Selected Bot Engine</span>
+                  <span class="summary-val" id="summaryServiceName">GXM Quantitative Bot</span>
+                </div>
+                <div class="summary-line highlight">
+                  <span class="summary-label">Total Amount Due</span>
+                  <span class="summary-val text-accent" id="summaryServicePrice">$249 USD</span>
+                </div>
+              </div>
+
+              <!-- 2. USER EMAIL (For Activation) -->
+              <div class="form-group">
+                <label for="userEmail">Activation Email Address <span class="text-danger">*</span></label>
+                <input type="email" id="userEmail" class="form-control" placeholder="your-email@domain.com" required>
+                <small class="form-help">Your license key and login credentials will be dispatched to this email.</small>
+              </div>
+
+              <!-- 3. USER PHONE / TELEGRAM NUMBER -->
+              <div class="form-group">
+                <label for="userPhone">Phone / WhatsApp / Telegram Number <span class="text-danger">*</span></label>
+                <input type="tel" id="userPhone" class="form-control" placeholder="+1 (555) 000-0000 or WhatsApp number" required>
+                <small class="form-help">Used for priority verification and instant key delivery notifications.</small>
+              </div>
+
+              <!-- 4. TRANSACTION ID / HASH -->
+              <div class="form-group">
+                <label for="txidInput">Transaction ID / Reference Hash <span class="text-danger">*</span></label>
+                <input type="text" id="txidInput" class="form-control font-mono" placeholder="e.g. 0x8f2d4... or Bank Transfer Ref" required>
+              </div>
+
+              <!-- 5. SCREENSHOT PROOF UPLOAD -->
+              <div class="form-group">
+                <label>Payment Proof Screenshot <span class="text-danger">*</span></label>
+                <div class="file-drop-zone" id="proofDropZone">
+                  <input type="file" id="proofFileInput" accept="image/*" class="file-input-hidden" required>
+                  <div class="drop-zone-content" id="dropZoneContent">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <p class="drop-text">Click or drag screenshot of your payment transfer</p>
+                    <span class="file-types">PNG, JPG, WEBP up to 5MB</span>
+                  </div>
+                  <div class="proof-preview-wrap" id="proofPreviewWrap" style="display: none;">
+                    <img id="proofPreviewImg" src="" alt="Proof Preview">
+                    <button type="button" class="btn-remove-proof" id="removeProofBtn">&times; Change Image</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SUBMIT BUTTON -->
+              <button type="submit" class="btn btn-primary btn-lg btn-block" id="submitOrderBtn">
+                <span>Submit Order & Activate Key</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SUCCESS MODAL -->
+    <div class="cyber-modal" id="orderSuccessModal">
+      <div class="modal-backdrop"></div>
+      <div class="modal-dialog">
+        <div class="modal-content text-center">
+          <div class="success-icon-badge">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <h2 class="modal-title">Order Submitted Successfully!</h2>
+          <p class="modal-desc">
+            Your payment proof and order request have been logged into the queue. Our automated verification system and staff are reviewing the transaction hash.
+          </p>
+          <div class="order-id-box">
+            <span class="label">Reference Order ID:</span>
+            <strong class="order-id-val" id="successOrderId">TB-XXXXXX</strong>
+          </div>
+          <p class="modal-subtext">
+            Your activation key will be delivered directly to <strong id="successUserEmail"></strong> and VIP notifications sent to your number.
+          </p>
+          <div class="modal-actions">
+            <a href="/app" class="btn btn-primary">Go To Web Terminal</a>
+            <a href="/" class="btn btn-outline">Back To Home</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  
+<footer class="cyber-footer">
+  <div class="footer-glow"></div>
+  <div class="footer-container">
+    <div class="footer-grid">
+      <div class="footer-brand-col">
+        <a href="/" class="brand-logo">
+          <div class="logo-icon-wrap">
+            <svg class="logo-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          <span class="brand-name">TradingBoy<span class="brand-accent">AI</span></span>
+        </a>
+        <p class="footer-desc">Next-generation high-frequency algorithmic quantitative engine engineered for Quotex, MT5, GXM, Deriv, Bybit, and Binance execution.</p>
+        <div class="system-status-badge">
+          <span class="status-dot"></span>
+          <span>Core Algorithms: Operational (99.98% Uptime)</span>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-title">Trading Bots</h4>
+        <ul class="footer-links">
+          <li><a href="/services">GXM High-Freq Bot <span class="badge-featured" style="font-size:0.65rem; padding: 2px 6px;">Hot</span></a></li>
+          <li><a href="/services">Quotex Binary Bot</a></li>
+          <li><a href="/services">MetaTrader 5 (MT5)</a></li>
+          <li><a href="/services">Deriv Synthetic Bot</a></li>
+          <li><a href="/services">Bybit Futures Bot</a></li>
+          <li><a href="/services">Binance Spot/Futures</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-title">Navigation</h4>
+        <ul class="footer-links">
+          <li><a href="/pricing">Licensing & Plans</a></li>
+          <li><a href="/checkout">Direct Checkout</a></li>
+          <li><a href="/about">Quantitative Model</a></li>
+          <li><a href="/faq">Knowledge Base</a></li>
+          <li><a href="/contact">VIP Support</a></li>
+          <li><a href="/app">Web Terminal</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-title">Security & Protocol</h4>
+        <ul class="footer-links">
+          <li><a href="/faq">AES-256 Key Encryption</a></li>
+          <li><a href="/faq">Zero Balance Access</a></li>
+          <li><a href="/faq">Server Latency Engine</a></li>
+          <li><a href="/contact">Report Vulnerability</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 TradingBoy AI Quantitative Engine. All Rights Reserved.</p>
+      <div class="footer-legal-links">
+        <a href="/faq">Risk Disclosure</a>
+        <a href="/faq">Terms of Protocol</a>
+        <a href="/contact">Support</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  <script src="bot.js"></script>
+</body>
+</html>

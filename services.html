@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trading Bot Services & AI Engines — TradingBoy AI</title>
+  <meta name="description" content="Explore our complete line of algorithmic trading bots: Quotex, MT5, GXM Bot (Flagship), Deriv, Bybit, and Binance.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="bot.css">
+</head>
+<body class="theme-cyber">
+  <div class="cyber-bg-glow glow-1"></div>
+  <div class="cyber-bg-glow glow-2"></div>
+  <div class="cyber-grid-pattern"></div>
+
+  
+<header class="cyber-header">
+  <div class="nav-container">
+    <a href="/" class="brand-logo">
+      <div class="logo-icon-wrap">
+        <svg class="logo-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+      </div>
+      <span class="brand-name">TradingBoy<span class="brand-accent">AI</span></span>
+    </a>
+
+    <nav class="cyber-nav" id="cyberNav">
+      <a href="/" class="nav-link ">Home</a>
+      <a href="/services" class="nav-link active">Services</a>
+      <a href="/pricing" class="nav-link ">Pricing</a>
+      <a href="/about" class="nav-link ">About</a>
+      <a href="/faq" class="nav-link ">FAQ</a>
+      <a href="/contact" class="nav-link ">Contact</a>
+    </nav>
+
+    <div class="header-actions">
+      <a href="/checkout" class="btn btn-outline btn-sm ">
+        <span>Get Access</span>
+      </a>
+      <a href="/app" class="btn btn-primary btn-sm">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <span>Launch Bot</span>
+      </a>
+      <button class="mobile-toggle" id="mobileMenuBtn" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+
+  <main>
+    <section class="page-hero">
+      <div class="section-container text-center">
+        <div class="section-badge">SERVICES CATALOG</div>
+        <h1 class="page-title">Autonomous Trading Engines</h1>
+        <p class="page-subtitle">Every bot is calibrated with broker-specific execution rules and dynamic risk management systems.</p>
+      </div>
+    </section>
+
+    <section class="section-container">
+      <!-- DYNAMIC BOT CONTAINER (Loaded from Backend / Fallback) -->
+      <div class="services-dynamic-grid" id="servicesGrid">
+        
+        <!-- 1. GXM BOT (FLAGSHIP HIGHLIGHTED) -->
+        <div class="cyber-card service-full-card featured">
+          <div class="service-card-header">
+            <div class="service-icon-box gxm-glow" data-service-icon="gxm_bot"><img src="https://gainexmarket.com/favicon.png" class="service-logo-img" alt="GXM Bot Logo"></div>
+            <div class="service-title-col">
+              <h2 class="service-name">GXM Quantitative Bot <span class="pill pill-green" style="font-size:0.75rem; vertical-align:middle; margin-left:8px;">⭐ Flagship</span></h2>
+            </div>
+            <div class="service-price-tag" data-service-price="gxm_bot">
+              <span class="price-val">$70</span>
+              <span class="price-period">/ Lifetime</span>
+            </div>
+          </div>
+
+          <p class="service-overview">
+            Our most sophisticated institutional algorithm. GXM Bot processes order book tick data with real-time liquidity imbalance detection, triggering rapid low-drawdown scalp entries before retail orders propagate.
+          </p>
+
+          <div class="service-specs-grid">
+            <div class="spec-item">
+              <span class="spec-label">Target Markets</span>
+              <span class="spec-val">GXM Indices, Currencies, Crypto</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">Algorithm Type</span>
+              <span class="spec-val">Neural Imbalance + Momentum Scalp</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">Avg Execution Speed</span>
+              <span class="spec-val text-accent">8 Milliseconds</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">Protection System</span>
+              <span class="spec-val text-green">Auto-Trailing SL & Circuit Breaker</span>
+            </div>
+          </div>
+
+          <div class="service-features-list">
+            <div class="feat-item"><span class="feat-check">✓</span> 1-Click Zero-Config Cloud Web Deployment</div>
+            <div class="feat-item"><span class="feat-check">✓</span> Advanced Dynamic Spread & Slippage Filter</div>
+            <div class="feat-item"><span class="feat-check">✓</span> Real-Time Telegram Trade Alert Webhooks</div>
+            <div class="feat-item"><span class="feat-check">✓</span> Lifetime Engine Updates & Algorithm Tuning</div>
+          </div>
+
+          <div class="service-action-row">
+            <a href="/checkout?service=gxm_bot" class="btn btn-primary btn-lg">
+              <span>Buy GXM Bot License</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a href="/app" class="btn btn-outline btn-lg">Test In Web Terminal</a>
+          </div>
+        </div>
+
+        <!-- 2. QUOTEX BOT -->
+        <div class="cyber-card service-full-card">
+          <div class="service-card-header">
+            <div class="service-icon-box" data-service-icon="quotex_bot"><img src="https://qxbroker.com/favicon.ico" class="service-logo-img" alt="Quotex Logo"></div>
+            <div>
+              <div class="service-tag-strip">
+                <span class="pill pill-blue">Binary Options</span>
+                <span class="pill pill-cyan">1M / 5M Sniper</span>
+              </div>
+              <h2 class="service-name">Quotex Binary Scalper</h2>
+            </div>
+            <div class="service-price-tag" data-service-price="quotex_bot">
+              <span class="price-val">$99</span>
+              <span class="price-period">/ Lifetime</span>
+            </div>
+          </div>
+          <p class="service-overview">Engineered specifically for binary options execution. Predicts candle color closes with proprietary momentum oscillators and anti-martingale protection.</p>
+          <div class="service-features-list">
+            <div class="feat-item"><span class="feat-check">✓</span> Turbo 1-min and 5-min candle expiration sniper</div>
+            <div class="feat-item"><span class="feat-check">✓</span> OTC weekend market algorithm filters</div>
+            <div class="feat-item"><span class="feat-check">✓</span> Configurable win-streak profit lock system</div>
+          </div>
+          <div class="service-action-row">
+            <a href="/checkout?service=quotex_bot" class="btn btn-primary">Buy Quotex Bot</a>
+          </div>
+        </div>
+
+        <!-- 3. MT5 BOT -->
+        <div class="cyber-card service-full-card">
+          <div class="service-card-header">
+            <div class="service-icon-box" data-service-icon="mt5_bot"><img src="https://download.mql5.com/cdn/web/metaquotes.software.corp/mt5/mt5_192.png" class="service-logo-img" alt="MT5 Logo"></div>
+            <div>
+              <div class="service-tag-strip">
+                <span class="pill pill-purple">MetaTrader 5</span>
+                <span class="pill pill-green">Forex / Gold</span>
+              </div>
+              <h2 class="service-name">MetaTrader 5 (MT5) Institutional</h2>
+            </div>
+            <div class="service-price-tag" data-service-price="mt5_bot">
+              <span class="price-val">$149</span>
+              <span class="price-period">/ Lifetime</span>
+            </div>
+          </div>
+          <p class="service-overview">Multi-pair Expert Advisor bridging directly to MT5 terminal. Dominates XAUUSD (Gold), US30, and GBPUSD with smart order flow blocks.</p>
+          <div class="service-features-list">
+            <div class="feat-item"><span class="feat-check">✓</span> Direct MQL5/API socket bridge with sub-tick execution</div>
+            <div class="feat-item"><span class="feat-check">✓</span> News-event volatility filter to avoid major spikes</div>
+            <div class="feat-item"><span class="feat-check">✓</span> Multi-lot sizing with automatic account balance scaling</div>
+          </div>
+          <div class="service-action-row">
+            <a href="/checkout?service=mt5_bot" class="btn btn-primary">Buy MT5 Bot</a>
+          </div>
+        </div>
+
+        <!-- 4. DERIV BOT -->
+        <div class="cyber-card service-full-card">
+          <div class="service-card-header">
+            <div class="service-icon-box" data-service-icon="deriv_bot"><img src="https://deriv.com/static/favicons/favicon-96x96.png" class="service-logo-img" alt="Deriv Logo"></div>
+            <div>
+              <div class="service-tag-strip">
+                <span class="pill pill-orange">Deriv Synthetics</span>
+                <span class="pill pill-green">24/7 Always On</span>
+              </div>
+              <h2 class="service-name">Deriv Synthetic Indices Bot</h2>
+            </div>
+            <div class="service-price-tag" data-service-price="deriv_bot">
+              <span class="price-val">$89</span>
+              <span class="price-period">/ Lifetime</span>
+            </div>
+          </div>
+          <p class="service-overview">Optimized for Volatility 100/75/25 and Boom/Crash spike hunter algorithms. Operates 24/7 without weekend market closures.</p>
+          <div class="service-features-list">
+            <div class="feat-item"><span class="feat-check">✓</span> Pre-spike detection algorithms for Boom and Crash</div>
+            <div class="feat-item"><span class="feat-check">✓</span> Volatility Index continuous range-bound harvester</div>
+            <div class="feat-item"><span class="feat-check">✓</span> Zero latency Deriv WebSocket API integration</div>
+          </div>
+          <div class="service-action-row">
+            <a href="/checkout?service=deriv_bot" class="btn btn-primary">Buy Deriv Bot</a>
+          </div>
+        </div>
+
+        <!-- 5. BYBIT BOT -->
+        <div class="cyber-card service-full-card">
+          <div class="service-card-header">
+            <div class="service-icon-box" data-service-icon="bybit_bot"><img src="https://cryptologos.cc/logos/bybit-bybit-logo.svg?v=035" class="service-logo-img" alt="Bybit Logo"></div>
+            <div>
+              <div class="service-tag-strip">
+                <span class="pill pill-cyan">Bybit Futures</span>
+                <span class="pill pill-purple">Grid / Funding</span>
+              </div>
+              <h2 class="service-name">Bybit Futures Sniper</h2>
+            </div>
+            <div class="service-price-tag" data-service-price="bybit_bot">
+              <span class="price-val">$129</span>
+              <span class="price-period">/ Lifetime</span>
+            </div>
+          </div>
+          <p class="service-overview">Perpetual futures contract trading with AI trend-following, dynamic leverage adjustment, and automated funding fee harvesting.</p>
+          <div class="service-features-list">
+            <div class="feat-item"><span class="feat-check">✓</span> Trailing take-profit with laddered limit orders</div>
+            <div class="feat-item"><span class="feat-check">✓</span> Liquidation risk shield with auto-hedge capabilities</div>
+            <div class="feat-item"><span class="feat-check">✓</span> Unified Trading Account (UTA) support</div>
+          </div>
+          <div class="service-action-row">
+            <a href="/checkout?service=bybit_bot" class="btn btn-primary">Buy Bybit Bot</a>
+          </div>
+        </div>
+
+        <!-- 6. BINANCE BOT -->
+        <div class="cyber-card service-full-card">
+          <div class="service-card-header">
+            <div class="service-icon-box" data-service-icon="binance_bot"><img src="https://cryptologos.cc/logos/binance-coin-bnb-logo.svg?v=035" class="service-logo-img" alt="Binance Logo"></div>
+            <div>
+              <div class="service-tag-strip">
+                <span class="pill pill-yellow">Binance Pro</span>
+                <span class="pill pill-cyan">Spot & Futures</span>
+              </div>
+              <h2 class="service-name">Binance Pro Algorithmic</h2>
+            </div>
+            <div class="service-price-tag" data-service-price="binance_bot">
+              <span class="price-val">$139</span>
+              <span class="price-period">/ Lifetime</span>
+            </div>
+          </div>
+          <p class="service-overview">High-frequency multi-coin scanner engineered for Binance's high-liquidity order books. Captures rapid volume breakouts in real time.</p>
+          <div class="service-features-list">
+            <div class="feat-item"><span class="feat-check">✓</span> 200+ USDT pairs scanned every 250ms for momentum</div>
+            <div class="feat-item"><span class="feat-check">✓</span> Smart DCA (Dollar Cost Averaging) safety grids</div>
+            <div class="feat-item"><span class="feat-check">✓</span> Spot & USDT-M Futures dual-mode execution</div>
+          </div>
+          <div class="service-action-row">
+            <a href="/checkout?service=binance_bot" class="btn btn-primary">Buy Binance Bot</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  
+<footer class="cyber-footer">
+  <div class="footer-glow"></div>
+  <div class="footer-container">
+    <div class="footer-grid">
+      <div class="footer-brand-col">
+        <a href="/" class="brand-logo">
+          <div class="logo-icon-wrap">
+            <svg class="logo-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          <span class="brand-name">TradingBoy<span class="brand-accent">AI</span></span>
+        </a>
+        <p class="footer-desc">Next-generation high-frequency algorithmic quantitative engine engineered for Quotex, MT5, GXM, Deriv, Bybit, and Binance execution.</p>
+        <div class="system-status-badge">
+          <span class="status-dot"></span>
+          <span>Core Algorithms: Operational (99.98% Uptime)</span>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-title">Trading Bots</h4>
+        <ul class="footer-links">
+          <li><a href="/services">GXM High-Freq Bot <span class="badge-featured" style="font-size:0.65rem; padding: 2px 6px;">Hot</span></a></li>
+          <li><a href="/services">Quotex Binary Bot</a></li>
+          <li><a href="/services">MetaTrader 5 (MT5)</a></li>
+          <li><a href="/services">Deriv Synthetic Bot</a></li>
+          <li><a href="/services">Bybit Futures Bot</a></li>
+          <li><a href="/services">Binance Spot/Futures</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-title">Navigation</h4>
+        <ul class="footer-links">
+          <li><a href="/pricing">Licensing & Plans</a></li>
+          <li><a href="/checkout">Direct Checkout</a></li>
+          <li><a href="/about">Quantitative Model</a></li>
+          <li><a href="/faq">Knowledge Base</a></li>
+          <li><a href="/contact">VIP Support</a></li>
+          <li><a href="/app">Web Terminal</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-title">Security & Protocol</h4>
+        <ul class="footer-links">
+          <li><a href="/faq">AES-256 Key Encryption</a></li>
+          <li><a href="/faq">Zero Balance Access</a></li>
+          <li><a href="/faq">Server Latency Engine</a></li>
+          <li><a href="/contact">Report Vulnerability</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 TradingBoy AI Quantitative Engine. All Rights Reserved.</p>
+      <div class="footer-legal-links">
+        <a href="/faq">Risk Disclosure</a>
+        <a href="/faq">Terms of Protocol</a>
+        <a href="/contact">Support</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  <script src="bot.js"></script>
+</body>
+</html>
