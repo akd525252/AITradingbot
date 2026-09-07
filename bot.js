@@ -1096,13 +1096,27 @@ if (typeof document !== 'undefined') {
   }
 
   // 3. Dynamic Services & Prices Loader
-  let cachedServices = [];
+  const DEFAULT_SERVICES = [
+    { service_key: 'gxm_bot', name: 'GXM Quantitative Bot', price: '170', logo_url: '/logos/gxm.png' },
+    { service_key: 'quotex_bot', name: 'Quotex Binary Scalper', price: '99', logo_url: '/logos/quotex.png' },
+    { service_key: 'mt5_bot', name: 'MetaTrader 5 (MT5) Bot', price: '149', logo_url: '/logos/mt5.png' },
+    { service_key: 'deriv_bot', name: 'Deriv Synthetic Indices', price: '89', logo_url: '/logos/deriv.jpg' },
+    { service_key: 'bybit_bot', name: 'Bybit Futures Sniper', price: '129', logo_url: '/logos/bybit.png' },
+    { service_key: 'binance_bot', name: 'Binance Pro Algorithmic', price: '139', logo_url: '/logos/binance.webp' }
+  ];
+
+  let cachedServices = DEFAULT_SERVICES;
+
   async function loadDynamicServices() {
+    // Populate defaults immediately so the dropdown is instant and never gets stuck
+    populateServiceDropdown(cachedServices);
+    updateServiceCardsPrices(cachedServices);
+
     try {
       const res = await fetch(`${API_BASE}/api/public/bot-services?t=${Date.now()}`);
       if (res.ok) {
         const data = await res.json();
-        if (data && data.services && Array.isArray(data.services)) {
+        if (data && data.services && Array.isArray(data.services) && data.services.length > 0) {
           cachedServices = data.services;
           updateServiceCardsPrices(data.services);
           populateServiceDropdown(data.services);
@@ -1160,27 +1174,31 @@ if (typeof document !== 'undefined') {
     const select = document.getElementById('serviceSelect');
     if (!select) return;
 
+    const currentVal = select.value;
+    const urlParams = new URLSearchParams(window.location.search);
+    const preSelected = urlParams.get('service') || currentVal;
+
     select.innerHTML = '';
     services.forEach(svc => {
       const opt = document.createElement('option');
       opt.value = svc.service_key;
       const title = svc.name || svc.title || 'Trading Bot';
       const cleanP = formatPrice(svc.price);
-      opt.textContent = `${title} — $${cleanP} USD`;
+      opt.textContent = `${title} — ${cleanP} USD`;
       opt.dataset.price = cleanP;
       opt.dataset.title = title;
+      if (preSelected && svc.service_key === preSelected) {
+        opt.selected = true;
+      }
       select.appendChild(opt);
     });
 
-    // Check URL query param: ?service=gxm_bot
-    const urlParams = new URLSearchParams(window.location.search);
-    const preSelected = urlParams.get('service');
-    if (preSelected && select.querySelector(`option[value="${preSelected}"]`)) {
-      select.value = preSelected;
+    if (!select.value && select.options.length > 0) {
+      select.options[0].selected = true;
     }
 
     updateCheckoutSummary();
-    select.addEventListener('change', updateCheckoutSummary);
+    select.onchange = updateCheckoutSummary;
   }
 
   function updateCheckoutSummary() {
