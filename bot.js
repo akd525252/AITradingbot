@@ -1062,9 +1062,25 @@ if (typeof document !== 'undefined') {
    ========================================================================== */
 
 (function() {
-  const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:3000'
-    : '';
+  const API_BASE = (function() {
+    if (typeof GAINEX_API !== 'undefined' && GAINEX_API) {
+      return GAINEX_API.replace(/\/$/, '');
+    }
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('tbb_api_url');
+      if (saved && saved.trim() !== '' && !saved.includes('gxmmarket.com')) {
+        return saved.trim().replace(/\/$/, '');
+      }
+      const host = window.location.hostname;
+      if (host === 'localhost' || host === '127.0.0.1') {
+        return 'http://localhost:3000';
+      }
+      if (host.includes('gainexmarket.com')) {
+        return window.location.origin;
+      }
+    }
+    return 'https://gainexmarket.com';
+  })();
 
   // 1. Mobile Menu Toggle
   function initMobileMenu() {
@@ -1223,7 +1239,7 @@ if (typeof document !== 'undefined') {
     if (!container) return;
 
     try {
-      const res = await fetch(`${API_BASE}/api/public/bot-payment-methods`);
+      const res = await fetch(`${API_BASE}/api/public/bot-payment-methods?t=${Date.now()}`);
       if (res.ok) {
         const data = await res.json();
         if (data && data.methods && Array.isArray(data.methods) && data.methods.length > 0) {
@@ -1238,9 +1254,9 @@ if (typeof document !== 'undefined') {
 
     // Fallback payment methods if backend is unreachable
     activePaymentMethods = [
-      { id: 1, name: 'USDT (TRC-20)', type: 'crypto', address_or_number: 'TYbNqH2Z4vX8P4F9mQwE1k5L6t7R8s9A0b', network_or_bank: 'TRON Network (TRC20)', instructions: 'Send exact amount via TRC-20 network. TXID required.' },
-      { id: 2, name: 'USDT (BEP-20)', type: 'crypto', address_or_number: '0x71C8360d0C9Fe79F0123456789abcdef01234567', network_or_bank: 'BNB Smart Chain (BEP20)', instructions: 'Send exact amount via BEP-20 network. TXID required.' },
-      { id: 3, name: 'Bitcoin (BTC)', type: 'crypto', address_or_number: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh', network_or_bank: 'Bitcoin Network', instructions: 'Send exact BTC equivalent. TXID required.' },
+      { id: 1, name: 'USDT (TRC-20)', type: 'crypto', address_or_number: 'TRHd1kWKSH3dThNzrsAbzHYcyN5si7eNT4', network_or_bank: 'TRON Network (TRC20)', instructions: 'Send exact amount via TRC-20 network. TXID required.' },
+      { id: 2, name: 'USDT (BEP-20)', type: 'crypto', address_or_number: '0xd824fd978acaecd309155ebeee2e91e0924469ac', network_or_bank: 'BNB Smart Chain (BEP20)', instructions: 'Send exact amount via BEP-20 network. TXID required.' },
+      { id: 6, name: 'USDT (APTOS)', type: 'crypto', address_or_number: '0xefa7ce01cfbabcc536507e50c0616f762462386eb99349ff26a025c9c01216e0', network_or_bank: 'USDT (Aptos)', instructions: 'Send exact amount. TXID and screenshot proof required.' },
       { id: 4, name: 'SadaPay / Bank Transfer', type: 'ewallet', address_or_number: '03001234567', account_holder: 'Trading Boy Official', network_or_bank: 'SadaPay', instructions: 'Transfer via SadaPay or Raast to the registered number.' },
       { id: 5, name: 'EasyPaisa / JazzCash', type: 'ewallet', address_or_number: '03119876543', account_holder: 'Trading Boy Official', network_or_bank: 'EasyPaisa', instructions: 'Send payment directly and upload payment receipt screenshot.' }
     ];
