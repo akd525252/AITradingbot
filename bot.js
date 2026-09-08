@@ -1087,9 +1087,16 @@ if (typeof document !== 'undefined') {
     const btn = document.getElementById('mobileMenuBtn');
     const nav = document.getElementById('cyberNav');
     if (btn && nav) {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
         nav.classList.toggle('open');
         btn.classList.toggle('active');
+      });
+      document.addEventListener('click', (e) => {
+        if (!nav.contains(e.target) && !btn.contains(e.target)) {
+          nav.classList.remove('open');
+          btn.classList.remove('active');
+        }
       });
     }
   }
