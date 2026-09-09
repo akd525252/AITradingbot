@@ -1009,45 +1009,252 @@ function toggleMobileNav() {
 }
 
 /**
- * Fetch active bot services and real-time prices from the Gain EX backend
+ * Fetch active bot services, real-time prices, and countdown timers from the Gain EX backend
  * and dynamically populate pricing across Landing, Services, and Pricing pages.
  */
+const DEFAULT_SERVICES = [
+  { service_key: 'gxm_bot', name: 'GXM Quantitative Bot', price: '70', actual_price: '189', offer_timer_enabled: false, offer_ends_at: null, logo_url: '/logos/gxm.png' },
+  { service_key: 'quotex_bot', name: 'Quotex Binary Scalper', price: '99', actual_price: '99', offer_timer_enabled: false, offer_ends_at: null, logo_url: '/logos/quotex.png' },
+  { service_key: 'mt5_bot', name: 'MetaTrader 5 (MT5) Bot', price: '189', actual_price: '189', offer_timer_enabled: false, offer_ends_at: null, logo_url: '/logos/mt5.png' },
+  { service_key: 'deriv_bot', name: 'Deriv Synthetic Indices', price: '89', actual_price: '89', offer_timer_enabled: false, offer_ends_at: null, logo_url: '/logos/deriv.jpg' },
+  { service_key: 'bybit_bot', name: 'Bybit Futures Sniper', price: '129', actual_price: '129', offer_timer_enabled: false, offer_ends_at: null, logo_url: '/logos/bybit.png' },
+  { service_key: 'binance_bot', name: 'Binance Pro Algorithmic', price: '139', actual_price: '139', offer_timer_enabled: false, offer_ends_at: null, logo_url: '/logos/binance.webp' }
+];
+
+let globalServerClockOffset = 0;
+let globalPublicServices = DEFAULT_SERVICES;
+let serviceTimerTickerInterval = null;
+
+function getTbbApiBase() {
+  if (typeof GAINEX_API !== 'undefined' && GAINEX_API) {
+    return GAINEX_API.replace(/\/$/, '');
+  }
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem('tbb_api_url');
+    if (saved && saved.trim() !== '' && !saved.includes('gxmmarket.com')) {
+      return saved.trim().replace(/\/$/, '');
+    }
+    const host = window.location.hostname;
+    const port = window.location.port;
+    const protocol = window.location.protocol;
+    if (protocol === 'file:' || !host || host === 'localhost' || host === '127.0.0.1') {
+      return (port === '3000') ? window.location.origin : 'http://localhost:3000';
+    }
+    if (host.includes('gainexmarket.com')) {
+      return window.location.origin;
+    }
+  }
+  return 'https://gainexmarket.com';
+}
+
+function formatCleanPrice(p) {
+  if (p === undefined || p === null || p === '') return '149';
+  return String(p).replace(/[^0-9.]/g, '');
+}
+
+function computeServicePricing(svc) {
+  const now = Date.now() - globalServerClockOffset;
+  const offerPriceClean = formatCleanPrice(svc.price);
+  const actualPriceClean = (svc.actual_price !== undefined && svc.actual_price !== null && String(svc.actual_price).trim() !== '') 
+    ? formatCleanPrice(svc.actual_price) 
+    : offerPriceClean;
+
+  // Determine timer end timestamp
+  let offerEnds = 0;
+  if (svc.offer_ends_at) {
+    const parsed = new Date(svc.offer_ends_at).getTime();
+    if (!isNaN(parsed)) offerEnds = parsed;
+  }
+
+  // Timer is ONLY configured if admin explicitly enabled it AND set an expiration date
+  const isTimerConfigured = !!(
+    (svc.offer_timer_enabled === true || svc.offer_timer_enabled === 'true' || svc.offer_timer_enabled === 1 || svc.offer_timer_enabled === '1') &&
+    offerEnds > 0
+  );
+
+  const isTimerActive = isTimerConfigured && (offerEnds > now);
+
+  // Active price: promotional offer price while timer is active; actual regular price when timer reaches 00:00:00 or when timer is not configured
+  let effectivePrice = offerPriceClean;
+  if (isTimerConfigured) {
+    effectivePrice = isTimerActive ? offerPriceClean : actualPriceClean;
+  } else {
+    effectivePrice = offerPriceClean;
+  }
+
+  const showActualPrice = isTimerActive && (parseFloat(actualPriceClean) > parseFloat(offerPriceClean));
+
+  const diffMs = Math.max(0, offerEnds - now);
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const mins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+  const secs = Math.floor((diffMs % (1000 * 60)) / 1000);
+
+  return {
+    isTimerConfigured,
+    isTimerActive,
+    effectivePrice,
+    offerPriceClean,
+    actualPriceClean,
+    showActualPrice,
+    days,
+    hours,
+    mins,
+    secs,
+    diffMs
+  };
+}
+
+function tickAllServiceTimers() {
+  if (!globalPublicServices || !globalPublicServices.length) return;
+
+  globalPublicServices.forEach(svc => {
+    const pricing = computeServicePricing(svc);
+
+    // 1. Update Price Displays in Pricing & Services Pages
+    const priceContainers = document.querySelectorAll(`[data-service-price="${svc.service_key}"]`);
+    priceContainers.forEach(container => {
+      const valEl = container.querySelector('.price-val') || container.querySelector('.amount');
+      if (valEl) {
+        if (container.classList.contains('price-display')) {
+          valEl.textContent = pricing.effectivePrice;
+        } else {
+          valEl.textContent = `$${pricing.effectivePrice}`;
+        }
+      }
+
+      const parentCard = container.closest('.pricing-card') || container.closest('.service-card') || container.parentElement;
+      if (parentCard) {
+        // A. Actual Regular Price Strikethrough Display
+        let strikeEl = parentCard.querySelector(`[data-actual-price="${svc.service_key}"]`);
+        if (!strikeEl) {
+          strikeEl = document.createElement('div');
+          strikeEl.className = 'actual-price-strike';
+          strikeEl.setAttribute('data-actual-price', svc.service_key);
+          container.parentNode.insertBefore(strikeEl, container);
+        }
+
+        if (pricing.showActualPrice) {
+          strikeEl.innerHTML = `<span class="actual-label">Regular Price:</span> <span class="strike-val">$${pricing.actualPriceClean}</span>`;
+          strikeEl.style.display = 'flex';
+        } else {
+          strikeEl.style.display = 'none';
+        }
+
+        // B. Real-Time Countdown Timer Box (ONLY shown if timer is configured by Admin)
+        let timerBox = parentCard.querySelector(`[data-timer-box="${svc.service_key}"]`);
+        if (!timerBox) {
+          timerBox = document.createElement('div');
+          timerBox.className = 'pricing-offer-timer-wrap';
+          timerBox.setAttribute('data-timer-box', svc.service_key);
+          const targetInsert = strikeEl || container;
+          targetInsert.parentNode.insertBefore(timerBox, targetInsert);
+        }
+
+        if (pricing.isTimerConfigured && pricing.isTimerActive) {
+          timerBox.className = 'pricing-offer-timer-wrap';
+          const dayHtml = pricing.days > 0 ? `<span class="time-digit-block">${pricing.days}d</span><span class="time-sep">:</span>` : '';
+          timerBox.innerHTML = `
+            <div class="offer-timer-header">
+              <span class="pulse-fire">🔥</span>
+              <span class="offer-title">LIMITED TIME OFFER</span>
+            </div>
+            <div class="offer-countdown-clock">
+              ${dayHtml}
+              <span class="time-digit-block hours">${String(pricing.hours).padStart(2, '0')}</span>
+              <span class="time-sep">:</span>
+              <span class="time-digit-block mins">${String(pricing.mins).padStart(2, '0')}</span>
+              <span class="time-sep">:</span>
+              <span class="time-digit-block secs">${String(pricing.secs).padStart(2, '0')}</span>
+            </div>
+          `;
+          timerBox.style.display = 'flex';
+        } else {
+          timerBox.style.display = 'none';
+        }
+      }
+    });
+
+    // 2. Update Service Titles if customized
+    if (svc.name) {
+      const titleEls = document.querySelectorAll(`[data-service-title="${svc.service_key}"]`);
+      titleEls.forEach(el => el.textContent = svc.name);
+    }
+
+    // 3. Update Logos
+    if (svc.logo_url) {
+      const iconContainers = document.querySelectorAll(`[data-service-icon="${svc.service_key}"]`);
+      iconContainers.forEach(container => {
+        let img = container.querySelector('img');
+        if (!img) {
+          container.innerHTML = `<img src="${svc.logo_url}" class="service-logo-img" alt="${svc.name || 'Bot'}">`;
+        } else if (img.src !== svc.logo_url) {
+          img.src = svc.logo_url;
+        }
+      });
+    }
+  });
+
+  // 4. Update Checkout Dropdown & Order Summary Live
+  updateCheckoutLivePricing();
+}
+
+function updateCheckoutLivePricing() {
+  const select = document.getElementById('serviceSelect');
+  if (!select || !globalPublicServices || !globalPublicServices.length) return;
+
+  Array.from(select.options).forEach(opt => {
+    const svc = globalPublicServices.find(s => s.service_key === opt.value);
+    if (svc) {
+      const pricing = computeServicePricing(svc);
+      const title = svc.name || svc.title || 'Trading Bot';
+      opt.textContent = `${title} — ${pricing.effectivePrice} USD`;
+      opt.dataset.price = pricing.effectivePrice;
+      opt.dataset.title = title;
+    }
+  });
+
+  const nameEl = document.getElementById('summaryServiceName');
+  const priceEl = document.getElementById('summaryServicePrice');
+  if (nameEl && priceEl) {
+    const opt = select.selectedOptions[0];
+    if (opt) {
+      nameEl.textContent = opt.dataset.title || opt.textContent.split('—')[0].trim();
+      priceEl.textContent = `$${opt.dataset.price || '170'} USD`;
+    }
+  }
+}
+
 async function loadPublicBotServices() {
+  // Run initial ticker on load
+  tickAllServiceTimers();
+
+  if (!serviceTimerTickerInterval) {
+    serviceTimerTickerInterval = setInterval(tickAllServiceTimers, 1000);
+  }
+
   try {
-    const apiUrl = (typeof GAINEX_API !== 'undefined') ? GAINEX_API : 'https://gainexmarket.com';
+    const apiUrl = getTbbApiBase();
     const res = await fetch(`${apiUrl}/api/public/bot-services?t=${Date.now()}`);
     if (!res.ok) return;
     const data = await res.json();
-    if (!data.success || !Array.isArray(data.services)) return;
+    if (!data.success || !Array.isArray(data.services) || !data.services.length) return;
 
-    data.services.forEach(svc => {
-      const priceStr = `$${parseFloat(svc.price || 0).toFixed(2)}`;
-      const shortPriceStr = `$${Math.round(svc.price || 0)}`;
-
-      // 1. Landing page prices
-      const landingPriceEl = document.querySelector(`[data-service-key="${svc.service_key}"]`);
-      if (landingPriceEl) {
-        landingPriceEl.textContent = priceStr;
+    if (data.server_time) {
+      const srvTime = new Date(data.server_time).getTime();
+      if (!isNaN(srvTime)) {
+        globalServerClockOffset = Date.now() - srvTime;
       }
+    }
 
-      // 2. Services page prices
-      const servicePriceEl = document.getElementById(`price-${svc.service_key}`);
-      if (servicePriceEl) {
-        servicePriceEl.textContent = priceStr;
-      }
-
-      // 3. Pricing page prices
-      const pricingPriceEl = document.getElementById(`pricing-price-${svc.service_key}`);
-      if (pricingPriceEl) {
-        pricingPriceEl.textContent = shortPriceStr;
-      }
-    });
+    globalPublicServices = data.services;
+    tickAllServiceTimers();
   } catch (err) {
     console.warn('Public bot services dynamic price sync notice (using defaults):', err);
   }
 }
 
-// Auto-run if DOM is ready
+// Auto-run immediately
 if (typeof document !== 'undefined') {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', loadPublicBotServices);
@@ -1062,25 +1269,7 @@ if (typeof document !== 'undefined') {
    ========================================================================== */
 
 (function() {
-  const API_BASE = (function() {
-    if (typeof GAINEX_API !== 'undefined' && GAINEX_API) {
-      return GAINEX_API.replace(/\/$/, '');
-    }
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('tbb_api_url');
-      if (saved && saved.trim() !== '' && !saved.includes('gxmmarket.com')) {
-        return saved.trim().replace(/\/$/, '');
-      }
-      const host = window.location.hostname;
-      if (host === 'localhost' || host === '127.0.0.1') {
-        return 'http://localhost:3000';
-      }
-      if (host.includes('gainexmarket.com')) {
-        return window.location.origin;
-      }
-    }
-    return 'https://gainexmarket.com';
-  })();
+  const API_BASE = getTbbApiBase();
 
   // 1. Mobile Menu Toggle
   function initMobileMenu() {
@@ -1119,78 +1308,29 @@ if (typeof document !== 'undefined') {
   }
 
   // 3. Dynamic Services & Prices Loader
-  const DEFAULT_SERVICES = [
-    { service_key: 'gxm_bot', name: 'GXM Quantitative Bot', price: '170', logo_url: '/logos/gxm.png' },
-    { service_key: 'quotex_bot', name: 'Quotex Binary Scalper', price: '99', logo_url: '/logos/quotex.png' },
-    { service_key: 'mt5_bot', name: 'MetaTrader 5 (MT5) Bot', price: '149', logo_url: '/logos/mt5.png' },
-    { service_key: 'deriv_bot', name: 'Deriv Synthetic Indices', price: '89', logo_url: '/logos/deriv.jpg' },
-    { service_key: 'bybit_bot', name: 'Bybit Futures Sniper', price: '129', logo_url: '/logos/bybit.png' },
-    { service_key: 'binance_bot', name: 'Binance Pro Algorithmic', price: '139', logo_url: '/logos/binance.webp' }
-  ];
-
-  let cachedServices = DEFAULT_SERVICES;
-
   async function loadDynamicServices() {
-    // Populate defaults immediately so the dropdown is instant and never gets stuck
-    populateServiceDropdown(cachedServices);
-    updateServiceCardsPrices(cachedServices);
+    populateServiceDropdown(globalPublicServices);
+    tickAllServiceTimers();
 
     try {
       const res = await fetch(`${API_BASE}/api/public/bot-services?t=${Date.now()}`);
       if (res.ok) {
         const data = await res.json();
         if (data && data.services && Array.isArray(data.services) && data.services.length > 0) {
-          cachedServices = data.services;
-          updateServiceCardsPrices(data.services);
+          globalPublicServices = data.services;
+          if (data.server_time) {
+            const srvTime = new Date(data.server_time).getTime();
+            if (!isNaN(srvTime)) {
+              globalServerClockOffset = Date.now() - srvTime;
+            }
+          }
           populateServiceDropdown(data.services);
+          tickAllServiceTimers();
         }
       }
     } catch (e) {
       console.warn('Using default bot catalog fallback:', e.message);
     }
-  }
-
-  function formatPrice(p) {
-    if (!p) return '149';
-    return String(p).replace(/[^0-9.]/g, '');
-  }
-
-  function updateServiceCardsPrices(services) {
-    services.forEach(svc => {
-      const cleanP = formatPrice(svc.price);
-      
-      // Update Price everywhere on DOM
-      const priceContainers = document.querySelectorAll(`[data-service-price="${svc.service_key}"]`);
-      priceContainers.forEach(container => {
-        const valEl = container.querySelector('.price-val') || container.querySelector('.amount');
-        if (valEl) {
-          if (container.classList.contains('price-display')) {
-            valEl.textContent = cleanP;
-          } else {
-            valEl.textContent = `$${cleanP}`;
-          }
-        }
-      });
-
-      // Update Service Titles if edited by admin
-      if (svc.name) {
-        const titleEls = document.querySelectorAll(`[data-service-title="${svc.service_key}"]`);
-        titleEls.forEach(el => el.textContent = svc.name);
-      }
-
-      // Update Logo Image if custom logo_url provided
-      if (svc.logo_url) {
-        const iconContainers = document.querySelectorAll(`[data-service-icon="${svc.service_key}"]`);
-        iconContainers.forEach(container => {
-          let img = container.querySelector('img');
-          if (!img) {
-            container.innerHTML = `<img src="${svc.logo_url}" class="service-logo-img" alt="${svc.name || 'Bot'}">`;
-          } else if (img.src !== svc.logo_url) {
-            img.src = svc.logo_url;
-          }
-        });
-      }
-    });
   }
 
   function populateServiceDropdown(services) {
@@ -1205,10 +1345,10 @@ if (typeof document !== 'undefined') {
     services.forEach(svc => {
       const opt = document.createElement('option');
       opt.value = svc.service_key;
+      const pricing = computeServicePricing(svc);
       const title = svc.name || svc.title || 'Trading Bot';
-      const cleanP = formatPrice(svc.price);
-      opt.textContent = `${title} — ${cleanP} USD`;
-      opt.dataset.price = cleanP;
+      opt.textContent = `${title} — ${pricing.effectivePrice} USD`;
+      opt.dataset.price = pricing.effectivePrice;
       opt.dataset.title = title;
       if (preSelected && svc.service_key === preSelected) {
         opt.selected = true;
@@ -1233,7 +1373,7 @@ if (typeof document !== 'undefined') {
     const opt = select.selectedOptions[0];
     if (opt) {
       nameEl.textContent = opt.dataset.title || opt.textContent.split('—')[0].trim();
-      priceEl.textContent = `$${opt.dataset.price || '249'} USD`;
+      priceEl.textContent = `$${opt.dataset.price || '170'} USD`;
     }
   }
 

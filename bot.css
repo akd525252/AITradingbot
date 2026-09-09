@@ -2995,3 +2995,151 @@ header, main, footer, section {
     font-size: 0.84rem;
   }
 }
+
+/* ==========================================================================
+   REAL-TIME OFFER COUNTDOWN TIMER & DYNAMIC PRICING STYLES
+   ========================================================================== */
+.offer-timer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  color: #f59e0b;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.15);
+  animation: pulse-glow-amber 2s infinite ease-in-out;
+  transition: all 0.3s ease;
+  width: fit-content;
+}
+.offer-timer-badge.expired {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.25);
+  color: #ff6251;
+  animation: none;
+  box-shadow: none;
+}
+.offer-timer-badge .timer-digits {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #fbbf24;
+}
+.offer-timer-badge.expired .timer-digits {
+  color: #ff8b7e;
+}
+.original-strikethrough-price {
+  text-decoration: line-through;
+  opacity: 0.55;
+  font-size: 0.72em;
+  font-weight: 500;
+  margin-right: 6px;
+  color: var(--text-muted, #8e9297);
+  display: inline-block;
+}
+@keyframes pulse-glow-amber {
+  0%, 100% { box-shadow: 0 0 8px rgba(245, 158, 11, 0.15); }
+  50% { box-shadow: 0 0 16px rgba(245, 158, 11, 0.35); }
+}
+
+
+/* ==========================================================================
+   ENHANCED REAL-TIME OFFER TIMER & ACTUAL REGULAR PRICE STYLES
+   ========================================================================== */
+.pricing-offer-timer-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(239, 68, 68, 0.08));
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 8px;
+  padding: 6px 12px;
+  margin: 10px auto 12px auto;
+  width: fit-content;
+  max-width: 90%;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.18);
+  animation: pulse-glow-amber 2s infinite ease-in-out;
+  transition: all 0.3s ease;
+}
+.pricing-offer-timer-wrap.expired {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.3);
+  box-shadow: none;
+  animation: none;
+}
+.pricing-offer-timer-wrap .offer-timer-header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #f59e0b;
+}
+.pricing-offer-timer-wrap.expired .offer-timer-header {
+  color: #ff6251;
+}
+.pricing-offer-timer-wrap .offer-countdown-clock {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'SF Mono', 'Roboto Mono', 'Courier New', monospace;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: #fbbf24;
+}
+.pricing-offer-timer-wrap.expired .offer-countdown-clock {
+  color: #ff8b7e;
+}
+.pricing-offer-timer-wrap .time-digit-block {
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  min-width: 22px;
+  text-align: center;
+}
+.pricing-offer-timer-wrap.expired .time-digit-block {
+  border-color: rgba(239, 68, 68, 0.3);
+}
+.pricing-offer-timer-wrap .time-sep {
+  color: #f59e0b;
+  font-weight: 900;
+  animation: blink-colon 1s infinite;
+}
+@keyframes blink-colon {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.actual-price-strike {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  margin-bottom: 4px;
+  color: var(--text-muted, #8e9297);
+}
+.actual-price-strike .actual-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.75;
+}
+.actual-price-strike .strike-val {
+  text-decoration: line-through;
+  font-weight: 700;
+  color: #ff6251;
+  opacity: 0.85;
+}
