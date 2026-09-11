@@ -935,51 +935,113 @@ function clearLog() {
 }
 
 // ─── TOASTS ──────────────────────────────────────────────────────────────────
-function showToast(msg, type = 'info', duration = 4500) {
-  let container = document.getElementById('tbb-toast-container');
+function showToast(msg, type, duration) {
+  if (!type) type = 'info';
+  if (!duration) duration = 4500;
+
+  var container = document.getElementById('tbb-toast-container');
   if (!container) {
     container = document.createElement('div');
     container.id = 'tbb-toast-container';
     document.body.appendChild(container);
   }
 
-  // Determine icon & clean msg
-  let icon = 'ℹ️';
-  let cleanMsg = String(msg || '');
+  var normType = 'info';
+  var badgeText = 'Notice';
+  var iconSvg = '';
+
   if (type === 'error' || type === 'danger') {
-    icon = '✕';
-    type = 'error';
-    cleanMsg = cleanMsg.replace(/^[❌⚠️!✕]+s*/, '');
+    normType = 'error';
+    badgeText = 'Action Required';
+    iconSvg = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
   } else if (type === 'success') {
-    icon = '✓';
-    cleanMsg = cleanMsg.replace(/^[🚀🏆✓]+s*/, '');
+    normType = 'success';
+    badgeText = 'Success';
+    iconSvg = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>';
   } else if (type === 'warn' || type === 'warning') {
-    icon = '⚠️';
-    type = 'warn';
-    cleanMsg = cleanMsg.replace(/^[⚠️!]+s*/, '');
+    normType = 'warn';
+    badgeText = 'Warning';
+    iconSvg = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>';
   } else {
-    cleanMsg = cleanMsg.replace(/^[ℹ️🔑👋🔄🤖💰]+s*/, '');
+    normType = 'info';
+    badgeText = 'System Info';
+    iconSvg = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
   }
 
-  const toast = document.createElement('div');
-  toast.className = `tbb-toast toast-${type}`;
-  toast.innerHTML = `
-    <div class="tbb-toast-icon">${icon}</div>
-    <div class="tbb-toast-msg">${cleanMsg}</div>
-    <button type="button" class="tbb-toast-close" onclick="this.closest('.tbb-toast').remove()" aria-label="Close">✕</button>
-  `;
+  var raw = String(msg || '').trim();
+  var cleanMsg = raw.replace(/^[\uD800-\uDBFF][\uDC00-\uDFFF]|[^\x20-\x7E]+/g, '').trim();
+  if (!cleanMsg && raw) cleanMsg = raw;
+
+  var toast = document.createElement('div');
+  toast.className = 'tbb-toast toast-' + normType;
+  toast.setAttribute('role', 'alert');
+  toast.innerHTML = [
+    '<div class="tbb-toast-glow"></div>',
+    '<div class="tbb-toast-icon-wrap">' + iconSvg + '</div>',
+    '<div class="tbb-toast-body">',
+    '  <div class="tbb-toast-top-row">',
+    '    <span class="tbb-toast-badge">' + badgeText + '</span>',
+    '    <span class="tbb-toast-time">Just now</span>',
+    '  </div>',
+    '  <div class="tbb-toast-msg">' + cleanMsg + '</div>',
+    '</div>',
+    '<button type="button" class="tbb-toast-close" aria-label="Close notification">',
+    '  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">',
+    '    <line x1="18" y1="6" x2="6" y2="18"></line>',
+    '    <line x1="6" y1="6" x2="18" y2="18"></line>',
+    '  </svg>',
+    '</button>',
+    '<div class="tbb-toast-progress-wrap">',
+    '  <div class="tbb-toast-progress-bar" style="animation-duration: ' + duration + 'ms;"></div>',
+    '</div>'
+  ].join('\n');
+
+  function dismissToast(el) {
+    if (!el || !el.parentElement) return;
+    el.classList.remove('show');
+    el.classList.add('hide');
+    setTimeout(function() {
+      if (el.parentElement) el.remove();
+    }, 380);
+  }
+
+  var closeBtn = toast.querySelector('.tbb-toast-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function() { dismissToast(toast); });
+  }
+
   container.appendChild(toast);
 
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => toast.classList.add('show'));
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() { toast.classList.add('show'); });
   });
 
-  setTimeout(() => {
-    if (toast.parentElement) {
-      toast.classList.remove('show');
-      setTimeout(() => { if (toast.parentElement) toast.remove(); }, 350);
-    }
-  }, duration);
+  var remainingTime = duration;
+  var startTime = Date.now();
+  var timer = null;
+
+  function startTimer() {
+    startTime = Date.now();
+    timer = setTimeout(function() {
+      dismissToast(toast);
+    }, remainingTime);
+  }
+
+  startTimer();
+
+  toast.addEventListener('mouseenter', function() {
+    var elapsed = Date.now() - startTime;
+    remainingTime = Math.max(1000, remainingTime - elapsed);
+    clearTimeout(timer);
+    var bar = toast.querySelector('.tbb-toast-progress-bar');
+    if (bar) bar.style.animationPlayState = 'paused';
+  });
+
+  toast.addEventListener('mouseleave', function() {
+    var bar = toast.querySelector('.tbb-toast-progress-bar');
+    if (bar) bar.style.animationPlayState = 'running';
+    startTimer();
+  });
 }
 
 // ─── UTILS ───────────────────────────────────────────────────────────────────
