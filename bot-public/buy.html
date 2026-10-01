@@ -580,6 +580,15 @@
       }
     }
 
+    function getEffectivePrice(s) {
+      if (!s) return '270.00';
+      const now = Date.now();
+      const isOfferActive = s.offer_timer_enabled && s.offer_ends_at && (new Date(s.offer_ends_at).getTime() > now);
+      const raw = isOfferActive ? (s.price || s.actual_price || '270') : (s.actual_price || s.price || '270');
+      const num = parseFloat(String(raw).replace(/[^0-9.]/g, '')) || 270;
+      return num.toFixed(2);
+    }
+
     function renderBotServicesDropdown() {
       const select = document.getElementById('botServiceSelect');
       const countBadge = document.getElementById('serviceCountBadge');
@@ -593,9 +602,8 @@
       if (countBadge) countBadge.textContent = `${allBotServices.length} Plans Available`;
 
       select.innerHTML = allBotServices.map(s => {
-        const raw = s.actual_price || s.price || '70';
-        const formatted = raw.startsWith('$') ? raw : `$${parseFloat(raw).toFixed(2)}`;
-        return `<option value="${s.service_key}" data-id="${s.id}">${s.name} — ${formatted} USD</option>`;
+        const formatted = getEffectivePrice(s);
+        return `<option value="${s.service_key}" data-id="${s.id}">${s.name} — $${formatted} USD</option>`;
       }).join('');
 
       // Auto select matching query param or default
@@ -618,9 +626,8 @@
       selectedService = allBotServices.find(s => s.service_key === selectedKey) || allBotServices[0];
 
       if (selectedService && totalAmountText) {
-        const rawPrice = (selectedService.offer_timer_enabled && selectedService.price) ? selectedService.price : (selectedService.actual_price || selectedService.price || '70');
-        const formattedPrice = rawPrice.startsWith('$') ? rawPrice : `$${parseFloat(rawPrice).toFixed(2)}`;
-        totalAmountText.textContent = `${formattedPrice} USD`;
+        const formattedPrice = getEffectivePrice(selectedService);
+        totalAmountText.textContent = `$${formattedPrice} USD`;
       }
     }
 
@@ -693,7 +700,7 @@
         }
 
         // 2. Submit Bot Order
-        const orderAmount = parseFloat(selectedService.actual_price || selectedService.price || '70');
+        const orderAmount = parseFloat(getEffectivePrice(selectedService));
         const orderPayload = {
           service_key: selectedService.service_key,
           service_name: selectedService.name,
