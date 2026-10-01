@@ -463,8 +463,8 @@ const BOT_DOMAIN_KEYWORD = 'bestaccuracy';
 app.use((req, res, next) => {
   const hostname = (req.hostname || '').toLowerCase();
   const isBotDomain = hostname.includes(BOT_DOMAIN_KEYWORD);
-  if (!isBotDomain && (req.path === '/bot.html' || req.path === '/landing.html')) {
-    // Redirect stray requests for bot pages to the bot domain
+  if (!isBotDomain && req.path === '/bot.html') {
+    // Redirect stray requests for bot page to the bot domain
     return res.redirect(301, 'https://bestaccuracy.com/');
   }
   next();

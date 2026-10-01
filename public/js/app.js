@@ -1356,7 +1356,10 @@ const app = {
         // Start background auto refresh for multi-device & real-time sync
         this.startBackgroundAutoRefresh();
         
-        const initialTab = this.getTabFromPath();
+        let initialTab = this.getTabFromPath();
+        if (initialTab === 'login' || initialTab === 'signup' || initialTab === 'onboarding') {
+          initialTab = 'dashboard';
+        }
         await this.navigateTo(initialTab, { replaceState: true });
       } else {
         console.warn('Session check rejected:', res.status);
@@ -1364,13 +1367,15 @@ const app = {
         const isPwa = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone || window.location.search.includes('pwa=true');
         if (path === 'signup') {
           this.showScreen('signup');
-        } else {
+        } else if (path === 'login') {
           this.showScreen('login');
+        } else {
+          this.showScreen('onboarding');
         }
       }
     } catch (err) {
       console.error('Session check failed with exception:', err);
-      this.showScreen('login');
+      this.showScreen('onboarding');
     } finally {
       this.hideGlobalLoader();
     }
@@ -1462,10 +1467,6 @@ const app = {
   },
 
   showScreen(screenId) {
-    if (window.innerWidth >= 1024 && screenId === 'onboarding') {
-      this.showScreen('login');
-      return;
-    }
 
     const header  = document.getElementById('app-header');
     const nav     = document.getElementById('app-nav');
