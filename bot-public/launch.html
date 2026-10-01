@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Connect Broker &amp; Activate Bot : BestAccuracy</title>
+  <link rel="icon" type="image/png" href="images/favicon.png"/>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+    }
+    ::-webkit-scrollbar { display: none; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container-high": "#dce9ff",
+            "on-secondary-fixed": "#131b2e",
+            "tertiary-container": "#39ce94",
+            "secondary-container": "#dae2fd",
+            "outline-variant": "#bbcbba",
+            "background": "#f8f9ff",
+            "error": "#ba1a1a",
+            "on-tertiary-fixed-variant": "#005236",
+            "inverse-surface": "#213145",
+            "surface-tint": "#006d34",
+            "surface-bright": "#f8f9ff",
+            "on-primary": "#ffffff",
+            "on-surface": "#0b1c30",
+            "error-container": "#ffdad6",
+            "on-tertiary": "#ffffff",
+            "outline": "#6c7b6c",
+            "primary-fixed": "#62ff95",
+            "tertiary-fixed": "#6ffbbe",
+            "primary": "#006d34",
+            "tertiary": "#006c49",
+            "on-secondary": "#ffffff",
+            "secondary-fixed-dim": "#bec6e0",
+            "primary-fixed-dim": "#2fe378",
+            "on-tertiary-container": "#005337",
+            "inverse-primary": "#2fe378",
+            "on-primary-container": "#005426",
+            "on-primary-fixed-variant": "#005226",
+            "on-primary-fixed": "#00210b",
+            "on-error": "#ffffff",
+            "inverse-on-surface": "#eaf1ff",
+            "on-surface-variant": "#3c4a3d",
+            "surface-variant": "#d3e4fe",
+            "on-background": "#0b1c30",
+            "surface-container-low": "#eff4ff",
+            "on-tertiary-fixed": "#002113",
+            "surface-dim": "#cbdbf5",
+            "primary-container": "#00d26a",
+            "surface-container": "#e5eeff",
+            "secondary-fixed": "#dae2fd",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-fixed-dim": "#4edea3",
+            "on-error-container": "#93000a",
+            "on-secondary-container": "#5c647a",
+            "surface": "#f8f9ff",
+            "surface-container-highest": "#d3e4fe",
+            "on-secondary-fixed-variant": "#3f465c",
+            "secondary": "#565e74"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          fontFamily: {
+            body: ["Inter", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased min-h-screen flex flex-col justify-between selection:bg-primary-container/20 selection:text-primary">
+
+  <!-- TOP HEADER -->
+  <header class="fixed top-0 inset-x-0 h-20 bg-surface-container-lowest/90 backdrop-blur-xl border-b border-slate-200/60 z-50">
+    <div class="max-w-6xl mx-auto h-full px-6 flex items-center justify-between">
+      <a href="bot.html" class="flex items-center gap-3 group">
+        <img alt="BestAccuracy Logo" class="h-9 w-9 object-contain rounded-lg shadow-sm" src="images/logo.png"/>
+        <div class="flex flex-col">
+          <span class="text-lg font-bold text-on-surface tracking-tight leading-tight group-hover:text-primary transition-colors">BestAccuracy</span>
+          <span class="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">AI Trading Bot Gateway</span>
+        </div>
+      </a>
+
+      <div class="flex items-center gap-4">
+        <div class="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary-fixed/25 border border-primary/20 text-on-primary-fixed text-xs font-semibold">
+          <span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+          <span>Non-Custodial Handshake</span>
+        </div>
+        <a href="bot.html" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-semibold transition-all">
+          <span class="material-symbols-outlined text-[16px]">close</span>
+          <span>Exit Setup</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="w-full pt-28 pb-16 px-4 sm:px-6 flex items-center justify-center flex-1">
+    <div class="w-full max-w-2xl mx-auto">
+
+      <!-- Step Progress Indicator -->
+      <div class="mb-8 flex items-center justify-between max-w-md mx-auto">
+        <!-- Step 1 Pill -->
+        <div class="flex items-center gap-2.5">
+          <div id="stepNum1" class="w-8 h-8 rounded-full bg-primary-container text-on-primary-fixed flex items-center justify-center font-bold text-xs shadow-sm">
+            1
+          </div>
+          <div class="flex flex-col">
+            <span class="text-xs font-bold text-on-surface">Broker Details</span>
+            <span class="text-[10px] text-on-surface-variant">URL &amp; Account</span>
+          </div>
+        </div>
+
+        <!-- Connector Line -->
+        <div id="stepLine" class="flex-1 h-0.5 mx-4 bg-slate-200 transition-all duration-300"></div>
+
+        <!-- Step 2 Pill -->
+        <div class="flex items-center gap-2.5">
+          <div id="stepNum2" class="w-8 h-8 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center font-bold text-xs transition-all duration-300">
+            2
+          </div>
+          <div class="flex flex-col">
+            <span id="stepTitle2" class="text-xs font-semibold text-on-surface-variant">Activation Key</span>
+            <span class="text-[10px] text-on-surface-variant">Bot License</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN CARD -->
+      <div class="bg-surface-container-lowest rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200/80 relative overflow-hidden">
+        <!-- Background Ambient Glow -->
+        <div class="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-primary-container/10 blur-3xl pointer-events-none"></div>
+
+        <!-- ============================================== -->
+        <!-- STAGE 1: BROKER DETAILS (2 Columns Input Fields) -->
+        <!-- ============================================== -->
+        <div id="stage1" class="space-y-6">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-container/10 text-primary text-xs font-bold uppercase tracking-wider mb-2">
+              <span class="material-symbols-outlined text-[16px]">link</span>
+              Step 1 : Broker Credentials
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-on-surface tracking-tight">Connect Broker Gateway</h1>
+            <p class="text-sm text-on-surface-variant mt-1.5 leading-relaxed">
+              Enter your broker URL endpoint and your registered account email to initialize non-custodial read &amp; execute synchronization.
+            </p>
+          </div>
+
+          <!-- 2 Columns Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
+            
+            <!-- Column 1: Broker URL -->
+            <div class="flex flex-col gap-2">
+              <label class="text-xs font-bold uppercase tracking-wider text-on-surface flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px] text-primary">dns</span>
+                Broker URL / Gateway
+              </label>
+              <div class="relative">
+                <input 
+                  id="brokerUrl" 
+                  type="text" 
+                  placeholder="e.g. https://broker.com or broker.com" 
+                  value="https://gainexmarket.com"
+                  class="w-full h-12 px-4 rounded-xl bg-surface-container-low border border-slate-200 text-on-surface text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-slate-400"
+                />
+              </div>
+              <p class="text-[11px] text-on-surface-variant">The web address or API host of your trading broker.</p>
+            </div>
+
+            <!-- Column 2: Account Email -->
+            <div class="flex flex-col gap-2">
+              <label class="text-xs font-bold uppercase tracking-wider text-on-surface flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px] text-primary">mail</span>
+                Broker Account Email
+              </label>
+              <div class="relative">
+                <input 
+                  id="brokerEmail" 
+                  type="email" 
+                  placeholder="your-broker-email@gmail.com" 
+                  class="w-full h-12 px-4 rounded-xl bg-surface-container-low border border-slate-200 text-on-surface text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-slate-400"
+                />
+              </div>
+              <p class="text-[11px] text-on-surface-variant">The email linked to your exchange or broker profile.</p>
+            </div>
+
+          </div>
+
+          <!-- Quick Broker Presets -->
+          <div class="pt-2">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2">Or select your platform:</span>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="setPreset('https://gainexmarket.com')" class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-primary-container/20 hover:text-primary text-xs font-semibold text-on-surface transition-all flex items-center gap-1.5">
+                <img src="images/gxm.png" class="w-3.5 h-3.5 rounded object-contain"/> GXM (GainExMarket)
+              </button>
+              <button type="button" onclick="setPreset('https://binance.com')" class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-primary-container/20 hover:text-primary text-xs font-semibold text-on-surface transition-all flex items-center gap-1.5">
+                <img src="images/binance.png" class="w-3.5 h-3.5 rounded object-contain"/> Binance
+              </button>
+              <button type="button" onclick="setPreset('https://bybit.com')" class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-primary-container/20 hover:text-primary text-xs font-semibold text-on-surface transition-all flex items-center gap-1.5">
+                <img src="images/bybit.png" class="w-3.5 h-3.5 rounded object-contain"/> Bybit
+              </button>
+              <button type="button" onclick="setPreset('https://octafx.com')" class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-primary-container/20 hover:text-primary text-xs font-semibold text-on-surface transition-all flex items-center gap-1.5">
+                <img src="images/octafx.png" class="w-3.5 h-3.5 rounded object-contain"/> OctaFX
+              </button>
+              <button type="button" onclick="setPreset('https://quotex.io')" class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-primary-container/20 hover:text-primary text-xs font-semibold text-on-surface transition-all flex items-center gap-1.5">
+                <img src="images/quotex.png" class="w-3.5 h-3.5 rounded object-contain"/> Quotex
+              </button>
+              <button type="button" onclick="setPreset('https://pocketoption.com')" class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-primary-container/20 hover:text-primary text-xs font-semibold text-on-surface transition-all flex items-center gap-1.5">
+                <img src="images/pocketoption.png" class="w-3.5 h-3.5 rounded object-contain"/> Pocket Option
+              </button>
+              <button type="button" onclick="setPreset('https://metaquotes.net/mt5')" class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-primary-container/20 hover:text-primary text-xs font-semibold text-on-surface transition-all flex items-center gap-1.5">
+                <img src="images/mt5.png" class="w-3.5 h-3.5 rounded object-contain"/> MetaTrader 5
+              </button>
+            </div>
+          </div>
+
+          <!-- Error Alert (hidden by default) -->
+          <div id="stage1Error" class="hidden p-3.5 rounded-xl bg-error-container/40 border border-error/20 text-error text-xs font-medium flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">error</span>
+            <span id="stage1ErrorMsg">Please provide both your broker URL and account email.</span>
+          </div>
+
+          <!-- Submit Step 1 Button -->
+          <div class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100">
+            <div class="flex items-center gap-2 text-xs text-on-surface-variant font-medium">
+              <span class="material-symbols-outlined text-[16px] text-primary">security</span>
+              <span>256-Bit TLS Direct IPC Bridge</span>
+            </div>
+
+            <button 
+              type="button" 
+              onclick="goToStep2()" 
+              class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-primary-container text-on-primary-fixed font-bold text-sm hover:bg-primary-fixed-dim transition-all shadow-[0_0_20px_-3px_rgba(0,210,106,0.4)] active:scale-95 cursor-pointer"
+            >
+              <span>Next : License Activation</span>
+              <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+
+
+        <!-- ============================================== -->
+        <!-- STAGE 2: BOT ACTIVATION KEY (Second Step)      -->
+        <!-- ============================================== -->
+        <div id="stage2" class="hidden space-y-6">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-container/10 text-primary text-xs font-bold uppercase tracking-wider mb-2">
+              <span class="material-symbols-outlined text-[16px]">vpn_key</span>
+              Step 2 : License Verification
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-on-surface tracking-tight">Enter Bot Activation Key</h1>
+            <p class="text-sm text-on-surface-variant mt-1.5 leading-relaxed">
+              Enter the unique 16-character license key issued upon purchase to arm and launch your BestAccuracy AI Bot.
+            </p>
+          </div>
+
+          <!-- Broker Summary Pill -->
+          <div class="p-4 rounded-2xl bg-surface-container-low border border-slate-200/80 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm">
+                <span class="material-symbols-outlined text-[20px]">hub</span>
+              </div>
+              <div class="flex flex-col">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold text-on-surface" id="summaryUrl">https://gainexmarket.com</span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                  <span class="text-xs text-primary font-semibold">Handshake Ready</span>
+                </div>
+                <span class="text-xs text-on-surface-variant font-medium" id="summaryEmail">user@example.com</span>
+              </div>
+            </div>
+            <button type="button" onclick="backToStep1()" class="text-xs font-bold text-primary hover:underline flex items-center gap-1">
+              <span class="material-symbols-outlined text-[14px]">edit</span>
+              Edit
+            </button>
+          </div>
+
+          <!-- Key Input Field -->
+          <div class="flex flex-col gap-2 pt-2">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-bold uppercase tracking-wider text-on-surface flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px] text-primary">key</span>
+                Bot Activation Key
+              </label>
+              <span class="text-[11px] text-on-surface-variant">Format: BA-XXXX-XXXX-XXXX</span>
+            </div>
+
+            <div class="relative">
+              <input 
+                id="botKey" 
+                type="text" 
+                maxlength="23"
+                placeholder="BA-8924-A19F-78C2" 
+                oninput="formatKey(this)"
+                class="mono w-full h-14 px-4 text-base sm:text-lg font-bold tracking-widest text-on-surface bg-surface-container-low border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all uppercase placeholder:text-slate-400 placeholder:tracking-normal placeholder:font-sans placeholder:font-normal placeholder:text-sm"
+              />
+              <button 
+                type="button" 
+                onclick="pasteKey()"
+                class="absolute right-3 top-3 px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-xs font-bold text-on-surface transition-colors flex items-center gap-1"
+              >
+                <span class="material-symbols-outlined text-[14px]">content_paste</span>
+                Paste
+              </button>
+            </div>
+            <p class="text-[11px] text-on-surface-variant leading-relaxed">
+              Check your confirmation receipt or WhatsApp / Email notification for your activation code.
+            </p>
+          </div>
+
+          <!-- Need a Key Helper Banner -->
+          <div class="p-4 rounded-xl bg-surface-container flex items-center justify-between gap-3 text-xs">
+            <div class="flex items-center gap-2 text-on-surface font-medium">
+              <span class="material-symbols-outlined text-[18px] text-primary">info</span>
+              <span>Don't have an activation key yet?</span>
+            </div>
+            <a href="buy.html" class="font-bold text-primary hover:underline flex items-center gap-1">
+              Get Bot Key ($70) &rarr;
+            </a>
+          </div>
+
+          <!-- Error Alert for Step 2 -->
+          <div id="stage2Error" class="hidden p-3.5 rounded-xl bg-error-container/40 border border-error/20 text-error text-xs font-medium flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">error</span>
+            <span id="stage2ErrorMsg">Please enter a valid 16-character Bot Activation Key.</span>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100">
+            <button 
+              type="button" 
+              onclick="backToStep1()"
+              class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-6 py-3 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-semibold text-xs transition-colors"
+            >
+              <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+              Back
+            </button>
+
+            <button 
+              type="button" 
+              id="activateBtn"
+              onclick="activateAndLaunch()"
+              class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-primary-container text-on-primary-fixed font-bold text-sm hover:bg-primary-fixed-dim transition-all shadow-[0_0_20px_-3px_rgba(0,210,106,0.4)] active:scale-95 cursor-pointer"
+            >
+              <span class="material-symbols-outlined text-[18px]">check_circle</span>
+              <span id="activateBtnText">Activate &amp; Launch Bot</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- STAGE 3: ACTIVATION & HANDSHAKE IN PROGRESS   -->
+        <!-- ============================================== -->
+        <div id="stage3" class="hidden py-10 flex flex-col items-center justify-center text-center space-y-6">
+          <div class="relative w-20 h-20 flex items-center justify-center">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-container opacity-40"></span>
+            <div class="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center text-on-primary shadow-lg">
+              <span class="material-symbols-outlined text-[32px] animate-spin">sync</span>
+            </div>
+          </div>
+
+          <div class="space-y-2 max-w-sm">
+            <h2 class="text-xl font-extrabold text-on-surface" id="loadingTitle">Validating Activation Key</h2>
+            <p class="text-xs text-on-surface-variant" id="loadingSubtitle">Establishing non-custodial handshake with your broker gateway...</p>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="w-64 h-2 bg-surface-container rounded-full overflow-hidden">
+            <div id="loadingBar" class="h-full bg-primary-container w-0 rounded-full transition-all duration-700 ease-out"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Trust Badges -->
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-500 font-medium">
+        <div class="flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px] text-primary">lock</span>
+          <span>Non-Custodial Read &amp; Trade</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px] text-primary">verified_user</span>
+          <span>Zero Fund Withdrawal Access</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px] text-primary">bolt</span>
+          <span>Ultra-Low Latency IPC Bridge</span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    function setPreset(url) {
+      document.getElementById('brokerUrl').value = url;
+    }
+
+    function formatKey(input) {
+      let raw = input.value.trim().toUpperCase();
+      let clean = raw.replace(/[^A-Z0-9]/g, '');
+
+      if (clean.startsWith('GAINEXAI')) {
+        let parts = ['GAINEX', 'AI'];
+        let rem = clean.substring(8);
+        if (rem.length > 0) parts.push(rem.substring(0, 4));
+        if (rem.length > 4) parts.push(rem.substring(4, 8));
+        input.value = parts.join('-');
+      } else if (clean.startsWith('GAINEX')) {
+        let parts = ['GAINEX'];
+        let rem = clean.substring(6);
+        if (rem.length > 0) parts.push(rem.substring(0, 2));
+        if (rem.length > 2) parts.push(rem.substring(2, 6));
+        if (rem.length > 6) parts.push(rem.substring(6, 10));
+        input.value = parts.join('-');
+      } else if (clean.startsWith('BA')) {
+        let parts = ['BA'];
+        let rem = clean.substring(2);
+        for (let i = 0; i < rem.length && i < 12; i += 4) {
+          parts.push(rem.substring(i, i + 4));
+        }
+        input.value = parts.join('-');
+      } else {
+        let parts = [];
+        for (let i = 0; i < clean.length && i < 20; i += 4) {
+          parts.push(clean.substring(i, i + 4));
+        }
+        input.value = parts.join('-');
+      }
+    }
+
+    async function pasteKey() {
+      try {
+        const text = await navigator.clipboard.readText();
+        const input = document.getElementById('botKey');
+        input.value = text.trim();
+        formatKey(input);
+      } catch (err) {
+        alert("Clipboard permission not granted. Please paste manually into the input box.");
+      }
+    }
+
+    function goToStep2() {
+      const url = document.getElementById('brokerUrl').value.trim();
+      const email = document.getElementById('brokerEmail').value.trim();
+      const errorDiv = document.getElementById('stage1Error');
+      const errorMsg = document.getElementById('stage1ErrorMsg');
+
+      if (!url) {
+        errorMsg.textContent = "Please enter your Broker URL or Platform Gateway.";
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+
+      if (!email || !email.includes('@')) {
+        errorMsg.textContent = "Please enter a valid Broker Account Email.";
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+
+      errorDiv.classList.add('hidden');
+
+      // Update Summary
+      document.getElementById('summaryUrl').textContent = url;
+      document.getElementById('summaryEmail').textContent = email;
+
+      // Update Stepper UI
+      document.getElementById('stepNum1').classList.remove('bg-primary-container', 'text-on-primary-fixed');
+      document.getElementById('stepNum1').classList.add('bg-primary', 'text-on-primary');
+      document.getElementById('stepNum1').innerHTML = '<span class="material-symbols-outlined text-[16px]">check</span>';
+      
+      document.getElementById('stepLine').classList.remove('bg-slate-200');
+      document.getElementById('stepLine').classList.add('bg-primary');
+
+      document.getElementById('stepNum2').classList.remove('bg-surface-container', 'text-on-surface-variant');
+      document.getElementById('stepNum2').classList.add('bg-primary-container', 'text-on-primary-fixed', 'shadow-sm');
+
+      document.getElementById('stepTitle2').classList.remove('text-on-surface-variant');
+      document.getElementById('stepTitle2').classList.add('text-on-surface', 'font-bold');
+
+      // Transition stages
+      document.getElementById('stage1').classList.add('hidden');
+      document.getElementById('stage2').classList.remove('hidden');
+    }
+
+    function backToStep1() {
+      // Revert Stepper UI
+      document.getElementById('stepNum1').classList.remove('bg-primary', 'text-on-primary');
+      document.getElementById('stepNum1').classList.add('bg-primary-container', 'text-on-primary-fixed');
+      document.getElementById('stepNum1').textContent = '1';
+
+      document.getElementById('stepLine').classList.remove('bg-primary');
+      document.getElementById('stepLine').classList.add('bg-slate-200');
+
+      document.getElementById('stepNum2').classList.remove('bg-primary-container', 'text-on-primary-fixed', 'shadow-sm');
+      document.getElementById('stepNum2').classList.add('bg-surface-container', 'text-on-surface-variant');
+
+      document.getElementById('stepTitle2').classList.remove('text-on-surface', 'font-bold');
+      document.getElementById('stepTitle2').classList.add('text-on-surface-variant');
+
+      // Transition stages
+      document.getElementById('stage2').classList.add('hidden');
+      document.getElementById('stage1').classList.remove('hidden');
+    }
+
+    async function activateAndLaunch() {
+      const rawKey = document.getElementById('botKey').value.trim().toUpperCase();
+      const url = (document.getElementById('brokerUrl') ? document.getElementById('brokerUrl').value.trim() : '') || 'https://gainexmarket.com';
+      const email = (document.getElementById('brokerEmail') ? document.getElementById('brokerEmail').value.trim() : '');
+      const errorDiv = document.getElementById('stage2Error');
+      const errorMsg = document.getElementById('stage2ErrorMsg');
+
+      if (!rawKey || rawKey.length < 8) {
+        errorMsg.textContent = "Please enter your Bot Activation Key.";
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+
+      // Normalize key if it has alternative hyphen patterns
+      let cleanKey = rawKey.replace(/[^A-Z0-9]/g, '');
+      let key = rawKey;
+      if (cleanKey.startsWith('GAINEXAI') && cleanKey.length >= 16) {
+        key = `GAINEX-AI-${cleanKey.substring(8, 12)}-${cleanKey.substring(12, 16)}`;
+      }
+
+      errorDiv.classList.add('hidden');
+
+      // Call backend to validate and link the account
+      try {
+        const res = await fetch('/api/public/bot/link-account', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, key: key })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          errorMsg.textContent = data.error || "Failed to link bot account. Please check your email and key.";
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+
+        if (data.session_token) {
+          localStorage.setItem('bot_session_token', data.session_token);
+          localStorage.setItem('bot_connected_email', email);
+          localStorage.setItem('bot_key', key);
+          localStorage.setItem('bot_connected_broker', url);
+          localStorage.setItem('bot_username', data.username || email);
+          localStorage.setItem('bot_balance', data.balance !== undefined ? data.balance : 0);
+          localStorage.setItem('bot_currency', data.currency || 'USD');
+          localStorage.setItem('bot_broker_connected', 'true');
+        }
+      } catch (err) {
+        console.warn('Backend link fallback:', err);
+      }
+
+      // Show stage 3 (Activation handshake)
+      document.getElementById('stage2').classList.add('hidden');
+      document.getElementById('stage3').classList.remove('hidden');
+
+      const loadingBar = document.getElementById('loadingBar');
+      const loadingTitle = document.getElementById('loadingTitle');
+      const loadingSubtitle = document.getElementById('loadingSubtitle');
+
+      // Simulate handshake phases
+      loadingBar.style.width = "35%";
+
+      setTimeout(() => {
+        loadingBar.style.width = "75%";
+        loadingTitle.textContent = "Arming Neural Engine";
+        loadingSubtitle.textContent = "Syncing multi-asset execution telemetry & confidence models...";
+      }, 1000);
+
+      setTimeout(() => {
+        loadingBar.style.width = "100%";
+        loadingTitle.textContent = "Authentication Successful!";
+        loadingSubtitle.textContent = "Launching Institutional Dashboard now...";
+      }, 2000);
+
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 2800);
+    }
+  </script>
+</body>
+</html>

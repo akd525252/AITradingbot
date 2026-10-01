@@ -1,0 +1,11 @@
+﻿{
+  "version": 2,
+  "buildCommand": "",
+  "outputDirectory": "bot-public",
+  "framework": null,
+  "rewrites": [
+    { "source": "/buy", "destination": "/buy.html" },
+    { "source": "/launch", "destination": "/launch.html" },
+    { "source": "/dashboard", "destination": "/dashboard.html" }
+  ]
+}
