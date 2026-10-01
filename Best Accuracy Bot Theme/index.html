@@ -33,6 +33,35 @@
       box-shadow: 0 16px 32px -8px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(0, 210, 106, 0.06);
       border-color: rgba(0, 210, 106, 0.45);
     }
+
+    /* Mechanical Flip Clock Digit Timer Styles */
+    .flip-digit-wrapper {
+      display: inline-block;
+      height: 20px;
+      line-height: 20px;
+      width: 10px;
+      overflow: hidden;
+      vertical-align: middle;
+      user-select: none;
+      text-align: center;
+    }
+    .flip-strip {
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      will-change: transform;
+    }
+    .flip-strip > span {
+      height: 20px;
+      line-height: 20px;
+      width: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
   </style>
   <script src="https://cdn.tailwindcss.com"></script>
   <script id="tailwind-config">
@@ -202,7 +231,7 @@
               </a>
             </div>
             <p class="font-label-md text-label-md text-on-surface-variant font-medium">
-              One-time access · <strong class="text-on-surface font-semibold">$70</strong> · No recurring fees
+              One-time access · <strong id="landingBotPrice" class="text-on-surface font-semibold">$270</strong> · No recurring fees
             </p>
             <!-- Micro Trust Signals -->
             <div class="pt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
@@ -622,17 +651,20 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
 
             <!-- 1. Binance -->
-            <div class="broker-card bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between group">
+            <div class="broker-card bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between group hover:shadow-md hover:border-emerald-200 transition-all">
               <div>
                 <div class="flex items-center justify-between mb-5">
                   <!-- Binance App Icon Logo -->
                   <div class="w-14 h-14 rounded-2xl overflow-hidden shadow-md flex items-center justify-center border border-slate-800/30 bg-[#181a20]">
                     <img src="images/binance.png" alt="Binance Logo" class="w-full h-full object-cover"/>
                   </div>
-                  <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[#00d26a]"></span>
-                    Direct API
-                  </span>
+                  <div class="flex flex-col items-end gap-1.5">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#00d26a]"></span>
+                      Direct API
+                    </span>
+                    <span class="text-xs font-extrabold text-[#00a854] bg-[#00d26a]/10 px-2.5 py-0.5 rounded-md border border-[#00d26a]/20" data-broker-price="binance_bot">$139 USD</span>
+                  </div>
                 </div>
 
                 <h3 class="text-lg font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">Binance</h3>
@@ -640,26 +672,56 @@
                 <p class="text-sm text-slate-600 mt-3 leading-relaxed">
                   High-speed WebSocket stream, sub-15ms automated execution, and zero account withdrawal permission keys.
                 </p>
+
+                <!-- Limited Time Offer Countdown -->
+                <div class="mt-4 py-2 px-3 rounded-xl bg-slate-50/90 border border-slate-200 flex items-center justify-between gap-1 shadow-xs" data-offer-timer-service="binance_bot" style="display: none;">
+                  <div class="flex items-center gap-1 text-[11px] font-bold text-slate-700">
+                    <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 text-[10px] animate-pulse">⚡</span>
+                    <span class="uppercase tracking-wider text-[10px] font-extrabold text-slate-700">Offer Ends:</span>
+                  </div>
+                  <div class="flex items-center gap-1 flip-timer-group">
+                    <!-- Hours -->
+                    <div class="inline-flex items-center bg-white border border-slate-200/90 rounded px-1.5 py-0.5 shadow-xs">
+                      <span class="flip-digit-wrapper" data-flip-digit="h1"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                      <span class="flip-digit-wrapper" data-flip-digit="h2"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                    </div>
+                    <span class="text-slate-400 font-extrabold text-xs">:</span>
+                    <!-- Minutes -->
+                    <div class="inline-flex items-center bg-white border border-slate-200/90 rounded px-1.5 py-0.5 shadow-xs">
+                      <span class="flip-digit-wrapper" data-flip-digit="m1"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                      <span class="flip-digit-wrapper" data-flip-digit="m2"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                    </div>
+                    <span class="text-slate-400 font-extrabold text-xs">:</span>
+                    <!-- Seconds -->
+                    <div class="inline-flex items-center bg-white border border-emerald-300/90 rounded px-1.5 py-0.5 shadow-xs text-[#00a854]">
+                      <span class="flip-digit-wrapper" data-flip-digit="s1"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                      <span class="flip-digit-wrapper" data-flip-digit="s2"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                <span class="text-slate-400 font-medium">Protocol</span>
-                <span class="text-slate-700 font-semibold bg-slate-50 px-2 py-0.5 rounded border border-slate-200">REST + WebSocket</span>
+                <span class="text-slate-400 font-medium">Protocol: <strong class="text-slate-700 font-semibold">REST + WebSocket</strong></span>
+                <a href="buy.html?service=binance_bot" class="inline-flex items-center gap-1 font-bold text-emerald-600 hover:text-emerald-700 hover:underline">Get Bot &rarr;</a>
               </div>
             </div>
 
             <!-- 2. MetaTrader 5 (MT5) -->
-            <div class="broker-card bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between group">
+            <div class="broker-card bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between group hover:shadow-md hover:border-emerald-200 transition-all">
               <div>
                 <div class="flex items-center justify-between mb-5">
                   <!-- MT5 App Icon Logo -->
                   <div class="w-14 h-14 rounded-2xl overflow-hidden shadow-md flex items-center justify-center border border-blue-900/30 bg-[#0c2340]">
                     <img src="images/mt5.png" alt="MetaTrader 5 Logo" class="w-full h-full object-cover"/>
                   </div>
-                  <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[#00d26a]"></span>
-                    EA / Bridge
-                  </span>
+                  <div class="flex flex-col items-end gap-1.5">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#00d26a]"></span>
+                      EA / Bridge
+                    </span>
+                    <span class="text-xs font-extrabold text-[#00a854] bg-[#00d26a]/10 px-2.5 py-0.5 rounded-md border border-[#00d26a]/20" data-broker-price="mt5_bot">$189 USD</span>
+                  </div>
                 </div>
 
                 <h3 class="text-lg font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">MetaTrader 5 (MT5)</h3>
@@ -667,26 +729,56 @@
                 <p class="text-sm text-slate-600 mt-3 leading-relaxed">
                   Universal connector for any MT5 broker via secure IPC bridge or lightweight expert advisor plugin.
                 </p>
+
+                <!-- Limited Time Offer Countdown -->
+                <div class="mt-4 py-2 px-3 rounded-xl bg-slate-50/90 border border-slate-200 flex items-center justify-between gap-1 shadow-xs" data-offer-timer-service="mt5_bot" style="display: none;">
+                  <div class="flex items-center gap-1 text-[11px] font-bold text-slate-700">
+                    <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 text-[10px] animate-pulse">⚡</span>
+                    <span class="uppercase tracking-wider text-[10px] font-extrabold text-slate-700">Offer Ends:</span>
+                  </div>
+                  <div class="flex items-center gap-1 flip-timer-group">
+                    <!-- Hours -->
+                    <div class="inline-flex items-center bg-white border border-slate-200/90 rounded px-1.5 py-0.5 shadow-xs">
+                      <span class="flip-digit-wrapper" data-flip-digit="h1"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                      <span class="flip-digit-wrapper" data-flip-digit="h2"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                    </div>
+                    <span class="text-slate-400 font-extrabold text-xs">:</span>
+                    <!-- Minutes -->
+                    <div class="inline-flex items-center bg-white border border-slate-200/90 rounded px-1.5 py-0.5 shadow-xs">
+                      <span class="flip-digit-wrapper" data-flip-digit="m1"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                      <span class="flip-digit-wrapper" data-flip-digit="m2"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                    </div>
+                    <span class="text-slate-400 font-extrabold text-xs">:</span>
+                    <!-- Seconds -->
+                    <div class="inline-flex items-center bg-white border border-emerald-300/90 rounded px-1.5 py-0.5 shadow-xs text-[#00a854]">
+                      <span class="flip-digit-wrapper" data-flip-digit="s1"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                      <span class="flip-digit-wrapper" data-flip-digit="s2"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                <span class="text-slate-400 font-medium">Protocol</span>
-                <span class="text-slate-700 font-semibold bg-slate-50 px-2 py-0.5 rounded border border-slate-200">ZeroMQ / IPC Bridge</span>
+                <span class="text-slate-400 font-medium">Protocol: <strong class="text-slate-700 font-semibold">ZeroMQ / IPC</strong></span>
+                <a href="buy.html?service=mt5_bot" class="inline-flex items-center gap-1 font-bold text-emerald-600 hover:text-emerald-700 hover:underline">Get Bot &rarr;</a>
               </div>
             </div>
 
             <!-- 3. Bybit -->
-            <div class="broker-card bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between group">
+            <div class="broker-card bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between group hover:shadow-md hover:border-emerald-200 transition-all">
               <div>
                 <div class="flex items-center justify-between mb-5">
                   <!-- Bybit App Icon Logo -->
                   <div class="w-14 h-14 rounded-2xl overflow-hidden shadow-md flex items-center justify-center border border-slate-800/30 bg-[#12161f]">
                     <img src="images/bybit.png" alt="Bybit Logo" class="w-full h-full object-cover"/>
                   </div>
-                  <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[#00d26a]"></span>
-                    v5 Unified API
-                  </span>
+                  <div class="flex flex-col items-end gap-1.5">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#00d26a]"></span>
+                      v5 Unified API
+                    </span>
+                    <span class="text-xs font-extrabold text-[#00a854] bg-[#00d26a]/10 px-2.5 py-0.5 rounded-md border border-[#00d26a]/20" data-broker-price="bybit_bot">$249 USD</span>
+                  </div>
                 </div>
 
                 <h3 class="text-lg font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">Bybit</h3>
@@ -694,26 +786,56 @@
                 <p class="text-sm text-slate-600 mt-3 leading-relaxed">
                   Linear USDT perpetuities, inverse contracts, and spot execution with automated order trailing.
                 </p>
+
+                <!-- Limited Time Offer Countdown -->
+                <div class="mt-4 py-2 px-3 rounded-xl bg-slate-50/90 border border-slate-200 flex items-center justify-between gap-1 shadow-xs" data-offer-timer-service="bybit_bot" style="display: none;">
+                  <div class="flex items-center gap-1 text-[11px] font-bold text-slate-700">
+                    <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 text-[10px] animate-pulse">⚡</span>
+                    <span class="uppercase tracking-wider text-[10px] font-extrabold text-slate-700">Offer Ends:</span>
+                  </div>
+                  <div class="flex items-center gap-1 flip-timer-group">
+                    <!-- Hours -->
+                    <div class="inline-flex items-center bg-white border border-slate-200/90 rounded px-1.5 py-0.5 shadow-xs">
+                      <span class="flip-digit-wrapper" data-flip-digit="h1"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                      <span class="flip-digit-wrapper" data-flip-digit="h2"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                    </div>
+                    <span class="text-slate-400 font-extrabold text-xs">:</span>
+                    <!-- Minutes -->
+                    <div class="inline-flex items-center bg-white border border-slate-200/90 rounded px-1.5 py-0.5 shadow-xs">
+                      <span class="flip-digit-wrapper" data-flip-digit="m1"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                      <span class="flip-digit-wrapper" data-flip-digit="m2"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                    </div>
+                    <span class="text-slate-400 font-extrabold text-xs">:</span>
+                    <!-- Seconds -->
+                    <div class="inline-flex items-center bg-white border border-emerald-300/90 rounded px-1.5 py-0.5 shadow-xs text-[#00a854]">
+                      <span class="flip-digit-wrapper" data-flip-digit="s1"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                      <span class="flip-digit-wrapper" data-flip-digit="s2"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                <span class="text-slate-400 font-medium">Protocol</span>
-                <span class="text-slate-700 font-semibold bg-slate-50 px-2 py-0.5 rounded border border-slate-200">V5 REST &amp; WSS</span>
+                <span class="text-slate-400 font-medium">Protocol: <strong class="text-slate-700 font-semibold">V5 REST &amp; WSS</strong></span>
+                <a href="buy.html?service=bybit_bot" class="inline-flex items-center gap-1 font-bold text-emerald-600 hover:text-emerald-700 hover:underline">Get Bot &rarr;</a>
               </div>
             </div>
 
             <!-- 4. Quotex -->
-            <div class="broker-card bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between group">
+            <div class="broker-card bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between group hover:shadow-md hover:border-emerald-200 transition-all">
               <div>
                 <div class="flex items-center justify-between mb-5">
                   <!-- Quotex App Icon Logo -->
                   <div class="w-14 h-14 rounded-2xl overflow-hidden shadow-md flex items-center justify-center border border-slate-200/80 bg-white p-1.5">
                     <img src="images/quotex.png" alt="Quotex Logo" class="w-full h-full object-contain"/>
                   </div>
-                  <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[#00d26a]"></span>
-                    Webhook / Bot
-                  </span>
+                  <div class="flex flex-col items-end gap-1.5">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#00d26a]"></span>
+                      Webhook / Bot
+                    </span>
+                    <span class="text-xs font-extrabold text-[#00a854] bg-[#00d26a]/10 px-2.5 py-0.5 rounded-md border border-[#00d26a]/20" data-broker-price="quotex_bot">$299 USD</span>
+                  </div>
                 </div>
 
                 <h3 class="text-lg font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">Quotex</h3>
@@ -721,26 +843,56 @@
                 <p class="text-sm text-slate-600 mt-3 leading-relaxed">
                   Fast expiry execution, OTC pair synchronization, and signal trigger automation with millisecond accuracy.
                 </p>
+
+                <!-- Limited Time Offer Countdown -->
+                <div class="mt-4 py-2 px-3 rounded-xl bg-slate-50/90 border border-slate-200 flex items-center justify-between gap-1 shadow-xs" data-offer-timer-service="quotex_bot" style="display: none;">
+                  <div class="flex items-center gap-1 text-[11px] font-bold text-slate-700">
+                    <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 text-[10px] animate-pulse">⚡</span>
+                    <span class="uppercase tracking-wider text-[10px] font-extrabold text-slate-700">Offer Ends:</span>
+                  </div>
+                  <div class="flex items-center gap-1 flip-timer-group">
+                    <!-- Hours -->
+                    <div class="inline-flex items-center bg-white border border-slate-200/90 rounded px-1.5 py-0.5 shadow-xs">
+                      <span class="flip-digit-wrapper" data-flip-digit="h1"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                      <span class="flip-digit-wrapper" data-flip-digit="h2"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                    </div>
+                    <span class="text-slate-400 font-extrabold text-xs">:</span>
+                    <!-- Minutes -->
+                    <div class="inline-flex items-center bg-white border border-slate-200/90 rounded px-1.5 py-0.5 shadow-xs">
+                      <span class="flip-digit-wrapper" data-flip-digit="m1"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                      <span class="flip-digit-wrapper" data-flip-digit="m2"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                    </div>
+                    <span class="text-slate-400 font-extrabold text-xs">:</span>
+                    <!-- Seconds -->
+                    <div class="inline-flex items-center bg-white border border-emerald-300/90 rounded px-1.5 py-0.5 shadow-xs text-[#00a854]">
+                      <span class="flip-digit-wrapper" data-flip-digit="s1"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                      <span class="flip-digit-wrapper" data-flip-digit="s2"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                <span class="text-slate-400 font-medium">Protocol</span>
-                <span class="text-slate-700 font-semibold bg-slate-50 px-2 py-0.5 rounded border border-slate-200">Webhook Automation</span>
+                <span class="text-slate-400 font-medium">Protocol: <strong class="text-slate-700 font-semibold">Webhook Auto</strong></span>
+                <a href="buy.html?service=quotex_bot" class="inline-flex items-center gap-1 font-bold text-emerald-600 hover:text-emerald-700 hover:underline">Get Bot &rarr;</a>
               </div>
             </div>
 
             <!-- 5. Pocket Option -->
-            <div class="broker-card bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between group">
+            <div class="broker-card bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between group hover:shadow-md hover:border-emerald-200 transition-all">
               <div>
                 <div class="flex items-center justify-between mb-5">
                   <!-- Pocket Option App Icon Logo -->
                   <div class="w-14 h-14 rounded-2xl overflow-hidden shadow-md flex items-center justify-center border border-blue-500/20 bg-white">
                     <img src="images/pocketoption.png" alt="Pocket Option Logo" class="w-full h-full object-cover"/>
                   </div>
-                  <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[#00d26a]"></span>
-                    Signal Link
-                  </span>
+                  <div class="flex flex-col items-end gap-1.5">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#00d26a]"></span>
+                      Signal Link
+                    </span>
+                    <span class="text-xs font-extrabold text-[#00a854] bg-[#00d26a]/10 px-2.5 py-0.5 rounded-md border border-[#00d26a]/20" data-broker-price="pocket_option_bot">$99 USD</span>
+                  </div>
                 </div>
 
                 <h3 class="text-lg font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">Pocket Option</h3>
@@ -748,26 +900,56 @@
                 <p class="text-sm text-slate-600 mt-3 leading-relaxed">
                   Real-time trade copying, configurable expiry cycles, and rapid execution logic for standard and OTC markets.
                 </p>
+
+                <!-- Limited Time Offer Countdown -->
+                <div class="mt-4 py-2 px-3 rounded-xl bg-slate-50/90 border border-slate-200 flex items-center justify-between gap-1 shadow-xs" data-offer-timer-service="pocket_option_bot" style="display: none;">
+                  <div class="flex items-center gap-1 text-[11px] font-bold text-slate-700">
+                    <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 text-[10px] animate-pulse">⚡</span>
+                    <span class="uppercase tracking-wider text-[10px] font-extrabold text-slate-700">Offer Ends:</span>
+                  </div>
+                  <div class="flex items-center gap-1 flip-timer-group">
+                    <!-- Hours -->
+                    <div class="inline-flex items-center bg-white border border-slate-200/90 rounded px-1.5 py-0.5 shadow-xs">
+                      <span class="flip-digit-wrapper" data-flip-digit="h1"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                      <span class="flip-digit-wrapper" data-flip-digit="h2"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                    </div>
+                    <span class="text-slate-400 font-extrabold text-xs">:</span>
+                    <!-- Minutes -->
+                    <div class="inline-flex items-center bg-white border border-slate-200/90 rounded px-1.5 py-0.5 shadow-xs">
+                      <span class="flip-digit-wrapper" data-flip-digit="m1"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                      <span class="flip-digit-wrapper" data-flip-digit="m2"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                    </div>
+                    <span class="text-slate-400 font-extrabold text-xs">:</span>
+                    <!-- Seconds -->
+                    <div class="inline-flex items-center bg-white border border-emerald-300/90 rounded px-1.5 py-0.5 shadow-xs text-[#00a854]">
+                      <span class="flip-digit-wrapper" data-flip-digit="s1"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                      <span class="flip-digit-wrapper" data-flip-digit="s2"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                <span class="text-slate-400 font-medium">Protocol</span>
-                <span class="text-slate-700 font-semibold bg-slate-50 px-2 py-0.5 rounded border border-slate-200">Automated Signal API</span>
+                <span class="text-slate-400 font-medium">Protocol: <strong class="text-slate-700 font-semibold">Signal API</strong></span>
+                <a href="buy.html?service=pocket_option_bot" class="inline-flex items-center gap-1 font-bold text-emerald-600 hover:text-emerald-700 hover:underline">Get Bot &rarr;</a>
               </div>
             </div>
 
             <!-- 6. OctaFX -->
-            <div class="broker-card bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between group">
+            <div class="broker-card bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between group hover:shadow-md hover:border-emerald-200 transition-all">
               <div>
                 <div class="flex items-center justify-between mb-5">
                   <!-- OctaFX App Icon Logo -->
                   <div class="w-14 h-14 rounded-2xl overflow-hidden shadow-md flex items-center justify-center border border-blue-600/30 bg-[#0052FF]">
                     <img src="images/octafx.png" alt="OctaFX Logo" class="w-full h-full object-cover"/>
                   </div>
-                  <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[#00d26a]"></span>
-                    MT4 / MT5
-                  </span>
+                  <div class="flex flex-col items-end gap-1.5">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#00d26a]"></span>
+                      MT4 / MT5
+                    </span>
+                    <span class="text-xs font-extrabold text-[#00a854] bg-[#00d26a]/10 px-2.5 py-0.5 rounded-md border border-[#00d26a]/20" data-broker-price="octafx_bot">$99 USD</span>
+                  </div>
                 </div>
 
                 <h3 class="text-lg font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">OctaFX</h3>
@@ -775,26 +957,56 @@
                 <p class="text-sm text-slate-600 mt-3 leading-relaxed">
                   Ultra-tight spreads on major FX pairs, micro-lot sizing, and automated algorithmic execution with swap-free accounts.
                 </p>
+
+                <!-- Limited Time Offer Countdown -->
+                <div class="mt-4 py-2 px-3 rounded-xl bg-slate-50/90 border border-slate-200 flex items-center justify-between gap-1 shadow-xs" data-offer-timer-service="octafx_bot" style="display: none;">
+                  <div class="flex items-center gap-1 text-[11px] font-bold text-slate-700">
+                    <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 text-[10px] animate-pulse">⚡</span>
+                    <span class="uppercase tracking-wider text-[10px] font-extrabold text-slate-700">Offer Ends:</span>
+                  </div>
+                  <div class="flex items-center gap-1 flip-timer-group">
+                    <!-- Hours -->
+                    <div class="inline-flex items-center bg-white border border-slate-200/90 rounded px-1.5 py-0.5 shadow-xs">
+                      <span class="flip-digit-wrapper" data-flip-digit="h1"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                      <span class="flip-digit-wrapper" data-flip-digit="h2"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                    </div>
+                    <span class="text-slate-400 font-extrabold text-xs">:</span>
+                    <!-- Minutes -->
+                    <div class="inline-flex items-center bg-white border border-slate-200/90 rounded px-1.5 py-0.5 shadow-xs">
+                      <span class="flip-digit-wrapper" data-flip-digit="m1"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                      <span class="flip-digit-wrapper" data-flip-digit="m2"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                    </div>
+                    <span class="text-slate-400 font-extrabold text-xs">:</span>
+                    <!-- Seconds -->
+                    <div class="inline-flex items-center bg-white border border-emerald-300/90 rounded px-1.5 py-0.5 shadow-xs text-[#00a854]">
+                      <span class="flip-digit-wrapper" data-flip-digit="s1"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                      <span class="flip-digit-wrapper" data-flip-digit="s2"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                <span class="text-slate-400 font-medium">Protocol</span>
-                <span class="text-slate-700 font-semibold bg-slate-50 px-2 py-0.5 rounded border border-slate-200">FIX Protocol / Bridge</span>
+                <span class="text-slate-400 font-medium">Protocol: <strong class="text-slate-700 font-semibold">FIX / MT Bridge</strong></span>
+                <a href="buy.html?service=octafx_bot" class="inline-flex items-center gap-1 font-bold text-emerald-600 hover:text-emerald-700 hover:underline">Get Bot &rarr;</a>
               </div>
             </div>
 
             <!-- 7. GXM -->
-            <div class="broker-card bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between group">
+            <div class="broker-card bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between group hover:shadow-md hover:border-emerald-200 transition-all">
               <div>
                 <div class="flex items-center justify-between mb-5">
                   <!-- GXM App Icon Logo -->
                   <div class="w-14 h-14 rounded-2xl overflow-hidden shadow-md flex items-center justify-center border border-slate-800/30 bg-[#070b12]">
                     <img src="images/gxm.png" alt="GainExMarket GXM Logo" class="w-full h-full object-cover"/>
                   </div>
-                  <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[#00d26a]"></span>
-                    Direct Broker
-                  </span>
+                  <div class="flex flex-col items-end gap-1.5">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#00d26a]"></span>
+                      Direct Broker
+                    </span>
+                    <span class="text-xs font-extrabold text-[#00a854] bg-[#00d26a]/10 px-2.5 py-0.5 rounded-md border border-[#00d26a]/20" data-broker-price="gxm_bot">$270 USD</span>
+                  </div>
                 </div>
 
                 <h3 class="text-lg font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">GXM (GainExMarket)</h3>
@@ -802,16 +1014,43 @@
                 <p class="text-sm text-slate-600 mt-3 leading-relaxed">
                   Direct API connectivity, institutional liquidity feeds, tight execution spreads, and algorithmic order routing tailored for BestAccuracy strategies.
                 </p>
+
+                <!-- Limited Time Offer Countdown -->
+                <div class="mt-4 py-2 px-3 rounded-xl bg-slate-50/90 border border-slate-200 flex items-center justify-between gap-1 shadow-xs" data-offer-timer-service="gxm_bot" style="display: flex;">
+                  <div class="flex items-center gap-1 text-[11px] font-bold text-slate-700">
+                    <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 text-[10px] animate-pulse">⚡</span>
+                    <span class="uppercase tracking-wider text-[10px] font-extrabold text-slate-700">Offer Ends:</span>
+                  </div>
+                  <div class="flex items-center gap-1 flip-timer-group">
+                    <!-- Hours -->
+                    <div class="inline-flex items-center bg-white border border-slate-200/90 rounded px-1.5 py-0.5 shadow-xs">
+                      <span class="flip-digit-wrapper" data-flip-digit="h1"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                      <span class="flip-digit-wrapper" data-flip-digit="h2"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                    </div>
+                    <span class="text-slate-400 font-extrabold text-xs">:</span>
+                    <!-- Minutes -->
+                    <div class="inline-flex items-center bg-white border border-slate-200/90 rounded px-1.5 py-0.5 shadow-xs">
+                      <span class="flip-digit-wrapper" data-flip-digit="m1"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                      <span class="flip-digit-wrapper" data-flip-digit="m2"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                    </div>
+                    <span class="text-slate-400 font-extrabold text-xs">:</span>
+                    <!-- Seconds -->
+                    <div class="inline-flex items-center bg-white border border-emerald-300/90 rounded px-1.5 py-0.5 shadow-xs text-[#00a854]">
+                      <span class="flip-digit-wrapper" data-flip-digit="s1"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                      <span class="flip-digit-wrapper" data-flip-digit="s2"><span class="flip-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></span></span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                <span class="text-slate-400 font-medium">Protocol</span>
-                <span class="text-slate-700 font-semibold bg-slate-50 px-2 py-0.5 rounded border border-slate-200">Direct Broker Gateway</span>
+                <span class="text-slate-400 font-medium">Protocol: <strong class="text-slate-700 font-semibold">Direct Gateway</strong></span>
+                <a href="buy.html?service=gxm_bot" class="inline-flex items-center gap-1 font-bold text-emerald-600 hover:text-emerald-700 hover:underline">Get Bot &rarr;</a>
               </div>
             </div>
 
             <!-- 8. Multi-Broker Universal Hub Card -->
-            <div class="broker-card bg-gradient-to-br from-emerald-50/70 via-white to-slate-50 rounded-2xl p-6 border-2 border-dashed border-emerald-300 shadow-sm flex flex-col justify-between group">
+            <div class="broker-card bg-gradient-to-br from-emerald-50/70 via-white to-slate-50 rounded-2xl p-6 border-2 border-dashed border-emerald-300 shadow-sm flex flex-col justify-between group hover:shadow-md transition-all">
               <div>
                 <div class="flex items-center justify-between mb-5">
                   <div class="w-14 h-14 rounded-2xl bg-white flex items-center justify-center p-2.5 shadow-sm border border-emerald-200 text-emerald-600">
@@ -819,9 +1058,12 @@
                       <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                     </svg>
                   </div>
-                  <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">
-                    Custom Setup
-                  </span>
+                  <div class="flex flex-col items-end gap-1.5">
+                    <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                      Custom Setup
+                    </span>
+                    <span class="text-xs font-extrabold text-emerald-700 bg-emerald-100/60 px-2 py-0.5 rounded-md border border-emerald-300/40">Universal API</span>
+                  </div>
                 </div>
 
                 <h3 class="text-lg font-bold text-slate-900">Custom Broker / API</h3>
@@ -833,9 +1075,9 @@
 
               <div class="mt-6 pt-4 border-t border-emerald-100 flex items-center justify-between text-xs font-medium text-slate-500">
                 <span>Documentation Included</span>
-                <span class="text-emerald-600 font-bold flex items-center gap-1">
+                <a href="buy.html" class="text-emerald-600 font-bold flex items-center gap-1 hover:underline">
                   5-Min Setup &rarr;
-                </span>
+                </a>
               </div>
             </div>
 
@@ -881,10 +1123,10 @@
           <span class="font-label-md text-label-md uppercase tracking-wider text-primary font-bold">SIMPLE, TRANSPARENT ACCESS</span>
           <div class="flex flex-col gap-3">
             <h2 class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">
-              BestAccuracy AI Trading Bot (<span class="text-primary-container">$70</span>)
+              BestAccuracy AI Trading Bot (<span id="ctaBotPrice" class="text-primary-container">$270</span>)
             </h2>
             <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto leading-relaxed">
-              BestAccuracy is available for a single one-time purchase of $70. No recurring monthly subscriptions, no hidden tiers, and no platform commissions.
+              BestAccuracy is available for a single one-time purchase. No recurring monthly subscriptions, no hidden tiers, and no platform commissions.
             </p>
           </div>
           <!-- Feature Checklist -->
@@ -908,7 +1150,7 @@
           </div>
           <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
             <a href="buy.html" class="w-full sm:w-auto px-10 py-4 rounded-full bg-primary-container text-on-primary-fixed font-headline-sm text-body-md font-semibold hover:bg-primary-fixed-dim transition-all shadow-[0_0_24px_-3px_rgba(0,210,106,0.4)] active:scale-95 text-center inline-flex items-center justify-center gap-2">
-              <span>Get Bot ($70)</span>
+              <span>Get Bot License</span>
               <span class="material-symbols-outlined text-[18px]">shopping_cart_checkout</span>
             </a>
           </div>
@@ -1168,5 +1410,158 @@
       </div>
     </div>
   </footer>
+  <script>
+    // Mechanical Flip-Clock Countdown Timer & Dynamic Offer Pricing Engine
+    let activeTimerServices = [];
+
+    function setGroupDigits(group, hStr, mStr, sStr) {
+      const d_h1 = group.querySelector('[data-flip-digit="h1"] .flip-strip');
+      const d_h2 = group.querySelector('[data-flip-digit="h2"] .flip-strip');
+      const d_m1 = group.querySelector('[data-flip-digit="m1"] .flip-strip');
+      const d_m2 = group.querySelector('[data-flip-digit="m2"] .flip-strip');
+      const d_s1 = group.querySelector('[data-flip-digit="s1"] .flip-strip');
+      const d_s2 = group.querySelector('[data-flip-digit="s2"] .flip-strip');
+
+      if (d_h1) d_h1.style.transform = `translateY(-${parseInt(hStr[0], 10) * 20}px)`;
+      if (d_h2) d_h2.style.transform = `translateY(-${parseInt(hStr[1], 10) * 20}px)`;
+      if (d_m1) d_m1.style.transform = `translateY(-${parseInt(mStr[0], 10) * 20}px)`;
+      if (d_m2) d_m2.style.transform = `translateY(-${parseInt(mStr[1], 10) * 20}px)`;
+      if (d_s1) d_s1.style.transform = `translateY(-${parseInt(sStr[0], 10) * 20}px)`;
+      if (d_s2) d_s2.style.transform = `translateY(-${parseInt(sStr[1], 10) * 20}px)`;
+    }
+
+    function formatBrokerCardPrice(actPrice, curPrice, hasActiveOffer) {
+      if (hasActiveOffer && Number(actPrice) > Number(curPrice)) {
+        return `<span class="text-xs text-slate-400 line-through font-bold mr-1.5">$${actPrice}</span><span class="text-xs font-extrabold text-[#00a854] bg-[#00d26a]/10 px-2.5 py-0.5 rounded-md border border-[#00d26a]/20">$${curPrice} USD</span>`;
+      }
+      const displayPrice = hasActiveOffer ? curPrice : actPrice;
+      return `<span class="text-xs font-extrabold text-[#00a854] bg-[#00d26a]/10 px-2.5 py-0.5 rounded-md border border-[#00d26a]/20">$${displayPrice} USD</span>`;
+    }
+
+    function tickTimers() {
+      const now = Date.now();
+      activeTimerServices.forEach(item => {
+        const timerContainer = document.querySelector(`[data-offer-timer-service="${item.key}"]`);
+        const cardPriceEl = document.querySelector(`[data-broker-price="${item.key}"]`);
+        const curPrice = item.price;
+        const actPrice = item.actual_price;
+
+        let diff = Math.floor((item.targetTime - now) / 1000);
+
+        if (diff <= 0) {
+          // Timer reached 00:00:00 - Offer expired!
+          if (timerContainer) timerContainer.style.display = 'none';
+          if (cardPriceEl) {
+            cardPriceEl.innerHTML = formatBrokerCardPrice(actPrice, curPrice, false);
+          }
+          if (item.key === 'gxm_bot') {
+            const priceEl = document.getElementById('landingBotPrice');
+            if (priceEl) priceEl.textContent = `$${actPrice}`;
+            const ctaPriceEl = document.getElementById('ctaBotPrice');
+            if (ctaPriceEl) ctaPriceEl.textContent = `$${actPrice}`;
+          }
+        } else {
+          // Live Offer Active
+          if (timerContainer) {
+            timerContainer.style.display = 'flex';
+            const group = timerContainer.querySelector('.flip-timer-group');
+            if (group) {
+              const hours = Math.floor(diff / 3600);
+              const mins = Math.floor((diff % 3600) / 60);
+              const secs = diff % 60;
+              const hStr = String(hours).padStart(2, '0');
+              const mStr = String(mins).padStart(2, '0');
+              const sStr = String(secs).padStart(2, '0');
+              setGroupDigits(group, hStr, mStr, sStr);
+            }
+          }
+          if (cardPriceEl) {
+            cardPriceEl.innerHTML = formatBrokerCardPrice(actPrice, curPrice, true);
+          }
+          if (item.key === 'gxm_bot') {
+            const priceEl = document.getElementById('landingBotPrice');
+            if (priceEl) priceEl.textContent = `$${curPrice}`;
+            const ctaPriceEl = document.getElementById('ctaBotPrice');
+            if (ctaPriceEl) ctaPriceEl.textContent = `$${curPrice}`;
+          }
+        }
+      });
+    }
+
+    async function syncLandingPricing() {
+      try {
+        const res = await fetch('/api/public/bot-services');
+        if (res.ok) {
+          const data = await res.json();
+          const services = data.services || [];
+          if (services.length > 0) {
+            activeTimerServices = [];
+
+            services.forEach(s => {
+              const key = s.service_key;
+              const curPrice = (s.price || '99').replace('$', '');
+              const actPrice = (s.actual_price || curPrice).replace('$', '');
+              const timerContainer = document.querySelector(`[data-offer-timer-service="${key}"]`);
+              const cardPriceEl = document.querySelector(`[data-broker-price="${key}"]`);
+
+              // Only show timer if offer timer is enabled and expiration date is in the future
+              const hasActiveOffer = Boolean(s.offer_timer_enabled && s.offer_ends_at && new Date(s.offer_ends_at).getTime() > Date.now());
+
+              if (hasActiveOffer) {
+                activeTimerServices.push({
+                  key: key,
+                  targetTime: new Date(s.offer_ends_at).getTime(),
+                  price: curPrice,
+                  actual_price: actPrice
+                });
+                if (timerContainer) timerContainer.style.display = 'flex';
+                if (cardPriceEl) {
+                  cardPriceEl.innerHTML = formatBrokerCardPrice(actPrice, curPrice, true);
+                }
+              } else {
+                // Timer is disabled or expired for this service: hide timer pill completely and show actual price
+                if (timerContainer) timerContainer.style.display = 'none';
+                if (cardPriceEl) {
+                  cardPriceEl.innerHTML = formatBrokerCardPrice(actPrice, curPrice, false);
+                }
+              }
+
+              // Update Pricing Plans section
+              const planPriceEl = document.getElementById(`planPrice_${key}`);
+              if (planPriceEl) {
+                planPriceEl.textContent = hasActiveOffer ? curPrice : actPrice;
+              }
+            });
+
+            // Update hero/header price
+            const activeService = services.find(s => s.is_active && s.service_key === 'gxm_bot') || services.find(s => s.is_active) || services[0];
+            const isGxmOfferActive = activeTimerServices.some(t => t.key === activeService.service_key);
+            const heroPrice = isGxmOfferActive ? (activeService.price || '200') : (activeService.actual_price || activeService.price || '270');
+            const priceEl = document.getElementById('landingBotPrice');
+            if (priceEl) {
+              priceEl.textContent = `$${heroPrice.replace('$', '')}`;
+            }
+            const ctaPriceEl = document.getElementById('ctaBotPrice');
+            if (ctaPriceEl) {
+              ctaPriceEl.textContent = `$${heroPrice.replace('$', '')}`;
+            }
+
+            tickTimers();
+          }
+        }
+      } catch (e) {
+        console.warn('Pricing sync fallback:', e);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      syncLandingPricing();
+      setInterval(tickTimers, 1000);
+    });
+    if (document.readyState !== 'loading') {
+      syncLandingPricing();
+      setInterval(tickTimers, 1000);
+    }
+  </script>
 </body>
 </html>

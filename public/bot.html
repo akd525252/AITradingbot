@@ -1005,10 +1005,7 @@
                       <span class="w-1.5 h-1.5 rounded-full bg-[#00d26a]"></span>
                       Direct Broker
                     </span>
-                    <div class="flex items-center" data-broker-price="gxm_bot">
-                      <span class="text-xs text-slate-400 line-through font-bold mr-1.5">$270</span>
-                      <span class="text-xs font-extrabold text-[#00a854] bg-[#00d26a]/10 px-2 py-0.5 rounded-md border border-[#00d26a]/20">$200 USD</span>
-                    </div>
+                    <span class="text-xs font-extrabold text-[#00a854] bg-[#00d26a]/10 px-2.5 py-0.5 rounded-md border border-[#00d26a]/20" data-broker-price="gxm_bot">$270 USD</span>
                   </div>
                 </div>
 
@@ -1433,6 +1430,14 @@
       if (d_s2) d_s2.style.transform = `translateY(-${parseInt(sStr[1], 10) * 20}px)`;
     }
 
+    function formatBrokerCardPrice(actPrice, curPrice, hasActiveOffer) {
+      if (hasActiveOffer && Number(actPrice) > Number(curPrice)) {
+        return `<span class="text-xs text-slate-400 line-through font-bold mr-1.5">$${actPrice}</span><span class="text-xs font-extrabold text-[#00a854] bg-[#00d26a]/10 px-2.5 py-0.5 rounded-md border border-[#00d26a]/20">$${curPrice} USD</span>`;
+      }
+      const displayPrice = hasActiveOffer ? curPrice : actPrice;
+      return `<span class="text-xs font-extrabold text-[#00a854] bg-[#00d26a]/10 px-2.5 py-0.5 rounded-md border border-[#00d26a]/20">$${displayPrice} USD</span>`;
+    }
+
     function tickTimers() {
       const now = Date.now();
       activeTimerServices.forEach(item => {
@@ -1447,7 +1452,7 @@
           // Timer reached 00:00:00 - Offer expired!
           if (timerContainer) timerContainer.style.display = 'none';
           if (cardPriceEl) {
-            cardPriceEl.innerHTML = `$${actPrice} USD`;
+            cardPriceEl.innerHTML = formatBrokerCardPrice(actPrice, curPrice, false);
           }
           if (item.key === 'gxm_bot') {
             const priceEl = document.getElementById('landingBotPrice');
@@ -1471,11 +1476,7 @@
             }
           }
           if (cardPriceEl) {
-            if (Number(actPrice) > Number(curPrice)) {
-              cardPriceEl.innerHTML = `<span class="text-xs text-slate-400 line-through font-bold mr-1.5">$${actPrice}</span><span class="text-xs font-extrabold text-[#00a854] bg-[#00d26a]/10 px-2 py-0.5 rounded-md border border-[#00d26a]/20">$${curPrice} USD</span>`;
-            } else {
-              cardPriceEl.innerHTML = `$${curPrice} USD`;
-            }
+            cardPriceEl.innerHTML = formatBrokerCardPrice(actPrice, curPrice, true);
           }
           if (item.key === 'gxm_bot') {
             const priceEl = document.getElementById('landingBotPrice');
@@ -1515,17 +1516,13 @@
                 });
                 if (timerContainer) timerContainer.style.display = 'flex';
                 if (cardPriceEl) {
-                  if (Number(actPrice) > Number(curPrice)) {
-                    cardPriceEl.innerHTML = `<span class="text-xs text-slate-400 line-through font-bold mr-1.5">$${actPrice}</span><span class="text-xs font-extrabold text-[#00a854] bg-[#00d26a]/10 px-2 py-0.5 rounded-md border border-[#00d26a]/20">$${curPrice} USD</span>`;
-                  } else {
-                    cardPriceEl.innerHTML = `$${curPrice} USD`;
-                  }
+                  cardPriceEl.innerHTML = formatBrokerCardPrice(actPrice, curPrice, true);
                 }
               } else {
                 // Timer is disabled or expired for this service: hide timer pill completely and show actual price
                 if (timerContainer) timerContainer.style.display = 'none';
                 if (cardPriceEl) {
-                  cardPriceEl.innerHTML = `$${actPrice} USD`;
+                  cardPriceEl.innerHTML = formatBrokerCardPrice(actPrice, curPrice, false);
                 }
               }
 
