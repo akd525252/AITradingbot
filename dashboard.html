@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>BestAccuracy : AI Trading Bot Dashboard</title>
+  <link rel="icon" type="image/png" href="images/favicon.png"/>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container-high": "#dce9ff",
+            "on-secondary-fixed": "#131b2e",
+            "tertiary-container": "#39ce94",
+            "secondary-container": "#dae2fd",
+            "outline-variant": "#bbcbba",
+            "background": "#f8f9ff",
+            "error": "#ba1a1a",
+            "on-tertiary-fixed-variant": "#005236",
+            "inverse-surface": "#213145",
+            "surface-tint": "#006d34",
+            "surface-bright": "#f8f9ff",
+            "on-primary": "#ffffff",
+            "on-surface": "#0b1c30",
+            "error-container": "#ffdad6",
+            "on-tertiary": "#ffffff",
+            "outline": "#6c7b6c",
+            "primary-fixed": "#62ff95",
+            "tertiary-fixed": "#6ffbbe",
+            "primary": "#006d34",
+            "tertiary": "#006c49",
+            "on-secondary": "#ffffff",
+            "secondary-fixed-dim": "#bec6e0",
+            "primary-fixed-dim": "#2fe378",
+            "on-tertiary-container": "#005337",
+            "inverse-primary": "#2fe378",
+            "on-primary-container": "#005426",
+            "on-primary-fixed-variant": "#005226",
+            "on-primary-fixed": "#00210b",
+            "on-error": "#ffffff",
+            "inverse-on-surface": "#eaf1ff",
+            "on-surface-variant": "#3c4a3d",
+            "surface-variant": "#d3e4fe",
+            "on-background": "#0b1c30",
+            "surface-container-low": "#eff4ff",
+            "on-tertiary-fixed": "#002113",
+            "surface-dim": "#cbdbf5",
+            "primary-container": "#00d26a",
+            "surface-container": "#e5eeff",
+            "secondary-fixed": "#dae2fd",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-fixed-dim": "#4edea3",
+            "on-error-container": "#93000a",
+            "on-secondary-container": "#5c647a",
+            "surface": "#f8f9ff",
+            "surface-container-highest": "#d3e4fe",
+            "on-secondary-fixed-variant": "#3f465c",
+            "secondary": "#565e74"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "gutter": "1.5rem",
+            "margin": "3rem",
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem",
+            "margin-mobile": "1.25rem",
+            "gutter-mobile": "1rem",
+            "space-xl": "2.5rem",
+            "space-lg": "1.5rem",
+            "space-md": "1rem"
+          },
+          fontFamily: {
+            "label-md": ["Inter"],
+            "label-sm": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "headline-md": ["Inter"],
+            "headline-lg": ["Inter"],
+            "display-hero-mobile": ["Inter"],
+            "body-md": ["Inter"],
+            "display-hero": ["Inter"],
+            "body-lg": ["Inter"],
+            "headline-sm": ["Inter"],
+            "metric-xl": ["Inter"],
+            "body-sm": ["Inter"]
+          },
+          fontSize: {
+            "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.04em", fontWeight: "600" }],
+            "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.06em", fontWeight: "600" }],
+            "headline-lg-mobile": ["28px", { lineHeight: "36px", letterSpacing: "-0.02em", fontWeight: "700" }],
+            "headline-md": ["24px", { lineHeight: "32px", letterSpacing: "-0.02em", fontWeight: "600" }],
+            "headline-lg": ["36px", { lineHeight: "44px", letterSpacing: "-0.025em", fontWeight: "700" }],
+            "display-hero-mobile": ["36px", { lineHeight: "44px", letterSpacing: "-0.025em", fontWeight: "700" }],
+            "body-md": ["15px", { lineHeight: "22px", letterSpacing: "-0.005em", fontWeight: "500" }],
+            "display-hero": ["56px", { lineHeight: "64px", letterSpacing: "-0.03em", fontWeight: "700" }],
+            "body-lg": ["18px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "400" }],
+            "headline-sm": ["20px", { lineHeight: "28px", letterSpacing: "-0.015em", fontWeight: "600" }],
+            "metric-xl": ["32px", { lineHeight: "38px", letterSpacing: "-0.03em", fontWeight: "700" }],
+            "body-sm": ["13px", { lineHeight: "18px", letterSpacing: "0em", fontWeight: "400" }]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-surface font-body-md text-body-md text-on-surface antialiased min-h-screen">
+
+  <!-- TOP INSTITUTIONAL HEADER -->
+  <header class="fixed top-0 inset-x-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50">
+    <div class="max-w-[1440px] mx-auto h-16 px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+      
+      <!-- Brand & Telemetry -->
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="flex items-center gap-3 group">
+          <img alt="BestAccuracy Logo" class="h-9 w-9 object-contain rounded-lg shadow-sm" src="images/logo.png"/>
+          <div class="flex flex-col">
+            <span class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight leading-tight group-hover:text-primary transition-colors">BestAccuracy</span>
+            <span class="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-wider">Institutional AI Engine</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Center Status: Bot Online -->
+      <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-low border border-slate-200/60">
+        <span class="relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-container opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+        </span>
+        <span class="font-label-md text-label-md text-on-surface font-medium">Bot Status:</span>
+        <span class="font-label-sm text-label-sm text-primary font-bold">Online · 99.98%</span>
+      </div>
+
+      <!-- Right Actions: Telemetry + Account + Home -->
+      <div class="flex items-center gap-3 sm:gap-4">
+        <!-- Execution Status Pill -->
+        <div class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container">
+          <span class="h-2 w-2 rounded-full bg-primary animate-pulse"></span>
+          <span class="font-label-sm text-label-sm text-on-primary-container font-semibold">Active Execution</span>
+        </div>
+
+        <!-- Account Identifier -->
+        <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-low text-on-surface font-label-md text-label-md border border-slate-200/60">
+          <span class="material-symbols-outlined text-[16px] text-primary">link</span>
+          <span class="font-semibold">AKD••••2525</span>
+          <span class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-secondary-fixed text-[10px] font-label-sm uppercase font-bold">Live</span>
+        </div>
+
+        <!-- Back to Website Button -->
+        <a href="index.html" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-body-sm transition-all text-xs font-semibold">
+          <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+          <span class="hidden sm:inline">Website</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN DASHBOARD CONTENT -->
+  <main class="w-full pt-20 pb-16 bg-surface">
+    <div class="px-4 sm:px-6 lg:px-8 max-w-[1440px] mx-auto w-full flex flex-col gap-6">
+
+      <!-- 1. TOP WELCOME & STATUS BANNER -->
+      <div class="w-full bg-surface-container-lowest rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative overflow-hidden border border-slate-100">
+        <!-- Ambient decorative gradient mesh -->
+        <div class="absolute -right-16 -top-16 w-80 h-80 rounded-full bg-primary-container/10 blur-3xl pointer-events-none"></div>
+        
+        <div class="flex flex-col gap-2 z-10">
+          <div class="flex items-center gap-2">
+            <span class="font-headline-sm text-headline-sm font-semibold text-on-surface">Welcome back</span>
+            <span class="text-xl">👋</span>
+          </div>
+          <h1 class="font-headline-md text-headline-md font-bold text-on-surface tracking-tight">Your AI trading assistant is ready.</h1>
+          <p class="font-body-md text-body-md text-on-surface-variant max-w-xl leading-relaxed">
+            Monitor market activity, configure your bot, and track quantitative execution telemetry from one centralized terminal.
+          </p>
+        </div>
+
+        <!-- Right AI Status Cluster -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 z-10">
+          <!-- Observer Companion Widget (clean icon instead of robot image) -->
+          <div class="flex items-center gap-3 p-3 bg-surface-container-low rounded-xl pr-5 border border-slate-200/50">
+            <div class="w-11 h-11 rounded-lg bg-surface-container-lowest flex items-center justify-center shadow-sm text-primary">
+              <span class="material-symbols-outlined text-[24px]">radar</span>
+            </div>
+            <div class="flex flex-col max-w-[190px]">
+              <span class="font-label-sm text-[11px] text-primary uppercase font-bold tracking-wider">AI Observer</span>
+              <span class="font-body-sm text-body-sm text-on-surface font-medium truncate">Actively monitoring BTC/USD</span>
+            </div>
+          </div>
+
+          <!-- Telemetry Pill Status -->
+          <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-surface-container-low border border-slate-200/50">
+            <div class="flex items-center gap-2">
+              <span class="relative flex h-2.5 w-2.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-container opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+              </span>
+              <span class="font-label-md text-label-md text-on-surface font-semibold">BESTACCURACY AI</span>
+              <span class="font-label-sm text-label-sm text-primary font-bold">Running</span>
+            </div>
+            <div class="h-4 w-px bg-surface-container-high"></div>
+            <div class="flex items-center gap-1 font-label-sm text-label-sm text-on-surface-variant font-medium">
+              <span class="material-symbols-outlined text-[16px] text-primary">speed</span>
+              <span>14ms</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. HORIZONTAL MARKET TICKER -->
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
+        <!-- BTC -->
+        <div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col gap-1.5 hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between">
+            <span class="font-label-md text-label-md text-on-surface-variant font-medium">BTC/USD</span>
+            <span class="px-2 py-0.5 rounded text-[11px] font-label-sm bg-primary-container/15 text-primary font-semibold">+2.41%</span>
+          </div>
+          <div class="font-headline-sm text-headline-sm font-bold text-on-surface">$83,908.92</div>
+          <div class="flex items-center gap-1 text-[11px] font-label-sm text-on-surface-variant">
+            <span class="material-symbols-outlined text-[14px] text-primary">trending_up</span> Vol: 18.4M
+          </div>
+        </div>
+        <!-- ETH -->
+        <div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col gap-1.5 hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between">
+            <span class="font-label-md text-label-md text-on-surface-variant font-medium">ETH/USD</span>
+            <span class="px-2 py-0.5 rounded text-[11px] font-label-sm bg-primary-container/15 text-primary font-semibold">+1.18%</span>
+          </div>
+          <div class="font-headline-sm text-headline-sm font-bold text-on-surface">$2,678.85</div>
+          <div class="flex items-center gap-1 text-[11px] font-label-sm text-on-surface-variant">
+            <span class="material-symbols-outlined text-[14px] text-primary">trending_up</span> Vol: 9.2M
+          </div>
+        </div>
+        <!-- BNB -->
+        <div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col gap-1.5 hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between">
+            <span class="font-label-md text-label-md text-on-surface-variant font-medium">BNB/USD</span>
+            <span class="px-2 py-0.5 rounded text-[11px] font-label-sm bg-primary-container/15 text-primary font-semibold">+0.84%</span>
+          </div>
+          <div class="font-headline-sm text-headline-sm font-bold text-on-surface">$767.98</div>
+          <div class="flex items-center gap-1 text-[11px] font-label-sm text-on-surface-variant">
+            <span class="material-symbols-outlined text-[14px] text-primary">trending_up</span> Vol: 3.1M
+          </div>
+        </div>
+        <!-- SOL -->
+        <div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col gap-1.5 hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between">
+            <span class="font-label-md text-label-md text-on-surface-variant font-medium">SOL/USD</span>
+            <span class="px-2 py-0.5 rounded text-[11px] font-label-sm bg-error-container text-error font-semibold">-0.45%</span>
+          </div>
+          <div class="font-headline-sm text-headline-sm font-bold text-on-surface">$118.68</div>
+          <div class="flex items-center gap-1 text-[11px] font-label-sm text-on-surface-variant">
+            <span class="material-symbols-outlined text-[14px] text-error">trending_down</span> Vol: 6.8M
+          </div>
+        </div>
+        <!-- XRP -->
+        <div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col gap-1.5 hover:shadow-md transition-shadow col-span-2 md:col-span-1">
+          <div class="flex items-center justify-between">
+            <span class="font-label-md text-label-md text-on-surface-variant font-medium">XRP/USD</span>
+            <span class="px-2 py-0.5 rounded text-[11px] font-label-sm bg-primary-container/15 text-primary font-semibold">+3.12%</span>
+          </div>
+          <div class="font-headline-sm text-headline-sm font-bold text-on-surface">$1.50</div>
+          <div class="flex items-center gap-1 text-[11px] font-label-sm text-on-surface-variant">
+            <span class="material-symbols-outlined text-[14px] text-primary">trending_up</span> Vol: 4.4M
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. OVERVIEW ROW (2 Columns) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Broker & Account Connection Card -->
+        <div class="bg-surface-container-lowest p-6 sm:p-7 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between gap-5">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-xl bg-surface-container-low flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary text-[22px]">account_balance_wallet</span>
+              </div>
+              <div>
+                <div class="font-headline-sm text-headline-sm font-bold text-on-surface">Broker / Account</div>
+                <div class="font-body-sm text-body-sm text-on-surface-variant">Institutional Gateway</div>
+              </div>
+            </div>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-label-sm bg-primary-container/15 text-primary font-semibold">
+              <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+              Connected
+            </span>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-baseline justify-between py-4 bg-surface-container-low px-5 rounded-xl">
+            <div class="flex flex-col">
+              <span class="font-label-sm text-[11px] text-on-surface-variant uppercase font-semibold">Portfolio Balance</span>
+              <span class="font-metric-xl text-metric-xl text-on-surface font-extrabold tracking-tight">$1,420.80</span>
+            </div>
+            <div class="flex flex-col sm:items-end mt-2 sm:mt-0">
+              <span class="font-label-sm text-[11px] text-on-surface-variant uppercase font-semibold">Identifier</span>
+              <span class="font-label-md text-label-md text-on-surface font-bold tracking-wider">AKD••••2525</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-1 text-body-sm text-on-surface-variant">
+            <div class="flex items-center gap-1.5 text-xs">
+              <span class="material-symbols-outlined text-[16px] text-primary">verified_user</span>
+              <span>Non-Custodial API (Read &amp; Trade only)</span>
+            </div>
+            <button class="px-4 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-xs font-semibold transition-colors">
+              Manage Connection
+            </button>
+          </div>
+        </div>
+
+        <!-- Dedicated Bot Telemetry Summary Card -->
+        <div class="bg-surface-container-lowest p-6 sm:p-7 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between gap-5">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-xl bg-surface-container-low flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary text-[22px]">smart_toy</span>
+              </div>
+              <div>
+                <div class="font-headline-sm text-headline-sm font-bold text-on-surface">Bot Telemetry &amp; State</div>
+                <div class="font-body-sm text-body-sm text-on-surface-variant">Real-time Node Signal</div>
+              </div>
+            </div>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-label-sm bg-primary-container/15 text-primary font-semibold">
+              <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+              Online &amp; Armed
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 py-3 bg-surface-container-low p-4 rounded-xl">
+            <div class="flex flex-col">
+              <span class="font-label-sm text-[11px] text-on-surface-variant font-medium">Monitoring</span>
+              <span class="font-label-md text-label-md text-on-surface font-semibold">BTC/USD</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="font-label-sm text-[11px] text-on-surface-variant font-medium">Mode</span>
+              <span class="font-label-md text-label-md text-primary font-bold">Autopilot</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="font-label-sm text-[11px] text-on-surface-variant font-medium">Last Analysis</span>
+              <span class="font-label-md text-label-md text-on-surface font-semibold">Just now</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="font-label-sm text-[11px] text-on-surface-variant font-medium">Trades Today</span>
+              <span class="font-label-md text-label-md text-on-surface font-bold">7</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-1 text-body-sm text-on-surface-variant text-xs">
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px] text-primary">hub</span>
+              <span>Global cluster: Singapore-SG1 Node</span>
+            </div>
+            <span class="font-label-sm text-label-sm text-primary font-bold">99.98% Accuracy Sync</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. TRADING OVERVIEW (PERFORMANCE METRICS - 4 CARDS) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <!-- Wins -->
+        <div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+          <div class="flex flex-col">
+            <span class="font-label-md text-label-md text-on-surface-variant uppercase font-semibold">Winning Trades</span>
+            <span class="font-headline-lg text-headline-lg text-on-surface font-extrabold mt-1">7</span>
+            <span class="font-body-sm text-body-sm text-primary flex items-center gap-1 mt-1 font-semibold">
+              <span class="material-symbols-outlined text-[16px]">verified</span> 100% Win Rate
+            </span>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-[26px]">check_circle</span>
+          </div>
+        </div>
+        <!-- Losses -->
+        <div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+          <div class="flex flex-col">
+            <span class="font-label-md text-label-md text-on-surface-variant uppercase font-semibold">Losing Trades</span>
+            <span class="font-headline-lg text-headline-lg text-on-surface font-extrabold mt-1">0</span>
+            <span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 mt-1 font-medium">
+              <span class="material-symbols-outlined text-[16px]">shield</span> Protected Drawdown
+            </span>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-surface-variant text-[26px]">close</span>
+          </div>
+        </div>
+        <!-- Total Trades -->
+        <div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+          <div class="flex flex-col">
+            <span class="font-label-md text-label-md text-on-surface-variant uppercase font-semibold">Executed Trades</span>
+            <span class="font-headline-lg text-headline-lg text-on-surface font-extrabold mt-1">7</span>
+            <span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 mt-1 font-medium">
+              <span class="material-symbols-outlined text-[16px]">sync_alt</span> 100% Allocated
+            </span>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center">
+            <span class="material-symbols-outlined text-secondary text-[26px]">swap_horiz</span>
+          </div>
+        </div>
+        <!-- Realized P&L -->
+        <div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between relative overflow-hidden">
+          <div class="absolute inset-y-0 right-0 w-24 bg-primary-container/10 blur-xl pointer-events-none"></div>
+          <div class="flex flex-col z-10">
+            <span class="font-label-md text-label-md text-on-surface-variant uppercase font-semibold">Realized P&amp;L</span>
+            <span class="font-headline-lg text-headline-lg text-primary mt-1 font-extrabold">+$245.62</span>
+            <span class="font-body-sm text-body-sm text-primary flex items-center gap-1 mt-1 font-semibold">
+              <span class="material-symbols-outlined text-[16px]">arrow_upward</span> +20.9% Session Gain
+            </span>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-primary-container/20 flex items-center justify-center z-10">
+            <span class="material-symbols-outlined text-primary text-[26px]">payments</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. MAIN BOT CONTROL & CONFIGURATION PANEL -->
+      <div class="bg-surface-container-lowest p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b-0">
+          <div>
+            <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">BestAccuracy Bot Parameters</h2>
+            <p class="font-body-sm text-body-sm text-on-surface-variant">Configure automated trading assistant execution logic</p>
+          </div>
+          <button id="resetBtn" class="text-primary hover:text-on-primary-container font-label-md text-sm font-semibold flex items-center gap-1.5 self-start sm:self-auto transition-colors">
+            <span class="material-symbols-outlined text-[16px]">restart_alt</span>
+            <span>Reset Settings</span>
+          </button>
+        </div>
+
+        <!-- Autopilot vs Copilot Selection -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Autopilot Card (Selected) -->
+          <div id="autopilotCard" onclick="selectMode('autopilot')" class="p-6 rounded-xl bg-surface-container-low cursor-pointer transition-all flex flex-col justify-between gap-4 relative overflow-hidden border-2 border-primary">
+            <div class="absolute top-0 left-0 bottom-0 w-1.5 bg-primary"></div>
+            <div class="flex items-start justify-between">
+              <div class="flex items-center gap-3">
+                <div id="autopilotIcon" class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-sm">
+                  <span class="material-symbols-outlined text-[18px]">check</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="font-headline-sm text-headline-sm font-bold text-on-surface">Autopilot</span>
+                  <span class="font-label-sm text-label-sm text-primary font-semibold">Fully Autonomous</span>
+                </div>
+              </div>
+              <span id="autopilotBadge" class="px-3 py-1 rounded-full text-[11px] font-label-sm bg-primary text-on-primary font-semibold">
+                Active
+              </span>
+            </div>
+            <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              Automatically execute eligible trades according to your configured technical settings and minimum confidence thresholds.
+            </p>
+          </div>
+
+          <!-- Copilot Card (Unselected) -->
+          <div id="copilotCard" onclick="selectMode('copilot')" class="p-6 rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer flex flex-col justify-between gap-4 border border-slate-200">
+            <div class="flex items-start justify-between">
+              <div class="flex items-center gap-3">
+                <div id="copilotIcon" class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+                  <span class="material-symbols-outlined text-[18px]">radio_button_unchecked</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="font-headline-sm text-headline-sm font-bold text-on-surface">Copilot</span>
+                  <span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Manual Approval</span>
+                </div>
+              </div>
+              <span id="copilotBadge" class="px-3 py-1 rounded-full text-[11px] font-label-sm bg-surface-container text-on-surface-variant font-semibold">
+                Standby
+              </span>
+            </div>
+            <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              Review and confirm algorithmic signals before execution. Real-time prompts will pop up on your institutional dashboard.
+            </p>
+          </div>
+        </div>
+
+        <!-- Configuration Controls Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Control 1 -->
+          <div class="flex flex-col gap-1.5">
+            <label class="font-label-md text-label-md text-on-surface font-semibold">Asset to Monitor</label>
+            <div class="relative">
+              <select class="w-full h-11 px-4 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md appearance-none focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer border border-slate-200/50">
+                <option selected="">BTC/USD</option>
+                <option>ETH/USD</option>
+                <option>BNB/USD</option>
+                <option>SOL/USD</option>
+              </select>
+              <span class="material-symbols-outlined absolute right-3 top-3 text-[18px] text-on-surface-variant pointer-events-none">expand_more</span>
+            </div>
+          </div>
+          <!-- Control 2 -->
+          <div class="flex flex-col gap-1.5">
+            <label class="font-label-md text-label-md text-on-surface font-semibold">Trade Duration</label>
+            <div class="relative">
+              <select class="w-full h-11 px-4 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md appearance-none focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer border border-slate-200/50">
+                <option selected="">60 Seconds (1m)</option>
+                <option>120 Seconds (2m)</option>
+                <option>300 Seconds (5m)</option>
+                <option>900 Seconds (15m)</option>
+              </select>
+              <span class="material-symbols-outlined absolute right-3 top-3 text-[18px] text-on-surface-variant pointer-events-none">expand_more</span>
+            </div>
+          </div>
+          <!-- Control 3 -->
+          <div class="flex flex-col gap-1.5">
+            <label class="font-label-md text-label-md text-on-surface font-semibold">Trade Stake</label>
+            <div class="relative">
+              <select class="w-full h-11 px-4 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md appearance-none focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer border border-slate-200/50">
+                <option selected="">$10.00 USD</option>
+                <option>$25.00 USD</option>
+                <option>$50.00 USD</option>
+                <option>$100.00 USD</option>
+              </select>
+              <span class="material-symbols-outlined absolute right-3 top-3 text-[18px] text-on-surface-variant pointer-events-none">expand_more</span>
+            </div>
+          </div>
+          <!-- Control 4 -->
+          <div class="flex flex-col gap-1.5">
+            <label class="font-label-md text-label-md text-on-surface font-semibold">Minimum Confidence</label>
+            <div class="relative flex items-center">
+              <input class="w-full h-11 px-4 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary font-bold border border-slate-200/50" type="text" value="70%"/>
+              <span class="material-symbols-outlined absolute right-3 text-[18px] text-primary pointer-events-none">verified</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-2">
+          <div class="flex items-center gap-3">
+            <!-- Primary Running Action Button -->
+            <button id="pauseBotBtn" onclick="togglePauseBot()" class="px-6 py-2.5 h-12 rounded-xl bg-primary-container text-on-primary-fixed font-headline-sm text-body-md font-bold flex items-center justify-center gap-2 hover:opacity-95 active:scale-95 transition-all shadow-md">
+              <span id="pauseBotIcon" class="material-symbols-outlined text-[20px]">pause_circle</span>
+              <span id="pauseBotText">Pause Bot</span>
+            </button>
+            <!-- Secondary Stop Button -->
+            <button id="stopBotBtn" onclick="toggleStopBot()" class="px-6 py-2.5 h-12 rounded-xl bg-surface-container hover:bg-error-container text-error font-headline-sm text-body-md font-bold flex items-center justify-center gap-2 transition-colors">
+              <span class="material-symbols-outlined text-[18px]">stop_circle</span>
+              <span>Stop Bot</span>
+            </button>
+          </div>
+          <div class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-container-low text-on-surface font-body-sm text-xs border border-slate-200/50">
+            <span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span>
+            <span class="font-bold text-primary">BestAccuracy AI Market Analysis</span>
+            <span class="text-on-surface-variant font-medium">Active : Monitoring BTC/USD</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. LOWER SPLIT SECTION (AI MARKET ANALYSIS & LIVE TRADES / ACTIVITY) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left Side: AI MARKET ANALYSIS & PERFORMANCE CHART (7 Cols) -->
+        <div class="lg:col-span-7 bg-surface-container-lowest p-6 sm:p-7 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between gap-5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-surface-container-low flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary text-[20px]">trending_up</span>
+              </div>
+              <h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">AI Market Analysis &amp; P&amp;L</h3>
+            </div>
+            <div class="flex items-center gap-1.5 bg-surface-container-low px-3 py-1 rounded-lg text-xs font-label-md text-on-surface-variant">
+              <span class="text-primary font-bold">Session</span>
+              <span class="cursor-pointer hover:text-on-surface">1D</span>
+              <span class="text-on-surface font-semibold cursor-pointer">1W</span>
+              <span class="cursor-pointer hover:text-on-surface">1M</span>
+            </div>
+          </div>
+
+          <!-- SVG Line Chart Visualizing Upward Slope -->
+          <div class="relative w-full h-56 flex flex-col justify-end pt-4">
+            <svg class="w-full h-44 overflow-visible" preserveAspectRatio="none" viewBox="0 0 600 160">
+              <defs>
+                <linearGradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#00d26a" stop-opacity="0.32"></stop>
+                  <stop offset="100%" stop-color="#00d26a" stop-opacity="0.0"></stop>
+                </linearGradient>
+              </defs>
+              <!-- Horizontal Gridlines -->
+              <line stroke="#eff4ff" stroke-width="1" x1="0" x2="600" y1="20" y2="20"></line>
+              <line stroke="#eff4ff" stroke-width="1" x1="0" x2="600" y1="60" y2="60"></line>
+              <line stroke="#eff4ff" stroke-width="1" x1="0" x2="600" y1="100" y2="100"></line>
+              <line stroke="#eff4ff" stroke-width="1" x1="0" x2="600" y1="140" y2="140"></line>
+              <!-- Shaded Area -->
+              <path d="M 0,140 Q 60,130 120,110 T 240,95 T 360,70 T 480,45 T 600,15 L 600,160 L 0,160 Z" fill="url(#chartGradient)"></path>
+              <!-- Sharp Green Trajectory Line -->
+              <path d="M 0,140 Q 60,130 120,110 T 240,95 T 360,70 T 480,45 T 600,15" fill="none" stroke="#006d34" stroke-linecap="round" stroke-width="3"></path>
+              <!-- Execution Nodes / Pulses -->
+              <circle cx="120" cy="110" fill="#00d26a" r="4" stroke="#ffffff" stroke-width="2"></circle>
+              <circle cx="240" cy="95" fill="#00d26a" r="4" stroke="#ffffff" stroke-width="2"></circle>
+              <circle cx="360" cy="70" fill="#00d26a" r="4" stroke="#ffffff" stroke-width="2"></circle>
+              <circle cx="480" cy="45" fill="#00d26a" r="4" stroke="#ffffff" stroke-width="2"></circle>
+              <circle cx="600" cy="15" fill="#006d34" r="6" stroke="#ffffff" stroke-width="2"></circle>
+            </svg>
+            <!-- Timeline X-Axis -->
+            <div class="flex justify-between items-center pt-2 text-[11px] font-label-sm text-on-surface-variant font-medium">
+              <span>09:00</span>
+              <span>11:00</span>
+              <span>13:00</span>
+              <span>15:00</span>
+              <span class="text-primary font-bold">Now (+20.9%)</span>
+            </div>
+          </div>
+
+          <!-- Live Indicators Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2">
+            <div class="p-3 rounded-xl bg-surface-container-low flex flex-col">
+              <span class="font-label-sm text-[11px] text-on-surface-variant font-medium">Market</span>
+              <span class="font-label-md text-label-md text-on-surface font-bold">BTC/USD</span>
+            </div>
+            <div class="p-3 rounded-xl bg-surface-container-low flex flex-col">
+              <span class="font-label-sm text-[11px] text-on-surface-variant font-medium">Trend</span>
+              <span class="font-label-md text-label-md text-primary font-bold">Bullish</span>
+            </div>
+            <div class="p-3 rounded-xl bg-surface-container-low flex flex-col">
+              <span class="font-label-sm text-[11px] text-on-surface-variant font-medium">Momentum</span>
+              <span class="font-label-md text-label-md text-on-surface font-bold">+4.2</span>
+            </div>
+            <div class="p-3 rounded-xl bg-surface-container-low flex flex-col">
+              <span class="font-label-sm text-[11px] text-on-surface-variant font-medium">Volatility</span>
+              <span class="font-label-md text-label-md text-on-surface font-bold">18.4 Normal</span>
+            </div>
+            <div class="p-3 rounded-xl bg-surface-container-low flex flex-col col-span-2 sm:col-span-1">
+              <span class="font-label-sm text-[11px] text-on-surface-variant font-medium">Signal Status</span>
+              <span class="font-label-md text-label-md text-on-surface font-semibold truncate">Waiting Next</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side: LIVE TRADES & ACTIVITY TIMELINE (5 Cols) -->
+        <div class="lg:col-span-5 flex flex-col gap-6">
+          <!-- Live Trades & Signals Card -->
+          <div class="bg-surface-container-lowest p-6 sm:p-7 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-4">
+            <div class="flex items-center justify-between">
+              <h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Live Trades &amp; Signals</h3>
+              <span class="px-2.5 py-1 rounded text-[11px] font-label-sm bg-primary-container/15 text-primary font-bold">Live Feed</span>
+            </div>
+            <!-- Executed Item Card -->
+            <div class="p-4 rounded-xl bg-surface-container-low flex flex-col gap-2">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-primary-container text-on-primary-fixed font-label-sm text-xs font-bold uppercase">BUY</span>
+                  <span class="font-label-md text-label-md text-on-surface font-bold">BTC/USD</span>
+                </div>
+                <span class="font-label-md text-label-md text-primary font-bold">+$8.50 Net</span>
+              </div>
+              <div class="flex items-center justify-between text-xs font-body-sm text-on-surface-variant">
+                <span>Duration: 60s • Stake: $10.00</span>
+                <span class="flex items-center gap-1 text-primary font-semibold">
+                  <span class="material-symbols-outlined text-[14px]">check_circle</span> Completed (11:25 PM)
+                </span>
+              </div>
+            </div>
+            <!-- Pending Algorithmic Trigger Notice -->
+            <div class="p-4 rounded-xl bg-surface-container flex items-center gap-3">
+              <span class="relative flex h-2.5 w-2.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+              </span>
+              <span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Awaiting next algorithmic trigger for BTC/USD...</span>
+            </div>
+          </div>
+
+          <!-- Activity Log Card -->
+          <div class="bg-surface-container-lowest p-6 sm:p-7 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-4 flex-1">
+            <div class="flex items-center justify-between">
+              <h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Activity Log</h3>
+              <div class="flex items-center gap-2">
+                <button class="text-primary hover:text-on-primary-container font-label-sm text-xs font-bold">Clear</button>
+              </div>
+            </div>
+            <!-- Timeline Items -->
+            <div class="flex flex-col gap-4">
+              <!-- Log 1 -->
+              <div class="flex items-start gap-3">
+                <div class="w-6 h-6 rounded-full bg-primary-container/20 flex items-center justify-center shrink-0 mt-0.5">
+                  <span class="material-symbols-outlined text-primary text-[14px]">done_all</span>
+                </div>
+                <div class="flex flex-col">
+                  <div class="flex items-center gap-2">
+                    <span class="font-label-md text-label-md text-on-surface font-semibold">Trade Executed</span>
+                    <span class="font-label-sm text-xs text-on-surface-variant">11:26 PM</span>
+                  </div>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant text-xs mt-0.5">
+                    BTC/USD 60s Call executed at $83,890.10
+                  </p>
+                </div>
+              </div>
+              <!-- Log 2 -->
+              <div class="flex items-start gap-3">
+                <div class="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center shrink-0 mt-0.5">
+                  <span class="material-symbols-outlined text-on-secondary-fixed text-[14px]">psychology</span>
+                </div>
+                <div class="flex flex-col">
+                  <div class="flex items-center gap-2">
+                    <span class="font-label-md text-label-md text-on-surface font-semibold">Signal Detected</span>
+                    <span class="font-label-sm text-xs text-on-surface-variant">11:25 PM</span>
+                  </div>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant text-xs mt-0.5">
+                    AI identified high-probability breakout (Confidence 82%)
+                  </p>
+                </div>
+              </div>
+              <!-- Log 3 -->
+              <div class="flex items-start gap-3">
+                <div class="w-6 h-6 rounded-full bg-surface-container-low flex items-center justify-center shrink-0 mt-0.5">
+                  <span class="material-symbols-outlined text-primary text-[14px]">link</span>
+                </div>
+                <div class="flex flex-col">
+                  <div class="flex items-center gap-2">
+                    <span class="font-label-md text-label-md text-on-surface font-semibold">Bot Connected</span>
+                    <span class="font-label-sm text-xs text-on-surface-variant">11:20 PM</span>
+                  </div>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant text-xs mt-0.5">
+                    BestAccuracy engine linked securely to AKD••••2525
+                  </p>
+                </div>
+              </div>
+              <!-- Log 4 -->
+              <div class="flex items-start gap-3">
+                <div class="w-6 h-6 rounded-full bg-surface-container-low flex items-center justify-center shrink-0 mt-0.5">
+                  <span class="material-symbols-outlined text-on-surface-variant text-[14px]">tune</span>
+                </div>
+                <div class="flex flex-col">
+                  <div class="flex items-center gap-2">
+                    <span class="font-label-md text-label-md text-on-surface font-semibold">Settings Updated</span>
+                    <span class="font-label-sm text-xs text-on-surface-variant">11:15 PM</span>
+                  </div>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant text-xs mt-0.5">
+                    Minimum confidence threshold set to 70%
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    let isPaused = false;
+    let isStopped = false;
+
+    function selectMode(mode) {
+      const autopilotCard = document.getElementById('autopilotCard');
+      const copilotCard = document.getElementById('copilotCard');
+      const autopilotIcon = document.getElementById('autopilotIcon');
+      const copilotIcon = document.getElementById('copilotIcon');
+      const autopilotBadge = document.getElementById('autopilotBadge');
+      const copilotBadge = document.getElementById('copilotBadge');
+
+      if (mode === 'autopilot') {
+        autopilotCard.className = "p-6 rounded-xl bg-surface-container-low cursor-pointer transition-all flex flex-col justify-between gap-4 relative overflow-hidden border-2 border-primary";
+        copilotCard.className = "p-6 rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer flex flex-col justify-between gap-4 border border-slate-200";
+        
+        autopilotIcon.className = "w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-sm";
+        autopilotIcon.innerHTML = '<span class="material-symbols-outlined text-[18px]">check</span>';
+        
+        copilotIcon.className = "w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant";
+        copilotIcon.innerHTML = '<span class="material-symbols-outlined text-[18px]">radio_button_unchecked</span>';
+        
+        autopilotBadge.className = "px-3 py-1 rounded-full text-[11px] font-label-sm bg-primary text-on-primary font-semibold";
+        autopilotBadge.textContent = "Active";
+        
+        copilotBadge.className = "px-3 py-1 rounded-full text-[11px] font-label-sm bg-surface-container text-on-surface-variant font-semibold";
+        copilotBadge.textContent = "Standby";
+      } else {
+        copilotCard.className = "p-6 rounded-xl bg-surface-container-low cursor-pointer transition-all flex flex-col justify-between gap-4 relative overflow-hidden border-2 border-primary";
+        autopilotCard.className = "p-6 rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer flex flex-col justify-between gap-4 border border-slate-200";
+        
+        copilotIcon.className = "w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-sm";
+        copilotIcon.innerHTML = '<span class="material-symbols-outlined text-[18px]">check</span>';
+        
+        autopilotIcon.className = "w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant";
+        autopilotIcon.innerHTML = '<span class="material-symbols-outlined text-[18px]">radio_button_unchecked</span>';
+        
+        copilotBadge.className = "px-3 py-1 rounded-full text-[11px] font-label-sm bg-primary text-on-primary font-semibold";
+        copilotBadge.textContent = "Active";
+        
+        autopilotBadge.className = "px-3 py-1 rounded-full text-[11px] font-label-sm bg-surface-container text-on-surface-variant font-semibold";
+        autopilotBadge.textContent = "Standby";
+      }
+    }
+
+    function togglePauseBot() {
+      const btn = document.getElementById('pauseBotBtn');
+      const icon = document.getElementById('pauseBotIcon');
+      const text = document.getElementById('pauseBotText');
+
+      if (!isPaused) {
+        isPaused = true;
+        btn.classList.remove('bg-primary-container', 'text-on-primary-fixed');
+        btn.classList.add('bg-amber-500', 'text-white');
+        icon.textContent = 'play_circle';
+        text.textContent = 'Resume Bot';
+      } else {
+        isPaused = false;
+        btn.classList.remove('bg-amber-500', 'text-white');
+        btn.classList.add('bg-primary-container', 'text-on-primary-fixed');
+        icon.textContent = 'pause_circle';
+        text.textContent = 'Pause Bot';
+      }
+    }
+
+    function toggleStopBot() {
+      const btn = document.getElementById('stopBotBtn');
+      if (!isStopped) {
+        if (confirm("Are you sure you want to stop the BestAccuracy AI Bot? Active orders will remain managed.")) {
+          isStopped = true;
+          btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">play_arrow</span><span>Start Bot</span>';
+          btn.className = "px-6 py-2.5 h-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-headline-sm text-body-md font-bold flex items-center justify-center gap-2 transition-colors";
+        }
+      } else {
+        isStopped = false;
+        btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">stop_circle</span><span>Stop Bot</span>';
+        btn.className = "px-6 py-2.5 h-12 rounded-xl bg-surface-container hover:bg-error-container text-error font-headline-sm text-body-md font-bold flex items-center justify-center gap-2 transition-colors";
+      }
+    }
+  </script>
+</body>
+</html>
