@@ -1,8 +1,7 @@
 // Simple Service Worker for PWA compliance
-const CACHE_NAME = 'gainex-pwa-v6';
+// v7: Cache bust — removed bot-site assets, main platform only
+const CACHE_NAME = 'gainex-pwa-v7';
 const ASSETS = [
-  '/landing.html',
-  '/css/landing.css',
   '/images/laptop-mockup.png',
   '/images/mobile-mockup.png',
   '/favicon.png'

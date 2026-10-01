@@ -453,8 +453,30 @@ app.use(async (req, res, next) => {
   next();
 });
 
-// Serve Main Trading Platform index.html for root path and legacy landing routes
+// ─── Domain-Based Routing ───────────────────────────────────────────────────
+// Bot site (bestaccuracy.com) → serves bot.html
+// Main platform (all other domains) → serves index.html
+// ─────────────────────────────────────────────────────────────────────────────
+const BOT_DOMAIN_KEYWORD = 'bestaccuracy';
+
+// Block /bot.html from being accessed directly on the main platform domain
+app.use((req, res, next) => {
+  const hostname = (req.hostname || '').toLowerCase();
+  const isBotDomain = hostname.includes(BOT_DOMAIN_KEYWORD);
+  if (!isBotDomain && (req.path === '/bot.html' || req.path === '/landing.html')) {
+    // Redirect stray requests for bot pages to the bot domain
+    return res.redirect(301, 'https://bestaccuracy.com/');
+  }
+  next();
+});
+
+// Serve root '/' and legacy landing paths — domain-aware
 app.get(['/', '/index.html', '/landing', '/landing.html'], (req, res) => {
+  const hostname = (req.hostname || '').toLowerCase();
+  const isBotDomain = hostname.includes(BOT_DOMAIN_KEYWORD);
+  if (isBotDomain) {
+    return res.sendFile(path.join(__dirname, '..', 'public', 'bot.html'));
+  }
   return res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
 
@@ -491,11 +513,18 @@ app.use('/api', apiRouter);
 // Mount Admin Security Settings routes (password, email, 2FA)
 app.use('/api/admin-settings', require('./admin-settings'));
 
-// Fallback for Single Page Application routing - serve index.html for all non-API paths
+// Fallback for Single Page Application routing - domain-aware
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
     return next();
   }
+  const hostname = (req.hostname || '').toLowerCase();
+  const isBotDomain = hostname.includes(BOT_DOMAIN_KEYWORD);
+  if (isBotDomain) {
+    // Bot domain: unknown paths fallback to bot.html
+    return res.sendFile(path.join(__dirname, '..', 'public', 'bot.html'));
+  }
+  // Main platform: SPA fallback to index.html
   res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
 
