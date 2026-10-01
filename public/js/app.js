@@ -1367,7 +1367,7 @@ const app = {
         } else if (isPwa) {
           this.showScreen('login');
         } else {
-          window.location.replace('/landing.html');
+          window.location.replace('/landing');
         }
       }
     } catch (err) {
@@ -1376,7 +1376,7 @@ const app = {
       if (isPwa) {
         this.showScreen('login');
       } else {
-        window.location.replace('/landing.html');
+        window.location.replace('/landing');
       }
     } finally {
       this.hideGlobalLoader();

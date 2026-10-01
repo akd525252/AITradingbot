@@ -480,8 +480,22 @@ app.get(['/', '/index.html'], async (req, res, next) => {
   return res.sendFile(path.join(__dirname, '..', 'public', 'landing.html'));
 });
 
+// Redirect .html requests to clean URLs
+app.get(['/landing.html', '/buy.html', '/dashboard.html', '/launch.html', '/card-editor.html'], (req, res) => {
+  const cleanPath = req.path.replace(/\.html$/, '');
+  const query = req.url.includes('?') ? req.url.substring(req.url.indexOf('?')) : '';
+  return res.redirect(301, cleanPath + query);
+});
+
+// Explicit clean routes for public standalone pages
+app.get('/landing', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'landing.html')));
+app.get('/buy', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'buy.html')));
+app.get('/dashboard', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'dashboard.html')));
+app.get('/launch', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'launch.html')));
+app.get('/card-editor', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'card-editor.html')));
+
 // Serve static public assets
-app.use(express.static(path.join(__dirname, '..', 'public')));
+app.use(express.static(path.join(__dirname, '..', 'public'), { extensions: ['html'] }));
 
 // Serve uploads
 const fs = require('fs');
