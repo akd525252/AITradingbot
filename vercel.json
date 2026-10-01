@@ -2,6 +2,7 @@
   "outputDirectory": "bot-public",
   "cleanUrls": true,
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://gainexmarket.com/api/$1" },
     { "source": "/buy", "destination": "/buy.html" },
     { "source": "/launch", "destination": "/launch.html" },
     { "source": "/dashboard", "destination": "/dashboard.html" }
