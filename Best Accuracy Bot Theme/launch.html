@@ -91,7 +91,7 @@
   <!-- TOP HEADER -->
   <header class="fixed top-0 inset-x-0 h-20 bg-surface-container-lowest/90 backdrop-blur-xl border-b border-slate-200/60 z-50">
     <div class="max-w-6xl mx-auto h-full px-6 flex items-center justify-between">
-      <a href="index.html" class="flex items-center gap-3 group">
+      <a href="bot.html" class="flex items-center gap-3 group">
         <img alt="BestAccuracy Logo" class="h-9 w-9 object-contain rounded-lg shadow-sm" src="images/logo.png"/>
         <div class="flex flex-col">
           <span class="text-lg font-bold text-on-surface tracking-tight leading-tight group-hover:text-primary transition-colors">BestAccuracy</span>
@@ -104,7 +104,7 @@
           <span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
           <span>Non-Custodial Handshake</span>
         </div>
-        <a href="index.html" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-semibold transition-all">
+        <a href="bot.html" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-semibold transition-all">
           <span class="material-symbols-outlined text-[16px]">close</span>
           <span>Exit Setup</span>
         </a>
@@ -416,12 +416,36 @@
     }
 
     function formatKey(input) {
-      let val = input.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-      let parts = [];
-      for (let i = 0; i < val.length && i < 16; i += 4) {
-        parts.push(val.substring(i, i + 4));
+      let raw = input.value.trim().toUpperCase();
+      let clean = raw.replace(/[^A-Z0-9]/g, '');
+
+      if (clean.startsWith('GAINEXAI')) {
+        let parts = ['GAINEX', 'AI'];
+        let rem = clean.substring(8);
+        if (rem.length > 0) parts.push(rem.substring(0, 4));
+        if (rem.length > 4) parts.push(rem.substring(4, 8));
+        input.value = parts.join('-');
+      } else if (clean.startsWith('GAINEX')) {
+        let parts = ['GAINEX'];
+        let rem = clean.substring(6);
+        if (rem.length > 0) parts.push(rem.substring(0, 2));
+        if (rem.length > 2) parts.push(rem.substring(2, 6));
+        if (rem.length > 6) parts.push(rem.substring(6, 10));
+        input.value = parts.join('-');
+      } else if (clean.startsWith('BA')) {
+        let parts = ['BA'];
+        let rem = clean.substring(2);
+        for (let i = 0; i < rem.length && i < 12; i += 4) {
+          parts.push(rem.substring(i, i + 4));
+        }
+        input.value = parts.join('-');
+      } else {
+        let parts = [];
+        for (let i = 0; i < clean.length && i < 20; i += 4) {
+          parts.push(clean.substring(i, i + 4));
+        }
+        input.value = parts.join('-');
       }
-      input.value = parts.join('-');
     }
 
     async function pasteKey() {
@@ -498,18 +522,59 @@
       document.getElementById('stage1').classList.remove('hidden');
     }
 
-    function activateAndLaunch() {
-      const key = document.getElementById('botKey').value.trim();
+    async function activateAndLaunch() {
+      const rawKey = document.getElementById('botKey').value.trim().toUpperCase();
+      const url = (document.getElementById('brokerUrl') ? document.getElementById('brokerUrl').value.trim() : '') || 'https://gainexmarket.com';
+      const email = (document.getElementById('brokerEmail') ? document.getElementById('brokerEmail').value.trim() : '');
       const errorDiv = document.getElementById('stage2Error');
       const errorMsg = document.getElementById('stage2ErrorMsg');
 
-      if (!key || key.length < 8) {
+      if (!rawKey || rawKey.length < 8) {
         errorMsg.textContent = "Please enter your Bot Activation Key.";
         errorDiv.classList.remove('hidden');
         return;
       }
 
+      // Normalize key if it has alternative hyphen patterns
+      let cleanKey = rawKey.replace(/[^A-Z0-9]/g, '');
+      let key = rawKey;
+      if (cleanKey.startsWith('GAINEXAI') && cleanKey.length >= 16) {
+        key = `GAINEX-AI-${cleanKey.substring(8, 12)}-${cleanKey.substring(12, 16)}`;
+      }
+
       errorDiv.classList.add('hidden');
+
+      // Call backend to validate and link the account
+      try {
+        const res = await fetch('/api/public/bot/link-account', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, key: key })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          errorMsg.textContent = data.error || "Failed to link bot account. Please check your email and key.";
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+
+        if (data.session_token) {
+          localStorage.setItem('bot_session_token', data.session_token);
+          localStorage.setItem('bot_connected_email', email);
+          localStorage.setItem('bot_key', key);
+          localStorage.setItem('bot_connected_broker', url);
+          localStorage.setItem('bot_username', data.username || email);
+          localStorage.setItem('bot_balance', data.balance !== undefined ? data.balance : 0);
+          localStorage.setItem('bot_currency', data.currency || 'USD');
+          localStorage.setItem('bot_wins', data.wins !== undefined ? data.wins : 0);
+          localStorage.setItem('bot_losses', data.losses !== undefined ? data.losses : 0);
+          localStorage.setItem('bot_trades_count', data.tradesCount !== undefined ? data.tradesCount : 0);
+          localStorage.setItem('bot_profit', data.profit !== undefined ? data.profit : 0);
+          localStorage.setItem('bot_broker_connected', 'true');
+        }
+      } catch (err) {
+        console.warn('Backend link fallback:', err);
+      }
 
       // Show stage 3 (Activation handshake)
       document.getElementById('stage2').classList.add('hidden');

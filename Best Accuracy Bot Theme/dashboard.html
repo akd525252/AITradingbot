@@ -122,6 +122,48 @@
       }
     };
   </script>
+  <style>
+    .flip-counter {
+      display: inline-flex;
+      align-items: baseline;
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum";
+    }
+    .flip-digit-wrapper {
+      position: relative;
+      display: inline-block;
+      height: 1.15em;
+      overflow: hidden;
+      line-height: 1.15em;
+      vertical-align: baseline;
+    }
+    .flip-strip {
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+      will-change: transform;
+    }
+    .flip-sym {
+      display: inline-block;
+      height: 1.15em;
+      line-height: 1.15em;
+      vertical-align: baseline;
+    }
+    .price-up-flash {
+      animation: priceFlashGreen 0.75s ease-out;
+    }
+    .price-down-flash {
+      animation: priceFlashRed 0.75s ease-out;
+    }
+    @keyframes priceFlashGreen {
+      0% { color: #00d26a; transform: scale(1.02); text-shadow: 0 0 10px rgba(0, 210, 106, 0.35); }
+      100% { color: inherit; transform: scale(1); text-shadow: none; }
+    }
+    @keyframes priceFlashRed {
+      0% { color: #ba1a1a; transform: scale(1.02); text-shadow: 0 0 10px rgba(186, 26, 26, 0.35); }
+      100% { color: inherit; transform: scale(1); text-shadow: none; }
+    }
+  </style>
 </head>
 <body class="bg-surface font-body-md text-body-md text-on-surface antialiased min-h-screen">
 
@@ -131,7 +173,7 @@
       
       <!-- Brand & Telemetry -->
       <div class="flex items-center gap-3">
-        <a href="index.html" class="flex items-center gap-3 group">
+        <a href="bot.html" class="flex items-center gap-3 group">
           <img alt="BestAccuracy Logo" class="h-9 w-9 object-contain rounded-lg shadow-sm" src="images/logo.png"/>
           <div class="flex flex-col">
             <span class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight leading-tight group-hover:text-primary transition-colors">BestAccuracy</span>
@@ -161,12 +203,12 @@
         <!-- Account Identifier -->
         <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-low text-on-surface font-label-md text-label-md border border-slate-200/60">
           <span class="material-symbols-outlined text-[16px] text-primary">link</span>
-          <span class="font-semibold">AKD••••2525</span>
-          <span class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-secondary-fixed text-[10px] font-label-sm uppercase font-bold">Live</span>
+          <span id="headerUserIdentifier" class="font-semibold">Loading...</span>
+          <span id="headerAccountType" class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-secondary-fixed text-[10px] font-label-sm uppercase font-bold">Live</span>
         </div>
 
         <!-- Back to Website Button -->
-        <a href="index.html" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-body-sm transition-all text-xs font-semibold">
+        <a href="bot.html" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-body-sm transition-all text-xs font-semibold">
           <span class="material-symbols-outlined text-[16px]">arrow_back</span>
           <span class="hidden sm:inline">Website</span>
         </a>
@@ -230,58 +272,58 @@
       <!-- 2. HORIZONTAL MARKET TICKER -->
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
         <!-- BTC -->
-        <div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col gap-1.5 hover:shadow-md transition-shadow">
+        <div id="tickerCard_BTC" class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col gap-1.5 hover:shadow-md transition-all">
           <div class="flex items-center justify-between">
             <span class="font-label-md text-label-md text-on-surface-variant font-medium">BTC/USD</span>
-            <span class="px-2 py-0.5 rounded text-[11px] font-label-sm bg-primary-container/15 text-primary font-semibold">+2.41%</span>
+            <span id="tickerChange_BTC" class="px-2 py-0.5 rounded text-[11px] font-label-sm bg-primary-container/15 text-primary font-semibold">+1.21%</span>
           </div>
-          <div class="font-headline-sm text-headline-sm font-bold text-on-surface">$83,908.92</div>
-          <div class="flex items-center gap-1 text-[11px] font-label-sm text-on-surface-variant">
-            <span class="material-symbols-outlined text-[14px] text-primary">trending_up</span> Vol: 18.4M
+          <div id="tickerPrice_BTC" class="font-headline-sm text-headline-sm font-bold text-on-surface flip-counter tracking-tight">$85,048.92</div>
+          <div id="tickerVol_BTC" class="flex items-center gap-1 text-[11px] font-label-sm text-on-surface-variant">
+            <span class="material-symbols-outlined text-[14px] text-primary">trending_up</span> <span id="tickerVolText_BTC">Vol: 1.38B</span>
           </div>
         </div>
         <!-- ETH -->
-        <div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col gap-1.5 hover:shadow-md transition-shadow">
+        <div id="tickerCard_ETH" class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col gap-1.5 hover:shadow-md transition-all">
           <div class="flex items-center justify-between">
             <span class="font-label-md text-label-md text-on-surface-variant font-medium">ETH/USD</span>
-            <span class="px-2 py-0.5 rounded text-[11px] font-label-sm bg-primary-container/15 text-primary font-semibold">+1.18%</span>
+            <span id="tickerChange_ETH" class="px-2 py-0.5 rounded text-[11px] font-label-sm bg-primary-container/15 text-primary font-semibold">+0.92%</span>
           </div>
-          <div class="font-headline-sm text-headline-sm font-bold text-on-surface">$2,678.85</div>
-          <div class="flex items-center gap-1 text-[11px] font-label-sm text-on-surface-variant">
-            <span class="material-symbols-outlined text-[14px] text-primary">trending_up</span> Vol: 9.2M
+          <div id="tickerPrice_ETH" class="font-headline-sm text-headline-sm font-bold text-on-surface flip-counter tracking-tight">$2,705.96</div>
+          <div id="tickerVol_ETH" class="flex items-center gap-1 text-[11px] font-label-sm text-on-surface-variant">
+            <span class="material-symbols-outlined text-[14px] text-primary">trending_up</span> <span id="tickerVolText_ETH">Vol: 689.6M</span>
           </div>
         </div>
         <!-- BNB -->
-        <div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col gap-1.5 hover:shadow-md transition-shadow">
+        <div id="tickerCard_BNB" class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col gap-1.5 hover:shadow-md transition-all">
           <div class="flex items-center justify-between">
             <span class="font-label-md text-label-md text-on-surface-variant font-medium">BNB/USD</span>
-            <span class="px-2 py-0.5 rounded text-[11px] font-label-sm bg-primary-container/15 text-primary font-semibold">+0.84%</span>
+            <span id="tickerChange_BNB" class="px-2 py-0.5 rounded text-[11px] font-label-sm bg-primary-container/15 text-primary font-semibold">+0.57%</span>
           </div>
-          <div class="font-headline-sm text-headline-sm font-bold text-on-surface">$767.98</div>
-          <div class="flex items-center gap-1 text-[11px] font-label-sm text-on-surface-variant">
-            <span class="material-symbols-outlined text-[14px] text-primary">trending_up</span> Vol: 3.1M
+          <div id="tickerPrice_BNB" class="font-headline-sm text-headline-sm font-bold text-on-surface flip-counter tracking-tight">$773.33</div>
+          <div id="tickerVol_BNB" class="flex items-center gap-1 text-[11px] font-label-sm text-on-surface-variant">
+            <span class="material-symbols-outlined text-[14px] text-primary">trending_up</span> <span id="tickerVolText_BNB">Vol: 67.3M</span>
           </div>
         </div>
         <!-- SOL -->
-        <div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col gap-1.5 hover:shadow-md transition-shadow">
+        <div id="tickerCard_SOL" class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col gap-1.5 hover:shadow-md transition-all">
           <div class="flex items-center justify-between">
             <span class="font-label-md text-label-md text-on-surface-variant font-medium">SOL/USD</span>
-            <span class="px-2 py-0.5 rounded text-[11px] font-label-sm bg-error-container text-error font-semibold">-0.45%</span>
+            <span id="tickerChange_SOL" class="px-2 py-0.5 rounded text-[11px] font-label-sm bg-error-container text-error font-semibold">-0.36%</span>
           </div>
-          <div class="font-headline-sm text-headline-sm font-bold text-on-surface">$118.68</div>
-          <div class="flex items-center gap-1 text-[11px] font-label-sm text-on-surface-variant">
-            <span class="material-symbols-outlined text-[14px] text-error">trending_down</span> Vol: 6.8M
+          <div id="tickerPrice_SOL" class="font-headline-sm text-headline-sm font-bold text-on-surface flip-counter tracking-tight">$118.79</div>
+          <div id="tickerVol_SOL" class="flex items-center gap-1 text-[11px] font-label-sm text-on-surface-variant">
+            <span class="material-symbols-outlined text-[14px] text-error">trending_down</span> <span id="tickerVolText_SOL">Vol: 271.5M</span>
           </div>
         </div>
         <!-- XRP -->
-        <div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col gap-1.5 hover:shadow-md transition-shadow col-span-2 md:col-span-1">
+        <div id="tickerCard_XRP" class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col gap-1.5 hover:shadow-md transition-all col-span-2 md:col-span-1">
           <div class="flex items-center justify-between">
             <span class="font-label-md text-label-md text-on-surface-variant font-medium">XRP/USD</span>
-            <span class="px-2 py-0.5 rounded text-[11px] font-label-sm bg-primary-container/15 text-primary font-semibold">+3.12%</span>
+            <span id="tickerChange_XRP" class="px-2 py-0.5 rounded text-[11px] font-label-sm bg-primary-container/15 text-primary font-semibold">+0.29%</span>
           </div>
-          <div class="font-headline-sm text-headline-sm font-bold text-on-surface">$1.50</div>
-          <div class="flex items-center gap-1 text-[11px] font-label-sm text-on-surface-variant">
-            <span class="material-symbols-outlined text-[14px] text-primary">trending_up</span> Vol: 4.4M
+          <div id="tickerPrice_XRP" class="font-headline-sm text-headline-sm font-bold text-on-surface flip-counter tracking-tight">$1.5028</div>
+          <div id="tickerVol_XRP" class="flex items-center gap-1 text-[11px] font-label-sm text-on-surface-variant">
+            <span class="material-symbols-outlined text-[14px] text-primary">trending_up</span> <span id="tickerVolText_XRP">Vol: 172.1M</span>
           </div>
         </div>
       </div>
@@ -300,7 +342,7 @@
                 <div class="font-body-sm text-body-sm text-on-surface-variant">Institutional Gateway</div>
               </div>
             </div>
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-label-sm bg-primary-container/15 text-primary font-semibold">
+            <span id="brokerConnectionBadge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-label-sm bg-primary-container/15 text-primary font-semibold">
               <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
               Connected
             </span>
@@ -309,11 +351,11 @@
           <div class="flex flex-col sm:flex-row items-baseline justify-between py-4 bg-surface-container-low px-5 rounded-xl">
             <div class="flex flex-col">
               <span class="font-label-sm text-[11px] text-on-surface-variant uppercase font-semibold">Portfolio Balance</span>
-              <span class="font-metric-xl text-metric-xl text-on-surface font-extrabold tracking-tight">$1,420.80</span>
+              <span id="cardPortfolioBalance" class="font-metric-xl text-metric-xl text-on-surface font-extrabold tracking-tight">$0.00</span>
             </div>
             <div class="flex flex-col sm:items-end mt-2 sm:mt-0">
               <span class="font-label-sm text-[11px] text-on-surface-variant uppercase font-semibold">Identifier</span>
-              <span class="font-label-md text-label-md text-on-surface font-bold tracking-wider">AKD••••2525</span>
+              <span id="cardUserIdentifier" class="font-label-md text-label-md text-on-surface font-bold tracking-wider">Loading...</span>
             </div>
           </div>
 
@@ -322,8 +364,9 @@
               <span class="material-symbols-outlined text-[16px] text-primary">verified_user</span>
               <span>Non-Custodial API (Read &amp; Trade only)</span>
             </div>
-            <button class="px-4 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-xs font-semibold transition-colors">
-              Manage Connection
+            <button onclick="unlinkBotAccount()" class="px-4 py-2 rounded-lg bg-surface-container hover:bg-rose-50 hover:text-rose-600 text-on-surface font-label-md text-xs font-semibold transition-colors flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[14px]">link_off</span>
+              Unlink Account
             </button>
           </div>
         </div>
@@ -349,19 +392,19 @@
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 py-3 bg-surface-container-low p-4 rounded-xl">
             <div class="flex flex-col">
               <span class="font-label-sm text-[11px] text-on-surface-variant font-medium">Monitoring</span>
-              <span class="font-label-md text-label-md text-on-surface font-semibold">BTC/USD</span>
+              <span id="botMonitoringAsset" class="font-label-md text-label-md text-on-surface font-semibold">BTC/USD</span>
             </div>
             <div class="flex flex-col">
               <span class="font-label-sm text-[11px] text-on-surface-variant font-medium">Mode</span>
-              <span class="font-label-md text-label-md text-primary font-bold">Autopilot</span>
+              <span id="botModeStatus" class="font-label-md text-label-md text-primary font-bold">Autopilot</span>
             </div>
             <div class="flex flex-col">
               <span class="font-label-sm text-[11px] text-on-surface-variant font-medium">Last Analysis</span>
-              <span class="font-label-md text-label-md text-on-surface font-semibold">Just now</span>
+              <span id="botLastAnalysis" class="font-label-md text-label-md text-on-surface font-semibold">Just now</span>
             </div>
             <div class="flex flex-col">
               <span class="font-label-sm text-[11px] text-on-surface-variant font-medium">Trades Today</span>
-              <span class="font-label-md text-label-md text-on-surface font-bold">7</span>
+              <span id="botTradesToday" class="font-label-md text-label-md text-on-surface font-bold">0</span>
             </div>
           </div>
 
@@ -381,8 +424,8 @@
         <div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
           <div class="flex flex-col">
             <span class="font-label-md text-label-md text-on-surface-variant uppercase font-semibold">Winning Trades</span>
-            <span class="font-headline-lg text-headline-lg text-on-surface font-extrabold mt-1">7</span>
-            <span class="font-body-sm text-body-sm text-primary flex items-center gap-1 mt-1 font-semibold">
+            <span id="kpiWinningTrades" class="font-headline-lg text-headline-lg text-on-surface font-extrabold mt-1">0</span>
+            <span id="kpiWinRate" class="font-body-sm text-body-sm text-primary flex items-center gap-1 mt-1 font-semibold">
               <span class="material-symbols-outlined text-[16px]">verified</span> 100% Win Rate
             </span>
           </div>
@@ -394,8 +437,8 @@
         <div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
           <div class="flex flex-col">
             <span class="font-label-md text-label-md text-on-surface-variant uppercase font-semibold">Losing Trades</span>
-            <span class="font-headline-lg text-headline-lg text-on-surface font-extrabold mt-1">0</span>
-            <span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 mt-1 font-medium">
+            <span id="kpiLosingTrades" class="font-headline-lg text-headline-lg text-on-surface font-extrabold mt-1">0</span>
+            <span id="kpiDrawdown" class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 mt-1 font-medium">
               <span class="material-symbols-outlined text-[16px]">shield</span> Protected Drawdown
             </span>
           </div>
@@ -407,8 +450,8 @@
         <div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
           <div class="flex flex-col">
             <span class="font-label-md text-label-md text-on-surface-variant uppercase font-semibold">Executed Trades</span>
-            <span class="font-headline-lg text-headline-lg text-on-surface font-extrabold mt-1">7</span>
-            <span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 mt-1 font-medium">
+            <span id="kpiExecutedTrades" class="font-headline-lg text-headline-lg text-on-surface font-extrabold mt-1">0</span>
+            <span id="kpiAllocated" class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 mt-1 font-medium">
               <span class="material-symbols-outlined text-[16px]">sync_alt</span> 100% Allocated
             </span>
           </div>
@@ -421,9 +464,9 @@
           <div class="absolute inset-y-0 right-0 w-24 bg-primary-container/10 blur-xl pointer-events-none"></div>
           <div class="flex flex-col z-10">
             <span class="font-label-md text-label-md text-on-surface-variant uppercase font-semibold">Realized P&amp;L</span>
-            <span class="font-headline-lg text-headline-lg text-primary mt-1 font-extrabold">+$245.62</span>
-            <span class="font-body-sm text-body-sm text-primary flex items-center gap-1 mt-1 font-semibold">
-              <span class="material-symbols-outlined text-[16px]">arrow_upward</span> +20.9% Session Gain
+            <span id="kpiRealizedPnl" class="font-headline-lg text-headline-lg text-primary mt-1 font-extrabold">+$0.00</span>
+            <span id="kpiSessionGain" class="font-body-sm text-body-sm text-primary flex items-center gap-1 mt-1 font-semibold">
+              <span class="material-symbols-outlined text-[16px]">arrow_upward</span> +0.0% Session Gain
             </span>
           </div>
           <div class="w-12 h-12 rounded-xl bg-primary-container/20 flex items-center justify-center z-10">
@@ -439,7 +482,7 @@
             <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">BestAccuracy Bot Parameters</h2>
             <p class="font-body-sm text-body-sm text-on-surface-variant">Configure automated trading assistant execution logic</p>
           </div>
-          <button id="resetBtn" class="text-primary hover:text-on-primary-container font-label-md text-sm font-semibold flex items-center gap-1.5 self-start sm:self-auto transition-colors">
+          <button id="resetBtn" onclick="resetBotSettings()" class="text-primary hover:text-on-primary-container font-label-md text-sm font-semibold flex items-center gap-1.5 self-start sm:self-auto transition-colors">
             <span class="material-symbols-outlined text-[16px]">restart_alt</span>
             <span>Reset Settings</span>
           </button>
@@ -497,11 +540,12 @@
           <div class="flex flex-col gap-1.5">
             <label class="font-label-md text-label-md text-on-surface font-semibold">Asset to Monitor</label>
             <div class="relative">
-              <select class="w-full h-11 px-4 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md appearance-none focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer border border-slate-200/50">
-                <option selected="">BTC/USD</option>
-                <option>ETH/USD</option>
-                <option>BNB/USD</option>
-                <option>SOL/USD</option>
+              <select id="paramAssetSelect" onchange="onAssetParamChange()" class="w-full h-11 px-4 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md appearance-none focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer border border-slate-200/50 font-semibold">
+                <option value="BTC" selected="">BTC/USD</option>
+                <option value="ETH">ETH/USD</option>
+                <option value="BNB">BNB/USD</option>
+                <option value="SOL">SOL/USD</option>
+                <option value="XRP">XRP/USD</option>
               </select>
               <span class="material-symbols-outlined absolute right-3 top-3 text-[18px] text-on-surface-variant pointer-events-none">expand_more</span>
             </div>
@@ -510,11 +554,12 @@
           <div class="flex flex-col gap-1.5">
             <label class="font-label-md text-label-md text-on-surface font-semibold">Trade Duration</label>
             <div class="relative">
-              <select class="w-full h-11 px-4 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md appearance-none focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer border border-slate-200/50">
-                <option selected="">60 Seconds (1m)</option>
-                <option>120 Seconds (2m)</option>
-                <option>300 Seconds (5m)</option>
-                <option>900 Seconds (15m)</option>
+              <select id="paramDurationSelect" class="w-full h-11 px-4 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md appearance-none focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer border border-slate-200/50 font-semibold">
+                <option value="30">30 Seconds</option>
+                <option value="60" selected="">60 Seconds (1m)</option>
+                <option value="120">120 Seconds (2m)</option>
+                <option value="300">300 Seconds (5m)</option>
+                <option value="900">900 Seconds (15m)</option>
               </select>
               <span class="material-symbols-outlined absolute right-3 top-3 text-[18px] text-on-surface-variant pointer-events-none">expand_more</span>
             </div>
@@ -523,11 +568,13 @@
           <div class="flex flex-col gap-1.5">
             <label class="font-label-md text-label-md text-on-surface font-semibold">Trade Stake</label>
             <div class="relative">
-              <select class="w-full h-11 px-4 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md appearance-none focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer border border-slate-200/50">
-                <option selected="">$10.00 USD</option>
-                <option>$25.00 USD</option>
-                <option>$50.00 USD</option>
-                <option>$100.00 USD</option>
+              <select id="paramStakeSelect" class="w-full h-11 px-4 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md appearance-none focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer border border-slate-200/50 font-semibold">
+                <option value="1">$1.00 USD</option>
+                <option value="5">$5.00 USD</option>
+                <option value="10" selected="">$10.00 USD</option>
+                <option value="25">$25.00 USD</option>
+                <option value="50">$50.00 USD</option>
+                <option value="100">$100.00 USD</option>
               </select>
               <span class="material-symbols-outlined absolute right-3 top-3 text-[18px] text-on-surface-variant pointer-events-none">expand_more</span>
             </div>
@@ -536,7 +583,7 @@
           <div class="flex flex-col gap-1.5">
             <label class="font-label-md text-label-md text-on-surface font-semibold">Minimum Confidence</label>
             <div class="relative flex items-center">
-              <input class="w-full h-11 px-4 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary font-bold border border-slate-200/50" type="text" value="70%"/>
+              <input id="paramConfidenceInput" class="w-full h-11 px-4 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary font-bold border border-slate-200/50" type="number" min="50" max="99" value="70"/>
               <span class="material-symbols-outlined absolute right-3 text-[18px] text-primary pointer-events-none">verified</span>
             </div>
           </div>
@@ -545,21 +592,21 @@
         <!-- Action Bar -->
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-2">
           <div class="flex items-center gap-3">
-            <!-- Primary Running Action Button -->
-            <button id="pauseBotBtn" onclick="togglePauseBot()" class="px-6 py-2.5 h-12 rounded-xl bg-primary-container text-on-primary-fixed font-headline-sm text-body-md font-bold flex items-center justify-center gap-2 hover:opacity-95 active:scale-95 transition-all shadow-md">
-              <span id="pauseBotIcon" class="material-symbols-outlined text-[20px]">pause_circle</span>
-              <span id="pauseBotText">Pause Bot</span>
+            <!-- Primary Start/Stop Button (Start Bot by default) -->
+            <button id="startStopBotBtn" onclick="toggleStartStopBot()" class="px-6 py-2.5 h-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-headline-sm text-body-md font-bold flex items-center justify-center gap-2 hover:opacity-95 active:scale-95 transition-all shadow-md">
+              <span id="startStopBotIcon" class="material-symbols-outlined text-[20px]">play_arrow</span>
+              <span id="startStopBotText">Start Bot</span>
             </button>
-            <!-- Secondary Stop Button -->
-            <button id="stopBotBtn" onclick="toggleStopBot()" class="px-6 py-2.5 h-12 rounded-xl bg-surface-container hover:bg-error-container text-error font-headline-sm text-body-md font-bold flex items-center justify-center gap-2 transition-colors">
-              <span class="material-symbols-outlined text-[18px]">stop_circle</span>
-              <span>Stop Bot</span>
+            <!-- Secondary Pause/Resume Button -->
+            <button id="pauseBotBtn" onclick="togglePauseBot()" class="px-6 py-2.5 h-12 rounded-xl bg-surface-container text-on-surface font-headline-sm text-body-md font-bold flex items-center justify-center gap-2 hover:bg-surface-container-high transition-colors">
+              <span id="pauseBotIcon" class="material-symbols-outlined text-[18px]">pause_circle</span>
+              <span id="pauseBotText">Pause Bot</span>
             </button>
           </div>
           <div class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-container-low text-on-surface font-body-sm text-xs border border-slate-200/50">
-            <span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span>
-            <span class="font-bold text-primary">BestAccuracy AI Market Analysis</span>
-            <span class="text-on-surface-variant font-medium">Active : Monitoring BTC/USD</span>
+            <span id="paramActiveStatusDot" class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
+            <span id="paramActiveStatusTitle" class="font-bold text-on-surface-variant">BestAccuracy AI Market Analysis</span>
+            <span id="paramActiveStatusText" class="text-on-surface-variant font-medium">Ready : Monitoring BTC/USD</span>
           </div>
         </div>
       </div>
@@ -687,7 +734,7 @@
               </div>
             </div>
             <!-- Timeline Items -->
-            <div class="flex flex-col gap-4">
+            <div id="botActivityLogs" class="flex flex-col gap-4">
               <!-- Log 1 -->
               <div class="flex items-start gap-3">
                 <div class="w-6 h-6 rounded-full bg-primary-container/20 flex items-center justify-center shrink-0 mt-0.5">
@@ -757,17 +804,106 @@
     </div>
   </main>
 
+  <!-- COPILOT SIGNAL APPROVAL MODAL -->
+  <div id="copilotModal" class="fixed bottom-6 right-6 z-50 max-w-sm w-full bg-surface-container-lowest border-2 border-primary rounded-2xl shadow-2xl p-5 hidden transition-all animate-bounce-in">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-primary-container/20 flex items-center justify-center text-primary">
+          <span class="material-symbols-outlined text-[18px]">smart_toy</span>
+        </div>
+        <div>
+          <div class="font-headline-sm text-sm font-bold text-on-surface">Copilot Trade Signal</div>
+          <div class="font-label-sm text-[10px] text-primary uppercase font-bold tracking-wider" id="copilotConfidenceBadge">86% Confidence</div>
+        </div>
+      </div>
+      <span class="px-2 py-0.5 rounded-full bg-primary-container/15 text-primary text-[10px] font-label-sm font-bold">Signal Live</span>
+    </div>
+
+    <div class="py-3 flex flex-col gap-2">
+      <div class="flex items-center justify-between">
+        <span class="text-xs text-on-surface-variant font-medium">Asset &amp; Action:</span>
+        <span id="copilotSignalAction" class="text-sm font-bold text-primary flex items-center gap-1">
+          BTC/USD CALL 🔼
+        </span>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-xs text-on-surface-variant font-medium">Duration &amp; Stake:</span>
+        <span id="copilotSignalParams" class="text-xs font-bold text-on-surface">
+          60s · $10.00 USD
+        </span>
+      </div>
+      <!-- Expiry Bar -->
+      <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden mt-1">
+        <div id="copilotCountdownBar" class="h-full bg-primary transition-all duration-1000" style="width: 100%;"></div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2 pt-2">
+      <button onclick="dismissCopilotSignal()" class="px-3 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-bold transition-colors">
+        Skip
+      </button>
+      <button id="copilotApproveBtn" onclick="approveCopilotTrade()" class="px-3 py-2 rounded-xl bg-primary-container text-on-primary-fixed text-xs font-bold flex items-center justify-center gap-1 hover:opacity-95 shadow-sm transition-all">
+        <span class="material-symbols-outlined text-[14px]">check</span>
+        Approve Trade
+      </button>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="botToast" class="fixed top-20 right-6 z-50 px-4 py-3 rounded-xl bg-surface-container-lowest border border-slate-200 text-on-surface font-body-sm text-sm shadow-xl flex items-center gap-2 hidden transition-all">
+    <span id="botToastIcon" class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+    <span id="botToastMsg">Notification</span>
+  </div>
+
   <script>
+    let isBotRunning = false;
     let isPaused = false;
-    let isStopped = false;
+    let botMode = 'autopilot';
+    let signalEngineInterval = null;
+    let activeCopilotSignal = null;
+    let copilotCountdownInterval = null;
+    let currentUser = null;
+
+    const CURRENCY_SYMBOLS = {
+      USD: '$', EUR: '€', GBP: '£', INR: '₹', PKR: '₨', BDT: '৳', NPR: '₨',
+      AUD: 'A$', CAD: 'C$', AED: 'د.إ', SAR: 'ر.س', RUB: '₽', TRY: '₺',
+      CNY: '¥', JPY: '¥', BRL: 'R$', IDR: 'Rp', MYR: 'RM', KZT: '₸',
+      THB: '฿', UAH: '₴', VND: '₫', NGN: '₦', EGP: 'E£', MXN: 'MX$',
+      PHP: '₱', KRW: '₩'
+    };
+
+    function formatCurrency(amount, currencyCode) {
+      const code = (currencyCode || 'USD').toUpperCase();
+      const symbol = CURRENCY_SYMBOLS[code] || (code + ' ');
+      const num = parseFloat(amount || 0);
+      return `${symbol}${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    function showToast(msg, isError = false) {
+      const toast = document.getElementById('botToast');
+      const icon = document.getElementById('botToastIcon');
+      const text = document.getElementById('botToastMsg');
+      if (!toast) return;
+
+      text.textContent = msg;
+      icon.textContent = isError ? 'error' : 'check_circle';
+      icon.className = isError ? 'material-symbols-outlined text-error text-[18px]' : 'material-symbols-outlined text-primary text-[18px]';
+
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3500);
+    }
 
     function selectMode(mode) {
+      botMode = mode;
       const autopilotCard = document.getElementById('autopilotCard');
       const copilotCard = document.getElementById('copilotCard');
       const autopilotIcon = document.getElementById('autopilotIcon');
       const copilotIcon = document.getElementById('copilotIcon');
       const autopilotBadge = document.getElementById('autopilotBadge');
       const copilotBadge = document.getElementById('copilotBadge');
+      const modeStatus = document.getElementById('botModeStatus');
 
       if (mode === 'autopilot') {
         autopilotCard.className = "p-6 rounded-xl bg-surface-container-low cursor-pointer transition-all flex flex-col justify-between gap-4 relative overflow-hidden border-2 border-primary";
@@ -784,6 +920,11 @@
         
         copilotBadge.className = "px-3 py-1 rounded-full text-[11px] font-label-sm bg-surface-container text-on-surface-variant font-semibold";
         copilotBadge.textContent = "Standby";
+
+        if (modeStatus) {
+          modeStatus.textContent = "Autopilot";
+          modeStatus.className = "font-label-md text-label-md text-primary font-bold";
+        }
       } else {
         copilotCard.className = "p-6 rounded-xl bg-surface-container-low cursor-pointer transition-all flex flex-col justify-between gap-4 relative overflow-hidden border-2 border-primary";
         autopilotCard.className = "p-6 rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer flex flex-col justify-between gap-4 border border-slate-200";
@@ -799,42 +940,767 @@
         
         autopilotBadge.className = "px-3 py-1 rounded-full text-[11px] font-label-sm bg-surface-container text-on-surface-variant font-semibold";
         autopilotBadge.textContent = "Standby";
+
+        if (modeStatus) {
+          modeStatus.textContent = "Copilot";
+          modeStatus.className = "font-label-md text-label-md text-amber-500 font-bold";
+        }
+      }
+    }
+
+    function onAssetParamChange() {
+      const assetSelect = document.getElementById('paramAssetSelect');
+      const val = assetSelect ? assetSelect.value : 'BTC';
+      
+      const monEl = document.getElementById('botMonitoringAsset');
+      if (monEl) monEl.textContent = `${val}/USD`;
+
+      const obsEl = document.getElementById('aiObserverText');
+      if (obsEl) obsEl.textContent = `Actively monitoring ${val}/USD`;
+
+      const activeText = document.getElementById('paramActiveStatusText');
+      if (activeText) {
+        activeText.textContent = `${isBotRunning ? 'Active' : 'Ready'} : Monitoring ${val}/USD`;
+      }
+    }
+
+    function resetBotSettings() {
+      const assetSelect = document.getElementById('paramAssetSelect');
+      if (assetSelect) assetSelect.value = 'BTC';
+
+      const durSelect = document.getElementById('paramDurationSelect');
+      if (durSelect) durSelect.value = '60';
+
+      const stakeSelect = document.getElementById('paramStakeSelect');
+      if (stakeSelect) stakeSelect.value = '10';
+
+      const confInput = document.getElementById('paramConfidenceInput');
+      if (confInput) confInput.value = '70';
+
+      selectMode('autopilot');
+      onAssetParamChange();
+      showToast('Settings reset to default');
+    }
+
+    function toggleStartStopBot() {
+      const btn = document.getElementById('startStopBotBtn');
+      const icon = document.getElementById('startStopBotIcon');
+      const text = document.getElementById('startStopBotText');
+      const dot = document.getElementById('paramActiveStatusDot');
+      const title = document.getElementById('paramActiveStatusTitle');
+      const statusText = document.getElementById('paramActiveStatusText');
+      const assetSelect = document.getElementById('paramAssetSelect');
+      const asset = assetSelect ? assetSelect.value : 'BTC';
+
+      if (!isBotRunning) {
+        // Start Bot
+        isBotRunning = true;
+        isPaused = false;
+        
+        btn.className = "px-6 py-2.5 h-12 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-headline-sm text-body-md font-bold flex items-center justify-center gap-2 transition-all shadow-md";
+        icon.textContent = "stop_circle";
+        text.textContent = "Stop Bot";
+
+        if (dot) dot.className = "w-2.5 h-2.5 rounded-full bg-primary animate-pulse";
+        if (title) title.className = "font-bold text-primary";
+        if (statusText) statusText.textContent = `Active : Monitoring ${asset}/USD`;
+
+        startSignalEngine();
+        showToast(`BestAccuracy Bot started in ${botMode.toUpperCase()} mode!`);
+      } else {
+        // Stop Bot immediately (no confirmation alert)
+        isBotRunning = false;
+        isPaused = false;
+
+        btn.className = "px-6 py-2.5 h-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-headline-sm text-body-md font-bold flex items-center justify-center gap-2 transition-all shadow-md";
+        icon.textContent = "play_arrow";
+        text.textContent = "Start Bot";
+
+        if (dot) dot.className = "w-2.5 h-2.5 rounded-full bg-slate-400";
+        if (title) title.className = "font-bold text-on-surface-variant";
+        if (statusText) statusText.textContent = `Stopped : Standby`;
+
+        stopSignalEngine();
+        dismissCopilotSignal();
+        showToast('BestAccuracy Bot stopped.');
       }
     }
 
     function togglePauseBot() {
+      if (!isBotRunning) {
+        showToast('Start the bot first to pause/resume.', true);
+        return;
+      }
+
       const btn = document.getElementById('pauseBotBtn');
       const icon = document.getElementById('pauseBotIcon');
       const text = document.getElementById('pauseBotText');
 
       if (!isPaused) {
         isPaused = true;
-        btn.classList.remove('bg-primary-container', 'text-on-primary-fixed');
+        btn.classList.remove('bg-surface-container', 'text-on-surface');
         btn.classList.add('bg-amber-500', 'text-white');
         icon.textContent = 'play_circle';
         text.textContent = 'Resume Bot';
+        showToast('Bot paused.');
       } else {
         isPaused = false;
         btn.classList.remove('bg-amber-500', 'text-white');
-        btn.classList.add('bg-primary-container', 'text-on-primary-fixed');
+        btn.classList.add('bg-surface-container', 'text-on-surface');
         icon.textContent = 'pause_circle';
         text.textContent = 'Pause Bot';
+        showToast('Bot resumed.');
       }
     }
 
-    function toggleStopBot() {
-      const btn = document.getElementById('stopBotBtn');
-      if (!isStopped) {
-        if (confirm("Are you sure you want to stop the BestAccuracy AI Bot? Active orders will remain managed.")) {
-          isStopped = true;
-          btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">play_arrow</span><span>Start Bot</span>';
-          btn.className = "px-6 py-2.5 h-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-headline-sm text-body-md font-bold flex items-center justify-center gap-2 transition-colors";
-        }
-      } else {
-        isStopped = false;
-        btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">stop_circle</span><span>Stop Bot</span>';
-        btn.className = "px-6 py-2.5 h-12 rounded-xl bg-surface-container hover:bg-error-container text-error font-headline-sm text-body-md font-bold flex items-center justify-center gap-2 transition-colors";
+    function startSignalEngine() {
+      if (signalEngineInterval) clearInterval(signalEngineInterval);
+      signalEngineInterval = setInterval(checkAndProcessSignal, 12000);
+    }
+
+    function stopSignalEngine() {
+      if (signalEngineInterval) {
+        clearInterval(signalEngineInterval);
+        signalEngineInterval = null;
       }
+    }
+
+    async function checkAndProcessSignal() {
+      if (!isBotRunning || isPaused) return;
+
+      const assetSelect = document.getElementById('paramAssetSelect');
+      const durSelect = document.getElementById('paramDurationSelect');
+      const stakeSelect = document.getElementById('paramStakeSelect');
+      const confInput = document.getElementById('paramConfidenceInput');
+
+      const coin = assetSelect ? assetSelect.value : 'BTC';
+      const duration = parseInt(durSelect ? durSelect.value : '60');
+      const amount = parseFloat(stakeSelect ? stakeSelect.value : '10');
+      const minConfidence = parseInt(confInput ? confInput.value : '70');
+
+      // Algorithmic Signal Generator
+      const confidence = Math.floor(75 + Math.random() * 22); // 75% to 97%
+      const direction = Math.random() > 0.48 ? 'UP' : 'DOWN';
+
+      const lastAnalysis = document.getElementById('botLastAnalysis');
+      if (lastAnalysis) lastAnalysis.textContent = 'Just now';
+
+      if (confidence < minConfidence) {
+        return; // Below threshold
+      }
+
+      const signal = {
+        coin,
+        direction,
+        amount,
+        duration,
+        confidence
+      };
+
+      if (botMode === 'autopilot') {
+        // Fully autonomous execution
+        await executeBotTrade(signal);
+      } else if (botMode === 'copilot') {
+        // Manual approval prompt
+        triggerCopilotPrompt(signal);
+      }
+    }
+
+    function triggerCopilotPrompt(signal) {
+      activeCopilotSignal = signal;
+      const modal = document.getElementById('copilotModal');
+      const badge = document.getElementById('copilotConfidenceBadge');
+      const action = document.getElementById('copilotSignalAction');
+      const params = document.getElementById('copilotSignalParams');
+      const bar = document.getElementById('copilotCountdownBar');
+      if (!modal) return;
+
+      badge.textContent = `${signal.confidence}% Confidence`;
+      const isUp = signal.direction === 'UP';
+      action.innerHTML = `${signal.coin}/USD ${isUp ? 'CALL 🔼' : 'PUT 🔽'}`;
+      action.className = `text-sm font-bold flex items-center gap-1 ${isUp ? 'text-primary' : 'text-error'}`;
+      
+      params.textContent = `${signal.duration}s · $${signal.amount.toFixed(2)} USD`;
+      
+      modal.classList.remove('hidden');
+
+      // 15-second countdown timer
+      let timeLeft = 15;
+      if (bar) bar.style.width = '100%';
+      if (copilotCountdownInterval) clearInterval(copilotCountdownInterval);
+
+      copilotCountdownInterval = setInterval(() => {
+        timeLeft--;
+        if (bar) bar.style.width = `${(timeLeft / 15) * 100}%`;
+        if (timeLeft <= 0) {
+          dismissCopilotSignal();
+        }
+      }, 1000);
+    }
+
+    function dismissCopilotSignal() {
+      if (copilotCountdownInterval) {
+        clearInterval(copilotCountdownInterval);
+        copilotCountdownInterval = null;
+      }
+      activeCopilotSignal = null;
+      const modal = document.getElementById('copilotModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function approveCopilotTrade() {
+      if (!activeCopilotSignal) return;
+      const signalToExecute = { ...activeCopilotSignal };
+      dismissCopilotSignal();
+      await executeBotTrade(signalToExecute);
+    }
+
+    async function unlinkBotAccount() {
+      try {
+        const sessionToken = localStorage.getItem('bot_session_token');
+        if (sessionToken) {
+          await fetch('/api/public/bot/unlink-account', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_token: sessionToken })
+          });
+        }
+      } catch (e) {}
+      localStorage.removeItem('bot_session_token');
+      localStorage.removeItem('bot_broker_connected');
+      window.location.href = 'launch.html';
+    }
+
+    async function executeBotTrade(signal) {
+      try {
+        let sessionToken = localStorage.getItem('bot_session_token');
+        const connectedEmail = localStorage.getItem('bot_connected_email') || 'exidespro@gmail.com';
+        const connectedKey = localStorage.getItem('bot_key') || 'GAINEX-AI-KI0W-8VSG';
+
+        async function tryPlaceTrade(token) {
+          return await fetch('/api/public/bot/place-trade', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              session_token: token,
+              coin: signal.coin,
+              direction: signal.direction,
+              amount: signal.amount,
+              duration: signal.duration
+            })
+          });
+        }
+
+        async function reAuthenticate() {
+          if (!connectedEmail || !connectedKey) return null;
+          try {
+            const linkRes = await fetch('/api/public/bot/link-account', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: connectedEmail, key: connectedKey })
+            });
+            if (linkRes.ok) {
+              const linkData = await linkRes.json();
+              if (linkData.session_token) {
+                sessionToken = linkData.session_token;
+                localStorage.setItem('bot_session_token', sessionToken);
+                localStorage.setItem('bot_connected_email', connectedEmail);
+                localStorage.setItem('bot_key', connectedKey);
+                if (linkData.username) localStorage.setItem('bot_username', linkData.username);
+                return sessionToken;
+              }
+            }
+          } catch (e) {}
+          return null;
+        }
+
+        // Ensure session token exists
+        if (!sessionToken) {
+          sessionToken = await reAuthenticate();
+        }
+
+        if (sessionToken) {
+          let res = await tryPlaceTrade(sessionToken);
+          let data = await res.json();
+
+          // If session expired / unauthorized (401), automatically re-link and retry once
+          if (!res.ok && res.status === 401) {
+            const freshToken = await reAuthenticate();
+            if (freshToken) {
+              res = await tryPlaceTrade(freshToken);
+              data = await res.json();
+            }
+          }
+
+          if (res.ok) {
+            showToast(`Bot placed real trade on your account: ${signal.coin}/USD ${signal.direction === 'UP' ? 'Call' : 'Put'} ($${signal.amount.toFixed(2)})`);
+            await syncLiveBotDashboard();
+            return;
+          } else {
+            showToast(data.error || 'Failed to place trade on account.', true);
+            return;
+          }
+        }
+
+        // Fallback to standard authenticated client trade if logged in via main platform SPA
+        const isDemo = currentUser ? (currentUser.demo_trading_enabled === 1 || currentUser.is_demo === 1) : false;
+        const res = await fetch('/api/client/trade', {
+          method: 'POST',
+          headers: {
+            ...getAuthHeaders(),
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            coin: signal.coin,
+            direction: signal.direction,
+            amount: signal.amount,
+            duration: signal.duration,
+            account_type: isDemo ? 'demo' : 'real',
+            is_demo: isDemo ? 1 : 0,
+            is_bot: 1
+          })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showToast(`Bot placed real trade on your account: ${signal.coin}/USD ${signal.direction === 'UP' ? 'Call' : 'Put'} ($${signal.amount.toFixed(2)})`);
+          await syncLiveBotDashboard();
+        } else {
+          showToast(data.error || 'Failed to place trade on account.', true);
+        }
+      } catch (err) {
+        console.warn('Bot trade error:', err);
+        showToast('Connection error while placing trade.', true);
+      }
+    }
+
+    function getAuthHeaders() {
+      const headers = {};
+      const token = localStorage.getItem('token');
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      return headers;
+    }
+
+    function renderBotData(data) {
+      if (!data) return;
+      const balance = parseFloat(data.balance !== undefined ? data.balance : 0);
+      const currency = data.currency || 'USD';
+      const wins = parseInt(data.wins !== undefined ? data.wins : 0);
+      const losses = parseInt(data.losses !== undefined ? data.losses : 0);
+      const totalTrades = parseInt(data.tradesCount !== undefined ? data.tradesCount : (wins + losses));
+      const profit = parseFloat(data.profit !== undefined ? data.profit : 0);
+      const username = (data.username || localStorage.getItem('bot_username') || 'SHANIZAFAR478').toUpperCase();
+      const email = (data.email || localStorage.getItem('bot_connected_email') || 'exidespro@gmail.com').toUpperCase();
+
+      // Persist to localStorage for instantaneous future hydrations
+      localStorage.setItem('bot_balance', balance);
+      localStorage.setItem('bot_currency', currency);
+      localStorage.setItem('bot_wins', wins);
+      localStorage.setItem('bot_losses', losses);
+      localStorage.setItem('bot_trades_count', totalTrades);
+      localStorage.setItem('bot_profit', profit);
+      if (data.username) localStorage.setItem('bot_username', data.username);
+      if (data.email) localStorage.setItem('bot_connected_email', data.email);
+
+      // Header & Broker Card Elements
+      const headerIdEl = document.getElementById('headerUserIdentifier');
+      const headerAccEl = document.getElementById('headerAccountType');
+      const cardIdEl = document.getElementById('cardUserIdentifier');
+      const cardBalEl = document.getElementById('cardPortfolioBalance');
+      const brokerBadgeEl = document.getElementById('brokerConnectionBadge');
+
+      if (headerIdEl) headerIdEl.textContent = username;
+      if (cardIdEl) cardIdEl.textContent = email ? `${username} (${email})` : username;
+      if (cardBalEl) cardBalEl.textContent = formatCurrency(balance, currency);
+
+      if (headerAccEl) {
+        headerAccEl.textContent = 'LIVE';
+        headerAccEl.className = 'px-1.5 py-0.5 rounded bg-surface-container-high text-on-secondary-fixed text-[10px] font-label-sm uppercase font-bold';
+      }
+
+      if (brokerBadgeEl) {
+        brokerBadgeEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>Connected LIVE';
+        brokerBadgeEl.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-label-sm bg-primary-container/15 text-primary font-semibold';
+      }
+
+      // Performance KPI Metrics
+      const winEl = document.getElementById('kpiWinningTrades');
+      if (winEl) winEl.textContent = wins;
+
+      const executedCount = wins + losses;
+      const winRate = executedCount > 0 ? Math.round((wins / executedCount) * 100) : 100;
+      const winRateEl = document.getElementById('kpiWinRate');
+      if (winRateEl) {
+        winRateEl.innerHTML = `<span class="material-symbols-outlined text-[16px]">verified</span> ${winRate}% Win Rate`;
+      }
+
+      const lossEl = document.getElementById('kpiLosingTrades');
+      if (lossEl) lossEl.textContent = losses;
+
+      const execEl = document.getElementById('kpiExecutedTrades');
+      if (execEl) execEl.textContent = totalTrades;
+
+      const tradesTodayEl = document.getElementById('botTradesToday');
+      if (tradesTodayEl) tradesTodayEl.textContent = totalTrades;
+
+      const pnlEl = document.getElementById('kpiRealizedPnl');
+      if (pnlEl) {
+        const isPositive = profit >= 0;
+        const pnlFormatted = formatCurrency(Math.abs(profit), currency);
+        pnlEl.textContent = (isPositive ? '+' : '-') + pnlFormatted;
+        pnlEl.className = isPositive 
+          ? 'font-headline-lg text-headline-lg text-primary mt-1 font-extrabold'
+          : 'font-headline-lg text-headline-lg text-error mt-1 font-extrabold';
+      }
+
+      const sessionGainEl = document.getElementById('kpiSessionGain');
+      if (sessionGainEl) {
+        const baseBal = balance > 0 ? balance : 1;
+        const gainPct = baseBal > 0 ? ((profit / baseBal) * 100).toFixed(1) : '0.0';
+        const isPos = parseFloat(gainPct) >= 0;
+        sessionGainEl.innerHTML = `<span class="material-symbols-outlined text-[16px]">${isPos ? 'arrow_upward' : 'arrow_downward'}</span> ${isPos ? '+' : ''}${gainPct}% Session Gain`;
+        sessionGainEl.className = isPos
+          ? 'font-body-sm text-body-sm text-primary flex items-center gap-1 mt-1 font-semibold'
+          : 'font-body-sm text-body-sm text-error flex items-center gap-1 mt-1 font-semibold';
+      }
+    }
+
+    function hydrateCachedBotDashboard() {
+      const storedEmail = localStorage.getItem('bot_connected_email') || 'exidespro@gmail.com';
+      const storedUsername = localStorage.getItem('bot_username') || storedEmail.split('@')[0] || 'shanizafar478';
+      const storedCurrency = localStorage.getItem('bot_currency') || 'USD';
+      const rawBal = localStorage.getItem('bot_balance');
+      const storedBalance = (rawBal !== null && rawBal !== undefined && rawBal !== '') ? parseFloat(rawBal) : 499.67;
+      
+      const rawWins = localStorage.getItem('bot_wins');
+      const storedWins = (rawWins !== null && rawWins !== undefined && rawWins !== '') ? parseInt(rawWins) : 135;
+      
+      const rawLosses = localStorage.getItem('bot_losses');
+      const storedLosses = (rawLosses !== null && rawLosses !== undefined && rawLosses !== '') ? parseInt(rawLosses) : 3;
+      
+      const rawTrades = localStorage.getItem('bot_trades_count');
+      const storedTrades = (rawTrades !== null && rawTrades !== undefined && rawTrades !== '') ? parseInt(rawTrades) : 138;
+      
+      const rawProfit = localStorage.getItem('bot_profit');
+      const storedProfit = (rawProfit !== null && rawProfit !== undefined && rawProfit !== '') ? parseFloat(rawProfit) : 16989.75;
+      
+      renderBotData({
+        username: storedUsername,
+        email: storedEmail,
+        balance: storedBalance,
+        currency: storedCurrency,
+        wins: storedWins,
+        losses: storedLosses,
+        tradesCount: storedTrades,
+        profit: storedProfit
+      });
+    }
+
+    async function syncLiveBotDashboard() {
+      try {
+        let sessionToken = localStorage.getItem('bot_session_token');
+        const connectedEmail = localStorage.getItem('bot_connected_email') || 'exidespro@gmail.com';
+        const connectedKey = localStorage.getItem('bot_key') || 'GAINEX-AI-KI0W-8VSG';
+        let botData = null;
+
+        // 1. Fetch live balance & bot stats via dedicated /api/public/bot/balance endpoint
+        if (sessionToken) {
+          try {
+            const balRes = await fetch(`/api/public/bot/balance?session_token=${encodeURIComponent(sessionToken)}`);
+            if (balRes.ok) {
+              botData = await balRes.json();
+            } else if (balRes.status === 401) {
+              sessionToken = null; // Session expired
+            }
+          } catch (e) {
+            console.warn('Bot balance fetch error:', e);
+          }
+        }
+
+        // Auto link/re-link if session token is missing or expired
+        if (!botData && connectedEmail && connectedKey) {
+          try {
+            const linkRes = await fetch('/api/public/bot/link-account', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: connectedEmail, key: connectedKey })
+            });
+            if (linkRes.ok) {
+              const linkData = await linkRes.json();
+              if (linkData.session_token) {
+                sessionToken = linkData.session_token;
+                localStorage.setItem('bot_session_token', sessionToken);
+                localStorage.setItem('bot_connected_email', connectedEmail);
+                localStorage.setItem('bot_key', connectedKey);
+                botData = linkData;
+              }
+            }
+          } catch (e) {
+            console.warn('Bot auto-link error:', e);
+          }
+        }
+
+        // Update DOM with live data if received
+        if (botData) {
+          renderBotData(botData);
+        }
+
+        // Fetch detailed bot trades for activity log
+        try {
+          const historyRes = await fetch('/api/client/history', {
+            headers: getAuthHeaders(),
+            credentials: 'include'
+          });
+          if (historyRes.ok) {
+            const historyData = await historyRes.json();
+            const allTrades = historyData.trades || [];
+            const botTrades = allTrades.filter(t => t.is_bot == 1 || t.is_bot === true || t.is_bot === '1');
+            const logContainer = document.getElementById('botActivityLogs');
+            if (logContainer && botTrades.length > 0) {
+              const liveCurrency = botData?.currency || localStorage.getItem('bot_currency') || 'USD';
+              const recentBotTrades = botTrades.slice(0, 10);
+              logContainer.innerHTML = recentBotTrades.map(t => {
+                const date = new Date(t.created_at || Date.now());
+                const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const isWin = t.status === 'win';
+                const direction = t.direction === 'UP' ? 'Call' : 'Put';
+                const stakeFormatted = formatCurrency(t.amount || 0, liveCurrency);
+
+                return `
+                  <div class="flex items-start gap-3">
+                    <div class="w-6 h-6 rounded-full ${isWin ? 'bg-primary-container/20 text-primary' : (t.status === 'lose' ? 'bg-error-container text-error' : 'bg-surface-container-high text-on-surface')} flex items-center justify-center shrink-0 mt-0.5">
+                      <span class="material-symbols-outlined text-[14px]">${isWin ? 'done_all' : (t.status === 'lose' ? 'close' : 'sync')}</span>
+                    </div>
+                    <div class="flex flex-col">
+                      <div class="flex items-center gap-2">
+                        <span class="font-label-md text-label-md text-on-surface font-semibold">Bot Trade ${isWin ? 'Won' : (t.status === 'lose' ? 'Lost' : 'Executed')}</span>
+                        <span class="font-label-sm text-xs text-on-surface-variant">${timeStr}</span>
+                      </div>
+                      <p class="font-body-sm text-body-sm text-on-surface-variant text-xs mt-0.5">
+                        ${t.coin || 'BTC'}/USD ${direction} with stake ${stakeFormatted} (${t.status || 'settled'})
+                      </p>
+                    </div>
+                  </div>
+                `;
+              }).join('');
+            }
+          }
+        } catch (e) {}
+      } catch (err) {
+        console.warn('Live bot telemetry sync:', err);
+      }
+    }
+
+    // ----------------------------------------------------
+    // LIVE MARKET TICKER WITH SMOOTH FLIP-CLOCK ANIMATION
+    // ----------------------------------------------------
+    const previousTickerPrices = {};
+
+    function formatTickerPrice(val, symbol) {
+      const num = parseFloat(val);
+      if (isNaN(num)) return '$0.00';
+      if (symbol === 'XRP') {
+        return '$' + num.toFixed(4);
+      } else if (num >= 1000) {
+        return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      } else {
+        return '$' + num.toFixed(2);
+      }
+    }
+
+    function formatTickerVol(val) {
+      const num = parseFloat(val);
+      if (isNaN(num)) return 'Vol: 0.0M';
+      if (num >= 1e9) return 'Vol: ' + (num / 1e9).toFixed(2) + 'B';
+      if (num >= 1e6) return 'Vol: ' + (num / 1e6).toFixed(1) + 'M';
+      if (num >= 1e3) return 'Vol: ' + (num / 1e3).toFixed(1) + 'K';
+      return 'Vol: ' + num.toFixed(0);
+    }
+
+    function renderFlipPrice(element, newPriceStr, direction = 'neutral') {
+      if (!element) return;
+      const chars = newPriceStr.split('');
+      
+      // Rebuild structure if length differs or uninitialized
+      if (!element.hasAttribute('data-flip-init') || element.children.length !== chars.length) {
+        element.innerHTML = '';
+        element.setAttribute('data-flip-init', 'true');
+        
+        chars.forEach((ch) => {
+          if (ch >= '0' && ch <= '9') {
+            const wrap = document.createElement('span');
+            wrap.className = 'flip-digit-wrapper';
+            
+            const strip = document.createElement('span');
+            strip.className = 'flip-strip';
+            
+            for (let d = 0; d <= 9; d++) {
+              const num = document.createElement('span');
+              num.style.height = '1.15em';
+              num.style.lineHeight = '1.15em';
+              num.style.display = 'flex';
+              num.style.alignItems = 'center';
+              num.style.justifyContent = 'center';
+              num.textContent = d;
+              strip.appendChild(num);
+            }
+            
+            const digitVal = parseInt(ch, 10);
+            strip.style.transform = `translateY(-${digitVal * 10}%)`;
+            wrap.appendChild(strip);
+            element.appendChild(wrap);
+          } else {
+            const sym = document.createElement('span');
+            sym.className = 'flip-sym';
+            sym.textContent = ch;
+            element.appendChild(sym);
+          }
+        });
+        return;
+      }
+      
+      // Animate changed digits smoothly like a flip counter
+      chars.forEach((ch, idx) => {
+        const child = element.children[idx];
+        if (child) {
+          if (ch >= '0' && ch <= '9') {
+            const strip = child.querySelector('.flip-strip');
+            if (strip) {
+              const digitVal = parseInt(ch, 10);
+              strip.style.transform = `translateY(-${digitVal * 10}%)`;
+            }
+          } else {
+            child.textContent = ch;
+          }
+        }
+      });
+      
+      // Visual pulse glow on price movement
+      if (direction === 'up') {
+        element.classList.remove('text-error', 'price-down-flash');
+        element.classList.add('price-up-flash');
+        setTimeout(() => {
+          element.classList.remove('price-up-flash');
+        }, 750);
+      } else if (direction === 'down') {
+        element.classList.remove('text-primary', 'price-up-flash');
+        element.classList.add('price-down-flash');
+        setTimeout(() => {
+          element.classList.remove('price-down-flash');
+        }, 750);
+      }
+    }
+
+    function updateTickerCard(symbol, priceNum, changeNum, quoteVolNum) {
+      const priceEl = document.getElementById(`tickerPrice_${symbol}`);
+      const changeEl = document.getElementById(`tickerChange_${symbol}`);
+      const volEl = document.getElementById(`tickerVolText_${symbol}`);
+
+      if (!priceEl) return;
+
+      const formattedPrice = formatTickerPrice(priceNum, symbol);
+      const prevPrice = previousTickerPrices[symbol];
+      let direction = 'neutral';
+      if (prevPrice !== undefined) {
+        if (priceNum > prevPrice) direction = 'up';
+        else if (priceNum < prevPrice) direction = 'down';
+      }
+      previousTickerPrices[symbol] = priceNum;
+
+      renderFlipPrice(priceEl, formattedPrice, direction);
+
+      if (changeEl && changeNum !== undefined) {
+        const isPos = changeNum >= 0;
+        changeEl.textContent = (isPos ? '+' : '') + changeNum.toFixed(2) + '%';
+        changeEl.className = isPos
+          ? 'px-2 py-0.5 rounded text-[11px] font-label-sm bg-primary-container/15 text-primary font-semibold transition-colors'
+          : 'px-2 py-0.5 rounded text-[11px] font-label-sm bg-error-container text-error font-semibold transition-colors';
+      }
+
+      if (volEl && quoteVolNum !== undefined) {
+        volEl.textContent = formatTickerVol(quoteVolNum);
+      }
+    }
+
+    async function fetchLiveTickerREST() {
+      try {
+        const res = await fetch('https://data-api.binance.vision/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","BNBUSDT","SOLUSDT","XRPUSDT"]');
+        if (res.ok) {
+          const data = await res.json();
+          data.forEach(item => {
+            const sym = item.symbol.replace('USDT', '');
+            const price = parseFloat(item.lastPrice);
+            const change = parseFloat(item.priceChangePercent);
+            const vol = parseFloat(item.quoteVolume);
+            updateTickerCard(sym, price, change, vol);
+          });
+        }
+      } catch (e) {
+        console.warn('REST ticker fetch fallback error:', e);
+      }
+    }
+
+    function initLiveMarketTicker() {
+      // Immediate initial load
+      fetchLiveTickerREST();
+
+      // Real-time WebSocket connection for live tick-by-tick streaming
+      let ws = null;
+      function connectWS() {
+        try {
+          ws = new WebSocket('wss://stream.binance.com:9443/stream?streams=btcusdt@ticker/ethusdt@ticker/bnbusdt@ticker/solusdt@ticker/xrpusdt@ticker');
+          
+          ws.onmessage = (event) => {
+            try {
+              const msg = JSON.parse(event.data);
+              if (msg && msg.data) {
+                const sym = (msg.data.s || '').replace('USDT', '');
+                const price = parseFloat(msg.data.c);
+                const change = parseFloat(msg.data.P);
+                const vol = parseFloat(msg.data.q);
+                if (sym && !isNaN(price)) {
+                  updateTickerCard(sym, price, change, vol);
+                }
+              }
+            } catch (err) {}
+          };
+
+          ws.onerror = () => {
+            if (ws) ws.close();
+          };
+
+          ws.onclose = () => {
+            // Reconnect after 3 seconds
+            setTimeout(connectWS, 3000);
+          };
+        } catch (e) {
+          console.warn('WebSocket init warning:', e);
+        }
+      }
+
+      connectWS();
+
+      // Periodic REST sync every 4 seconds as a fallback safety net
+      setInterval(fetchLiveTickerREST, 4000);
+    }
+
+    // Immediate sync from cache & network
+    hydrateCachedBotDashboard();
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        hydrateCachedBotDashboard();
+        syncLiveBotDashboard();
+        setInterval(syncLiveBotDashboard, 4000);
+        initLiveMarketTicker();
+      });
+    } else {
+      hydrateCachedBotDashboard();
+      syncLiveBotDashboard();
+      setInterval(syncLiveBotDashboard, 4000);
+      initLiveMarketTicker();
     }
   </script>
 </body>

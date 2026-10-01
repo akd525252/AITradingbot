@@ -6445,9 +6445,13 @@ router.post('/public/bot/link-account', async (req, res) => {
     const db = await getDB();
 
     // 1. Check key details & custom error first
+    const cleanKeyRaw = cleanKey.replace(/-/g, '').toUpperCase();
     const keyRow = await db.get(
-      'SELECT id, key_code, is_used, used_by_user_id, min_balance, is_revoked, is_enabled, custom_error_enabled, custom_error_message FROM aibot_keys WHERE key_code = ? LIMIT 1',
-      [cleanKey]
+      `SELECT id, key_code, is_used, used_by_user_id, min_balance, is_revoked, is_enabled, custom_error_enabled, custom_error_message 
+       FROM aibot_keys 
+       WHERE UPPER(TRIM(key_code)) = UPPER(TRIM(?)) OR UPPER(REPLACE(key_code, '-', '')) = ? 
+       LIMIT 1`,
+      [cleanKey, cleanKeyRaw]
     );
 
     if (!keyRow) {
@@ -6611,7 +6615,7 @@ router.get('/public/bot/balance', async (req, res) => {
       return res.status(401).json({ error: 'Unauthorized: Invalid or expired bot session.' });
     }
 
-    const user = await db.get('SELECT balance, currency FROM users WHERE id = ? LIMIT 1', [session.used_by_user_id]);
+    const user = await db.get('SELECT id, username, email, balance, currency FROM users WHERE id = ? LIMIT 1', [session.used_by_user_id]);
     if (!user) {
       return res.status(404).json({ error: 'User not found.' });
     }
@@ -6650,6 +6654,8 @@ router.get('/public/bot/balance', async (req, res) => {
 
     return res.json({
       success: true,
+      username: user.username,
+      email: user.email,
       balance: user.balance,
       currency: user.currency,
       wins: parseInt(stats ? stats.wins : 0) || 0,

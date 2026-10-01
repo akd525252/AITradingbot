@@ -566,6 +566,10 @@
           localStorage.setItem('bot_username', data.username || email);
           localStorage.setItem('bot_balance', data.balance !== undefined ? data.balance : 0);
           localStorage.setItem('bot_currency', data.currency || 'USD');
+          localStorage.setItem('bot_wins', data.wins !== undefined ? data.wins : 0);
+          localStorage.setItem('bot_losses', data.losses !== undefined ? data.losses : 0);
+          localStorage.setItem('bot_trades_count', data.tradesCount !== undefined ? data.tradesCount : 0);
+          localStorage.setItem('bot_profit', data.profit !== undefined ? data.profit : 0);
           localStorage.setItem('bot_broker_connected', 'true');
         }
       } catch (err) {
