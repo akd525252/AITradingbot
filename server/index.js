@@ -453,8 +453,8 @@ app.use(async (req, res, next) => {
   next();
 });
 
-// Serve Main Trading Platform index.html for root path
-app.get(['/', '/index.html'], (req, res) => {
+// Serve Main Trading Platform index.html for root path and legacy landing routes
+app.get(['/', '/index.html', '/landing', '/landing.html'], (req, res) => {
   return res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
 
