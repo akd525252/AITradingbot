@@ -1362,15 +1362,22 @@ const app = {
         console.warn('Session check rejected:', res.status);
         const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
         const isPwa = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone || window.location.search.includes('pwa=true');
-        if (path === 'signup') {
-          this.showScreen('signup');
-        } else {
+        if (path === 'login' || path === 'signup') {
+          this.showScreen(path);
+        } else if (isPwa) {
           this.showScreen('login');
+        } else {
+          window.location.replace('/landing.html');
         }
       }
     } catch (err) {
       console.error('Session check failed with exception:', err);
-      this.showScreen('login');
+      const isPwa = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone || window.location.search.includes('pwa=true');
+      if (isPwa) {
+        this.showScreen('login');
+      } else {
+        window.location.replace('/landing.html');
+      }
     } finally {
       this.hideGlobalLoader();
     }

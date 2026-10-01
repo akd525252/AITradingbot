@@ -453,27 +453,35 @@ app.use(async (req, res, next) => {
   next();
 });
 
-// Serve Main Platform index.html for root path
-app.get(['/', '/index.html'], (req, res) => {
-  return res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+// Intercept / and /index.html to decide between serving the landing page or the logged-in SPA platform
+app.get(['/', '/index.html'], async (req, res, next) => {
+  if (req.query.pwa === 'true') {
+    return res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+  }
+  const token = req.cookies?.token;
+  if (token) {
+    try {
+      const jwt = require('jsonwebtoken');
+      const JWT_SECRET = process.env.JWT_SECRET || 'gainex-secret-super-key-123';
+      const decoded = jwt.verify(token, JWT_SECRET);
+      
+      const { getDB } = require('./db');
+      const db = await getDB();
+      const user = await db.get('SELECT id, status FROM users WHERE id = ?', [decoded.id]);
+      if (user && user.status !== 'blocked') {
+        // Logged in user: send index.html (SPA)
+        return res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+      }
+    } catch (err) {
+      // Invalid/expired token: proceed to serve landing.html
+    }
+  }
+  // Not logged in: send landing.html
+  return res.sendFile(path.join(__dirname, '..', 'public', 'landing.html'));
 });
-
-// Redirect .html requests to clean URLs
-app.get(['/landing.html', '/buy.html', '/dashboard.html', '/launch.html', '/card-editor.html'], (req, res) => {
-  const cleanPath = req.path.replace(/\.html$/, '');
-  const query = req.url.includes('?') ? req.url.substring(req.url.indexOf('?')) : '';
-  return res.redirect(301, cleanPath + query);
-});
-
-// Explicit clean routes for public standalone pages
-app.get('/landing', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'landing.html')));
-app.get('/buy', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'buy.html')));
-app.get('/dashboard', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'dashboard.html')));
-app.get('/launch', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'launch.html')));
-app.get('/card-editor', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'card-editor.html')));
 
 // Serve static public assets
-app.use(express.static(path.join(__dirname, '..', 'public'), { extensions: ['html'] }));
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // Serve uploads
 const fs = require('fs');
