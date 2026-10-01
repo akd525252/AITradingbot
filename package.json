@@ -1,0 +1,35 @@
+{
+  "name": "gainex",
+  "version": "1.0.0",
+  "description": "Gain EX - Mobile-First Binary Trading Platform",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node app.js",
+    "build": "node -e \"console.log('Build successful')\""
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.108.2",
+    "ably": "^1.2.20",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.1",
+    "nodemailer": "^9.0.3",
+    "pg": "^8.21.0",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^6.0.1"
+  },
+  "overrides": {
+    "body-parser": "^1.20.6",
+    "cacheable-request": "^10.2.7",
+    "qs": "^6.16.0",
+    "tar": "7.5.21",
+    "undici": "^6.28.0"
+  }
+}

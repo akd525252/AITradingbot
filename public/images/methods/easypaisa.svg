@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <circle cx="50" cy="50" r="48" fill="#FFFFFF" stroke="#EAEAEA" stroke-width="2"/>
+  <g transform="translate(10, 10) scale(0.8)">
+    <!-- Dark Top 'e' -->
+    <path d="M 50 15 C 30 15 15 28 15 45 C 15 60 28 72 45 72 C 60 72 72 62 76 48 C 77 43 73 40 68 40 C 40 40 28 35 32 25 C 36 18 45 18 55 24 C 65 30 75 25 74 18 C 70 15 60 15 50 15 Z" fill="#221C30"/>
+    <!-- Green Bottom Swoop -->
+    <path d="M 15 50 C 15 68 30 82 50 82 C 65 82 78 72 82 60 C 83 56 79 54 75 56 C 60 66 45 68 30 62 C 20 58 15 54 15 50 Z" fill="#00C853"/>
+  </g>
+</svg>

@@ -1,0 +1,80 @@
+.charts {
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    left: 0;
+    user-select: none;
+    width: 100%;
+}
+.charts {
+    height: 100%;
+    position: absolute;
+    top: 0;
+}
+
+.layout-container {
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    height: 100%;
+}
+.layout-container {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+}
+
+.layout-container .chart-item {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1 1 100%;
+    flex: 1 1 100%;
+    height: 100%;
+    position: relative;
+}
+
+.charts.single .chart {
+    height: 100%;
+    width: 100%;
+}
+.charts .chart {
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    cursor: default;
+    display: block;
+    position: absolute;
+    user-select: none;
+}
+
+.charts .chart .chart-container {
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+.drop-down-modal-wrap {
+    background: transparent;
+    bottom: 0;
+    content: "";
+    cursor: default;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 11;
+}
+
+.chart,
+.chart-container {
+    width: 100%;
+    height: 100%;
+}
+
+.input-control__hint p {
+    margin-top: 0;
+}
+
+.overlay {
+    opacity: 0.3;
+}

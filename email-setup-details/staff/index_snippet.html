@@ -1,0 +1,93 @@
+<!-- ================= SIDEBAR LINK ================= -->
+<a class="nav-link" id="navlink-email-events" data-section="email-events" onclick="panel.show('email-events')">
+  <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+  Email Events
+</a>
+
+<!-- ================= COMPOSER SECTION ================= -->
+<section id="section-email-events" class="panel-section">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Email Events</h1>
+      <p class="page-subtitle">Compose and broadcast custom HTML emails to users</p>
+    </div>
+  </div>
+
+  <!-- Subject Input -->
+  <div class="panel-card" style="margin-bottom: 16px;">
+    <div class="form-group" style="margin: 0;">
+      <label class="form-label" style="font-weight: 600;">Email Subject</label>
+      <input type="text" id="email-subject" class="form-control" placeholder="Enter email subject line..." style="font-size: 15px; padding: 12px 16px;">
+    </div>
+  </div>
+
+  <!-- Editor + Preview Split -->
+  <div class="email-composer">
+    <!-- Left: HTML Editor -->
+    <div class="email-editor-panel">
+      <div class="panel-card" style="height: 100%; display: flex; flex-direction: column;">
+        <div class="card-header" style="display: flex; align-items: center; justify-content: space-between;">
+          <h3 style="margin: 0;">✏️ HTML Code</h3>
+          <span style="font-size: 11px; color: var(--text-muted);">Paste raw HTML email code</span>
+        </div>
+        <textarea id="email-html-editor" class="email-editor-textarea" placeholder="Paste your raw HTML email code here..." spellcheck="false"></textarea>
+      </div>
+    </div>
+
+    <!-- Right: Live Preview -->
+    <div class="email-preview-panel">
+      <div class="panel-card" style="height: 100%; display: flex; flex-direction: column;">
+        <div class="card-header" style="display: flex; align-items: center; justify-content: space-between;">
+          <h3 style="margin: 0;">👁️ Live Preview</h3>
+          <span style="font-size: 11px; color: var(--text-muted);" id="email-preview-status">Waiting for HTML...</span>
+        </div>
+        <div class="email-preview-wrapper">
+          <iframe id="email-preview-frame" class="email-preview-frame" sandbox="allow-same-origin" title="Email Preview"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="panel-card" style="margin-top: 16px;">
+    <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+      <button class="btn btn-primary" style="padding: 12px 28px; font-size: 14px; font-weight: 600;" onclick="panel.sendEmailToAll()">
+        Send to All Users
+      </button>
+      <button class="btn" style="padding: 12px 28px; font-size: 14px; font-weight: 600; background: var(--info); color: #fff;" onclick="panel.openEmailUserSelector()">
+        Send to Specific Users
+      </button>
+      <div id="email-send-progress" style="display: none; margin-left: auto; font-size: 13px; color: var(--primary); font-weight: 600;">
+        <span class="spinner"></span>
+        <span id="email-send-progress-text">Sending...</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RECIPIENT SELECTOR MODAL ================= -->
+<div id="email-select-users-modal" class="modal hidden">
+  <div class="modal-overlay" onclick="panel.closeModal('email-select-users-modal')"></div>
+  <div class="modal-box" style="max-width: 580px; max-height: 85vh; display: flex; flex-direction: column;">
+    <div class="modal-header">
+      <h3>Select Recipients</h3>
+      <button class="modal-close" onclick="panel.closeModal('email-select-users-modal')">✕</button>
+    </div>
+    <div class="modal-body" style="padding: 16px 20px; display: flex; flex-direction: column; overflow: hidden; flex: 1;">
+      <div class="form-group" style="margin-bottom: 12px;">
+        <input type="text" id="email-user-search" class="form-control" placeholder="Search users..." oninput="panel.searchEmailUsers(this.value)">
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13px;">
+        <span style="color: var(--primary); font-weight: 600;">Selected: <span id="email-selected-count">0</span> users</span>
+        <a href="#" onclick="panel.clearEmailSelection(); return false;" style="color: var(--danger); font-size: 12px; text-decoration: none;">Clear All</a>
+      </div>
+      <div id="email-user-list" class="email-user-selector" style="flex: 1; overflow-y: auto; min-height: 200px; max-height: 400px;">
+        <!-- Filled dynamically by JavaScript -->
+      </div>
+    </div>
+    <div style="padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px;">
+      <button type="button" class="btn" style="flex: 1; background: #2a3a32; color: #fff;" onclick="panel.closeModal('email-select-users-modal')">Cancel</button>
+      <button type="button" id="email-send-selected-btn" class="btn btn-primary" style="flex: 2;" onclick="panel.sendEmailToSelected()" disabled>Send to 0 Users</button>
+    </div>
+  </div>
+</div>

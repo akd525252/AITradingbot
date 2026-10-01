@@ -1,0 +1,16 @@
+# Gain EX — Hostinger LiteSpeed / Apache Routing & Security Rules
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # 1. Direct access to existing physical files and directories (css, js, images, etc.)
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # 2. Route all SPA sub-routes (/trade, /wallet, /profile, /history, /deposit, /withdraw) to index.html
+  RewriteRule ^(.*)$ /index.html [L,QSA]
+</IfModule>
+
+# Disable directory listing to prevent 403 Forbidden directory errors
+Options -Indexes

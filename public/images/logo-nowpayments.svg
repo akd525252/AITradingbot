@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 40">
+  <rect width="220" height="40" rx="6" fill="#00C26F"/>
+  <text x="12" y="28" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF">NOW</text>
+  <text x="68" y="28" font-family="Arial,sans-serif" font-size="18" font-weight="300" fill="#FFFFFF">Payments</text>
+</svg>

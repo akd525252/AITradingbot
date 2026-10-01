@@ -1,0 +1,34 @@
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  
+  page.on('console', msg => {
+    console.log(`PAGE LOG [${msg.type()}]:`, msg.text());
+  });
+  
+  page.on('pageerror', err => {
+    console.log('PAGE ERROR:', err.message);
+  });
+
+  await page.goto('http://localhost:3000/index.html');
+  await page.waitForSelector('#login-username');
+  await page.type('#login-username', 'testuser'); // assume this user exists or the auth mock will accept it
+  await page.type('#login-password', 'password123');
+  await page.click('#login-submit-btn');
+  
+  // Wait a bit to let it load
+  await new Promise(r => setTimeout(r, 2000));
+  
+  // Try to click Trade tab if not already on it
+  await page.evaluate(() => {
+    if (app && app.navigateTo) {
+      app.navigateTo('trade');
+    }
+  });
+  
+  await new Promise(r => setTimeout(r, 2000));
+  
+  await browser.close();
+})();

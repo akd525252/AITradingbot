@@ -1,0 +1,298 @@
+const { fork } = require('child_process');
+const path = require('path');
+
+const PORT = 3001;
+let serverProcess = null;
+let authToken = '';
+let adminToken = '';
+let userId = null;
+
+// Helper to make API requests
+async function apiCall(method, endpoint, body = null, token = null) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  const options = {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : null
+  };
+  const res = await fetch(`http://localhost:${PORT}/api${endpoint}`, options);
+  const data = await res.json().catch(() => ({}));
+  return { status: res.status, data };
+}
+
+// Assert helper
+function assert(condition, message) {
+  if (!condition) {
+    console.error(`❌ ASSERTION FAILED: ${message}`);
+    cleanupAndExit(1);
+  } else {
+    console.log(`✅ ${message}`);
+  }
+}
+
+function cleanupAndExit(code = 0) {
+  if (serverProcess) {
+    console.log('Stopping test server...');
+    serverProcess.kill();
+  }
+  process.exit(code);
+}
+
+async function runTests() {
+  console.log('=============================================');
+  console.log('🚀 RUNNING AUTOMATED Gain EX TEST SUITE...');
+  console.log('=============================================');
+
+  const testUser = `testuser_${Date.now()}`;
+
+  // 1. Verify Admin credentials (seeded in DB automatically)
+  console.log('\n--- 1. ADMIN AUTH FLOW ---');
+  const loginAdmin = await apiCall('POST', '/auth/login', { username: 'admin', password: 'admin123' });
+  assert(loginAdmin.status === 200, 'Admin can log in successfully with seeded credentials');
+  assert(loginAdmin.data.user.role === 'admin', 'Admin user role matches "admin"');
+  adminToken = loginAdmin.data.token;
+  
+  // Reset combine settings to avoid test pollution
+  await apiCall('PUT', '/admin/trades/combine-control', { combine_trades_control: false, combine_trades_outcome: 'none' }, adminToken);
+
+  // 2. Try registering a user with INVALID invite code (should fail)
+  console.log('\n--- 2. SIGNUP CONTROLS ---');
+  const signupInvalidInvite = await apiCall('POST', '/auth/signup', { 
+    username: testUser, 
+    email: `${testUser}@test.com`,
+    phone_number: '1234567890',
+    password: 'password123',
+    confirm_password: 'password123',
+    invite_code: 'BADCODE',
+    full_name: 'Test User'
+  });
+  assert(signupInvalidInvite.status === 400, 'Signup fails if invite code is invalid');
+
+  // Register with seeded ADMIN777 invite code
+  const signupValid = await apiCall('POST', '/auth/signup', { 
+    username: testUser, 
+    email: `${testUser}@test.com`,
+    phone_number: '1234567890',
+    password: 'password123',
+    confirm_password: 'password123',
+    invite_code: 'ADMIN777',
+    full_name: 'Test User'
+  });
+  assert(signupValid.status === 201, 'Signup succeeds with valid admin invite code');
+
+  // 3. User Login
+  console.log('\n--- 3. CLIENT AUTH FLOW ---');
+  const loginUserEmail = await apiCall('POST', '/auth/login', { username: `${testUser}@test.com`, password: 'password123' });
+  assert(loginUserEmail.status === 200, 'User logs in successfully with email');
+
+  const loginUser = await apiCall('POST', '/auth/login', { username: testUser, password: 'password123' });
+  assert(loginUser.status === 200, 'User logs in successfully with username');
+  assert(loginUser.data.user.role === 'user', 'Client user role matches "user"');
+  assert(loginUser.data.user.balance === 0.0, 'New user starts with $0.00 balance');
+  authToken = loginUser.data.token;
+  userId = loginUser.data.user.id;
+
+  // Approve user's KYC so they can trade
+  const approveKyc = await apiCall('POST', `/admin/users/${userId}/kyc/approve`, null, adminToken);
+  assert(approveKyc.status === 200, 'Admin approves user KYC verification');
+
+  // 4. Try placing a trade with $0 balance (should fail)
+  console.log('\n--- 4. TRADING CORE PRE-CHECKS ---');
+  const tradeZeroBal = await apiCall('POST', '/client/trade', { coin: 'BTC', direction: 'UP', amount: 50, duration: 15 }, authToken);
+  assert(tradeZeroBal.status === 400, 'Trade placement rejected due to insufficient funds');
+
+  // 5. Submit deposit and approve it as admin
+  console.log('\n--- 5. DEPOSIT FLOW ---');
+  const submitDep = await apiCall('POST', '/client/deposit', { method: 'USDT', amount: 500, proof_text: 'TX-TEST-101' }, authToken);
+  assert(submitDep.status === 200, 'Deposit request submitted successfully');
+
+  // Fetch deposits as Admin
+  const adminDeps = await apiCall('GET', '/admin/deposits', null, adminToken);
+  assert(adminDeps.status === 200, 'Admin can list deposits');
+  const testDep = adminDeps.data.deposits.find(d => d.proof_text === 'TX-TEST-101');
+  assert(testDep !== undefined, 'Submitted deposit slip visible in Admin control panel');
+
+  // Approve deposit
+  const approveDep = await apiCall('PUT', `/admin/deposits/${testDep.id}/approve`, null, adminToken);
+  assert(approveDep.status === 200, 'Admin approved the deposit successfully');
+
+  // Verify client balance updated
+  const clientMe = await apiCall('GET', '/auth/me', null, authToken);
+  assert(clientMe.status === 200, 'Fetch client session info succeeds');
+  assert(clientMe.data.user.balance === 500.0, 'Client wallet balance reflects approved $500 deposit');
+
+  // 6. Execute Trade with balance & apply Admin Force Override outcome
+  console.log('\n--- 6. TRADE EXECUTION & OVERRIDE CONTROL ---');
+  const placeTrade = await apiCall('POST', '/client/trade', { coin: 'BTC', direction: 'UP', amount: 100, duration: 15 }, authToken);
+  assert(placeTrade.status === 200, 'Placed $100 UP contract on BTC successfully');
+  const tradeId = placeTrade.data.trade.id;
+  const payoutPct = placeTrade.data.trade.commission_pct || 85;
+  const winProfit = 100 * (payoutPct / 100);
+
+  // Verify balance deducted ($500 - $100 = $400)
+  const afterTradeMe = await apiCall('GET', '/auth/me', null, authToken);
+  assert(afterTradeMe.data.user.balance === 400.0, 'Stake escrowed: balance correctly shows $400');
+
+  // Force WIN outcome in admin monitor panel
+  const forceOutcome = await apiCall('PUT', `/admin/trades/${tradeId}/control`, { admin_control: 'win' }, adminToken);
+  assert(forceOutcome.status === 200, 'Admin forces WIN outcome on active trade contract');
+
+  // Wait for background worker to resolve trade
+  console.log('Waiting 24 seconds for trade countdown & resolution worker...');
+  await new Promise(resolve => setTimeout(resolve, 24000));
+
+  // Check client balance after winning ($400 + $100 + winProfit)
+  const expectedWinBal = 500 + winProfit;
+  const afterResolveMe = await apiCall('GET', '/auth/me', null, authToken);
+  assert(afterResolveMe.data.user.balance === expectedWinBal, `Trade resolved as WIN. Wallet balance shows payout $${expectedWinBal.toFixed(2)} (got: ${afterResolveMe.data && afterResolveMe.data.user ? afterResolveMe.data.user.balance : JSON.stringify(afterResolveMe.data)})`);
+
+  // 7. Withdrawal request and adjust amount before approval
+  console.log('\n--- 7a. WITHDRAWAL CONTROLS & LIMIT TESTS ---');
+  // First, disable withdrawals for this user via Admin Manage settings
+  const disableWithdraw = await apiCall('PUT', `/admin/users/${userId}/manage`, { withdraw_enabled: false }, adminToken);
+  assert(disableWithdraw.status === 200, 'Admin disables withdrawals for test user');
+
+  // Try to withdraw (should fail)
+  const withdrawDisabledTry = await apiCall('POST', '/client/withdraw', { method: 'USDT', amount: 50, payout_details: '0xTestPayoutAddress' }, authToken);
+  assert(withdrawDisabledTry.status === 403, 'Withdrawal rejected because withdrawals are disabled');
+
+  // Re-enable withdrawals but set a limit of $100
+  const setWithdrawLimit = await apiCall('PUT', `/admin/users/${userId}/manage`, { withdraw_enabled: true, withdraw_limit: 100 }, adminToken);
+  assert(setWithdrawLimit.status === 200, 'Admin enables withdrawals with a limit of $100');
+
+  // Try to withdraw $150 (should fail)
+  const withdrawOverLimitTry = await apiCall('POST', '/client/withdraw', { method: 'USDT', amount: 150, payout_details: '0xTestPayoutAddress' }, authToken);
+  assert(withdrawOverLimitTry.status === 400, 'Withdrawal rejected because it exceeds the $100 limit');
+
+  // Remove limit (set to 0)
+  const removeWithdrawLimit = await apiCall('PUT', `/admin/users/${userId}/manage`, { withdraw_enabled: true, withdraw_limit: 0 }, adminToken);
+  assert(removeWithdrawLimit.status === 200, 'Admin removes withdrawal limit');
+
+  console.log('\n--- 7b. WITHDRAWAL WITH ADMIN AMOUNT EDITING ---');
+  const submitWith = await apiCall('POST', '/client/withdraw', { method: 'USDT', amount: 200, payout_details: '0xTestPayoutAddress' }, authToken);
+  assert(submitWith.status === 200, 'Withdrawal request submitted successfully');
+
+  // Check balance after withdrawal submission (locked $200, balance: 300 + winProfit)
+  const expectedPreApproveBal = 300 + winProfit;
+  const preApproveMe = await apiCall('GET', '/auth/me', null, authToken);
+  assert(preApproveMe.data.user.balance === expectedPreApproveBal, `Balance escrowed: wallet balance shows $${expectedPreApproveBal.toFixed(2)} (got: ${preApproveMe.data && preApproveMe.data.user ? preApproveMe.data.user.balance : JSON.stringify(preApproveMe.data)})`);
+
+  // List withdrawals as Admin
+  const adminWiths = await apiCall('GET', '/admin/withdrawals', null, adminToken);
+  const testWith = adminWiths.data.withdrawals.find(w => w.payout_details === '0xTestPayoutAddress');
+  assert(testWith !== undefined, 'Withdrawal request visible in Admin panel');
+
+  // Approve withdrawal but edit amount down from $200 to $150
+  const approveAdjustWith = await apiCall('PUT', `/admin/withdrawals/${testWith.id}/approve`, { amount: 150 }, adminToken);
+  assert(approveAdjustWith.status === 200, 'Admin approved withdrawal and adjusted payout amount to $150');
+
+  // Client balance should be: pre-approve ($300 + winProfit) + $50 (refunded difference) = $350 + winProfit
+  const expectedPostApproveBal = 350 + winProfit;
+  const postApproveMe = await apiCall('GET', '/auth/me', null, authToken);
+  assert(postApproveMe.data.user.balance === expectedPostApproveBal, `Refunding works: client balance correctly refunded the $50 difference, showing $${expectedPostApproveBal.toFixed(2)} (got: ${postApproveMe.data && postApproveMe.data.user ? postApproveMe.data.user.balance : JSON.stringify(postApproveMe.data)})`);
+
+  // 8. Verify Combine Trades Control
+  console.log('\n--- 8. COMBINE TRADES CONTROL ---');
+  // Turn Combine Trades Control ON with 'lose' outcome
+  const enableCombine = await apiCall('PUT', '/admin/trades/combine-control', { combine_trades_control: true, combine_trades_outcome: 'lose' }, adminToken);
+  assert(enableCombine.status === 200, 'Admin turns ON Combine Trades Control with LOSE outcome');
+
+  // Place another trade as client
+  const placeTrade2 = await apiCall('POST', '/client/trade', { coin: 'BTC', direction: 'UP', amount: 100, duration: 15 }, authToken);
+  assert(placeTrade2.status === 200, 'Placed second $100 UP contract on BTC successfully');
+  const tradeId2 = placeTrade2.data.trade.id;
+
+  console.log('Waiting 24 seconds for second trade countdown & resolution worker...');
+  await new Promise(resolve => setTimeout(resolve, 24000));
+
+  // Since it was combine LOSE, user should have lost it and received no payout.
+  // Balance should still be: post-approve ($350 + winProfit) - $100 (stake) = $250 + winProfit
+  const expectedFinalBal = 250 + winProfit;
+  const afterResolve2Me = await apiCall('GET', '/auth/me', null, authToken);
+  assert(afterResolve2Me.data.user.balance === expectedFinalBal, `Combine trades overrides and resolves trade as LOSE. Wallet balance shows $${expectedFinalBal.toFixed(2)} (got: ${afterResolve2Me.data && afterResolve2Me.data.user ? afterResolve2Me.data.user.balance : JSON.stringify(afterResolve2Me.data)})`);
+
+  // Turn Combine Trades Control OFF
+  const disableCombine = await apiCall('PUT', '/admin/trades/combine-control', { combine_trades_control: false, combine_trades_outcome: 'none' }, adminToken);
+  assert(disableCombine.status === 200, 'Admin turns OFF Combine Trades Control');
+
+  // 6. Test Document descriptions update and fetch
+  console.log('\n--- 6. DOCUMENT DESCRIPTIONS EDIT & GET ---');
+  const initialDocs = await apiCall('GET', '/public/documents');
+  assert(initialDocs.status === 200, 'Public documents fetch returns 200');
+  
+  const updateDocs = await apiCall('PUT', '/admin/settings', {
+    terms_description: '<p>Updated Terms</p>',
+    policy_description: '<p>Updated Policy</p>',
+    faq_description: '<p>Updated FAQ</p>'
+  }, adminToken);
+  assert(updateDocs.status === 200, 'Admin can update document descriptions');
+
+  const finalDocs = await apiCall('GET', '/public/documents');
+  assert(finalDocs.status === 200, 'Public documents fetched after update');
+  assert(finalDocs.data.terms_description === '<p>Updated Terms</p>', 'Updated terms matches');
+  assert(finalDocs.data.policy_description === '<p>Updated Policy</p>', 'Updated policy matches');
+  assert(finalDocs.data.faq_description === '<p>Updated FAQ</p>', 'Updated FAQ matches');
+
+  // 9. Test Currency Conversion & Rates
+  console.log('\n--- 9. CURRENCY CONVERSION & RATES ---');
+  
+  const updateRates = await apiCall('PUT', '/admin/settings', {
+    currency_rate_PKR: '278.0',
+    currency_rate_USD: '1.0'
+  }, adminToken);
+  assert(updateRates.status === 200, 'Admin can set currency rates in settings');
+
+  const publicRates = await apiCall('GET', '/public/currencies');
+  assert(publicRates.status === 200, 'Public currencies fetch returns 200');
+  assert(publicRates.data.currencies !== undefined, 'Public currencies returns object');
+  assert(publicRates.data.currencies.PKR === 278.0, 'PKR exchange rate is correct');
+  assert(publicRates.data.currencies.USD === 1.0, 'USD exchange rate is correct');
+
+  const currentMe = await apiCall('GET', '/auth/me', null, authToken);
+  assert((currentMe.data.user.currency || 'USD') === 'USD', 'User default currency is USD');
+  const usdBalance = currentMe.data.user.balance;
+  const usdDemoBalance = currentMe.data.user.demo_balance || 10000;
+
+  const convertReq = await apiCall('POST', '/client/convert', { targetCurrency: 'PKR' }, authToken);
+  assert(convertReq.status === 200, 'Conversion to PKR is successful');
+  assert(convertReq.data.user.currency === 'PKR', 'User currency updated to PKR');
+  
+  const expectedPkrBal = usdBalance * 278.0;
+  const expectedPkrDemoBal = usdDemoBalance; // Demo balance remains in USD and is not converted
+  
+  assert(Math.abs(convertReq.data.user.balance - expectedPkrBal) < 0.01, 'Converted real balance matches exchange rate calculation');
+  assert(Math.abs(convertReq.data.user.demo_balance - expectedPkrDemoBal) < 0.01, 'Demo balance remains unchanged in USD');
+
+  const clientHistory = await apiCall('GET', '/client/history', null, authToken);
+  assert(clientHistory.status === 200, 'User transaction history fetch succeeds');
+  const convLedger = clientHistory.data.ledger.find(l => l.description && l.description.toLowerCase().includes('convert'));
+  assert(convLedger !== undefined, 'Conversion record exists in ledger transaction history');
+
+  console.log('\n=============================================');
+  console.log('🎉 ALL AUTOMATED INTEGRATION TESTS PASSED!');
+  console.log('=============================================');
+  cleanupAndExit(0);
+}
+
+// Start the server process and listen
+console.log('Spawning test server...');
+serverProcess = fork(path.join(__dirname, 'server', 'index.js'), {
+  env: { ...process.env, PORT, NODE_ENV: 'test' },
+  silent: true
+});
+
+serverProcess.stdout.on('data', (data) => {
+  const line = data.toString();
+  console.log('Server:', line.trim());
+  if (line.includes('running at:')) {
+    // Server started, run tests
+    runTests();
+  }
+});
+
+serverProcess.stderr.on('data', (data) => {
+  console.error('Server Error:', data.toString());
+});

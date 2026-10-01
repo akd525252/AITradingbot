@@ -1,0 +1,11 @@
+const http = require('http');
+http.get('http://localhost:3000/api/client/coins', (res) => {
+  let data = '';
+  res.on('data', (chunk) => { data += chunk; });
+  res.on('end', () => {
+    console.log('STATUS:', res.statusCode);
+    console.log('DATA:', data);
+  });
+}).on('error', (err) => {
+  console.log('ERROR:', err.message);
+});

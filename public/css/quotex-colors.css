@@ -1,0 +1,317 @@
+﻿/* QUOTEX THEME OVERRIDE - Apply Quotex colors without breaking functionality */
+
+:root {
+  /* Quotex Backgrounds */
+  --bg-main: #1c1f2d !important;
+  --bg-card: #272a37 !important;
+  --bg-card-hover: #2f3241 !important;
+  --border-color: rgba(255, 255, 255, 0.1) !important;
+  
+  /* Quotex Blue - Flat only */
+  --primary: #2b99ff !important;
+  --primary-hover: #5bacff !important;
+  --primary-dark: #026fd3 !important;
+  --primary-light: rgba(43, 153, 255, 0.15) !important;
+  
+  /* Quotex Text */
+  --text-secondary: #9a9da6 !important;
+  --text-muted: #676b79 !important;
+  
+  /* Quotex UP/DOWN - Flat only */
+  --success: #0faf59 !important;
+  --success-hover: #0cc555 !important;
+  --danger: #ff6251 !important;
+  --danger-hover: #ff7a6c !important;
+  
+  /* Sharper Quotex corners */
+  --radius-sm: 4px !important;
+  --radius-md: 8px !important;
+  --radius-lg: 12px !important;
+  
+  /* Subtle shadows */
+  --shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.25) !important;
+  --transition: all 0.2s linear !important;
+}
+
+/* Remove ALL gradients - use flat colors */
+body {
+  background-color: var(--bg-main) !important;
+  background-image: none !important;
+}
+
+/* Flat button backgrounds - NO gradients */
+.btn-primary,
+.trade-btn-up,
+.tc-btn-up {
+  background: var(--success) !important;
+  background-image: none !important;
+  box-shadow: 0 4px 10px 0 rgba(15, 175, 89, 0.25) !important;
+}
+
+.trade-btn-down,
+.tc-btn-down {
+  background: var(--danger) !important;
+  background-image: none !important;
+  box-shadow: 0 4px 10px 0 rgba(255, 98, 81, 0.25) !important;
+}
+
+.btn-primary:not(.trade-btn-up):not(.tc-btn-up) {
+  background: var(--primary) !important;
+  background-image: none !important;
+  box-shadow: 0 4px 10px 0 rgba(43, 153, 255, 0.25) !important;
+}
+
+/* Flat wallet button - NO gradient */
+.nav-wallet-circle {
+  background: var(--primary) !important;
+  background-image: none !important;
+}
+
+/* Flat dashboard card - NO gradient */
+.dashboard-balance-card {
+  background: var(--bg-card) !important;
+  background-image: none !important;
+}
+
+/* Import Roboto font */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
+
+body, .app-container, * {
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+}
+/* ========================================
+   REMOVE ALL GRADIENTS - MAKE EVERYTHING FLAT
+   ======================================== */
+
+/* Remove body gradients */
+body {
+  background: var(--bg-main) !important;
+  background-color: var(--bg-main) !important;
+  background-image: none !important;
+}
+
+/* Remove ALL button gradients */
+.btn, .btn-primary, .btn-secondary, .btn-danger,
+button, input[type=submit], input[type=button] {
+  background-image: none !important;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover) !important;
+  background-image: none !important;
+}
+
+/* Remove navigation gradients */
+.app-nav, .app-header {
+  background-image: none !important;
+}
+
+/* Remove card gradients */
+.card, .dashboard-balance-card, .wallet-balance-card {
+  background: var(--bg-card) !important;
+  background-image: none !important;
+}
+
+.card.dashboard-balance-card:hover,
+.card.wallet-balance-card:hover {
+  background: var(--bg-card-hover) !important;
+  background-image: none !important;
+}
+
+/* Remove decorative gradient circles */
+.dashboard-balance-card::before {
+  background: transparent !important;
+  background-image: none !important;
+}
+
+/* Remove wallet button gradient */
+.nav-wallet-circle, .nav-wallet-center {
+  background: var(--primary) !important;
+  background-image: none !important;
+}
+
+.nav-wallet-center.active .nav-wallet-circle {
+  background: var(--primary-hover) !important;
+  background-image: none !important;
+}
+
+/* Remove trade button gradients */
+.trade-btn, .trade-btn-up, .trade-btn-down,
+.tc-btn-up, .tc-btn-down, .tc-trade-btn {
+  background-image: none !important;
+}
+
+.trade-btn-up, .tc-btn-up {
+  background: var(--success) !important;
+  background-image: none !important;
+}
+
+.trade-btn-up:hover, .tc-btn-up:hover {
+  background: var(--success-hover) !important;
+  background-image: none !important;
+}
+
+.trade-btn-down, .tc-btn-down {
+  background: var(--danger) !important;
+  background-image: none !important;
+}
+
+.trade-btn-down:hover, .tc-btn-down:hover {
+  background: var(--danger-hover) !important;
+  background-image: none !important;
+}
+
+/* Remove specific trade control button gradients */
+.tc-action-buttons .tc-btn-up {
+  background: var(--success) !important;
+  background-image: none !important;
+}
+
+.tc-action-buttons .tc-btn-down {
+  background: var(--danger) !important;
+  background-image: none !important;
+}
+
+/* Remove admin badge gradient */
+.admin-badge {
+  background: var(--success) !important;
+  background-image: none !important;
+}
+
+/* Remove toast notification gradients */
+.toast-success::before, .toast-success::after {
+  background: var(--success) !important;
+  background-image: none !important;
+}
+
+.toast-error::before, .toast-error::after {
+  background: var(--danger) !important;
+  background-image: none !important;
+}
+
+.toast-warning::before, .toast-warning::after {
+  background: #f59e0b !important;
+  background-image: none !important;
+}
+
+.toast-info::before, .toast-info::after {
+  background: var(--primary) !important;
+  background-image: none !important;
+}
+
+.toast-trade-up::before, .toast-trade-up::after {
+  background: var(--success) !important;
+  background-image: none !important;
+}
+
+.toast-trade-down::before, .toast-trade-down::after {
+  background: var(--danger) !important;
+  background-image: none !important;
+}
+
+.toast-trade-win::before, .toast-trade-win::after {
+  background: #f59e0b !important;
+  background-image: none !important;
+}
+
+.toast-trade-lose::before, .toast-trade-lose::after {
+  background: #6b7280 !important;
+  background-image: none !important;
+}
+
+/* Remove API icon gradients */
+.api-icon.crypto { background: #f7931a !important; background-image: none !important; }
+.api-icon.eth { background: #627eea !important; background-image: none !important; }
+.api-icon.sol { background: #9945ff !important; background-image: none !important; }
+.api-icon.bnb { background: #f3ba2f !important; background-image: none !important; }
+.api-icon.xrp { background: #00aae4 !important; background-image: none !important; }
+.api-icon.forex { background: #2c5f8a !important; background-image: none !important; }
+.api-icon.default { background: #374151 !important; background-image: none !important; }
+
+/* Remove sentiment bar gradients */
+.sentiment-bar-green {
+  background: var(--success) !important;
+  background-image: none !important;
+}
+
+.sentiment-bar-red {
+  background: var(--danger) !important;
+  background-image: none !important;
+}
+
+/* Remove KYC modal gradients */
+.kyc-modal-content {
+  background: var(--bg-card) !important;
+  background-image: none !important;
+}
+
+.kyc-step-dot.active {
+  background: var(--primary) !important;
+  background-image: none !important;
+}
+
+.kyc-btn-primary {
+  background: var(--primary) !important;
+  background-image: none !important;
+}
+
+/* Remove logo text gradient */
+.app-logo-text {
+  background: transparent !important;
+  background-image: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Remove all linear-gradient and radial-gradient globally */
+* {
+  background-image: none !important;
+}
+
+/* Force flat backgrounds everywhere */
+[style*='linear-gradient'], [style*='radial-gradient'] {
+  background-image: none !important;
+}
+
+/* ========================================
+   CRYPTO LOGOS IN ASSET PICKER
+   ======================================== */
+
+/* Add logo space in asset picker items */
+.asset-picker-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.asset-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+/* Crypto color coding for logos */
+.asset-logo[data-coin="BTC"] { background: #f7931a !important; color: #fff !important; }
+.asset-logo[data-coin="ETH"] { background: #627eea !important; color: #fff !important; }
+.asset-logo[data-coin="SOL"] { background: #9945ff !important; color: #fff !important; }
+.asset-logo[data-coin="BNB"] { background: #f3ba2f !important; color: #000 !important; }
+.asset-logo[data-coin="DOGE"] { background: #c2a633 !important; color: #fff !important; }
+.asset-logo[data-coin="XRP"] { background: #00aae4 !important; color: #fff !important; }
+.asset-logo[data-coin="ADA"] { background: #0033ad !important; color: #fff !important; }
+.asset-logo[data-coin="AVAX"] { background: #e84142 !important; color: #fff !important; }
+.asset-logo[data-coin="MATIC"] { background: #8247e5 !important; color: #fff !important; }
+.asset-logo[data-coin="LINK"] { background: #2a5ada !important; color: #fff !important; }
+.asset-logo[data-coin="LTC"] { background: #345d9d !important; color: #fff !important; }
+.asset-logo[data-coin="DOT"] { background: #e6007a !important; color: #fff !important; }
+.asset-logo[data-coin="TRX"] { background: #ef0027 !important; color: #fff !important; }
+.asset-logo[data-coin="UNI"] { background: #ff007a !important; color: #fff !important; }
+.asset-logo[data-coin="ATOM"] { background: #2e3148 !important; color: #fff !important; }

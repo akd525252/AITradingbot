@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Allow: /landing.html
+Allow: /sitemap.xml
+
+# Disallow secure areas, admin panels, and backend APIs
+Disallow: /staff/
+Disallow: /api/
+Disallow: /admin/
+Disallow: /client/
+
+Sitemap: https://gainexmarket.com/sitemap.xml

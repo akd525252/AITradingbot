@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.gainexmarket.twa",
+      "sha256_cert_fingerprints": [
+        "BC:08:9F:59:F1:8E:2E:3B:A9:C5:EA:99:10:89:F0:50:4D:8C:CD:F2:1A:C5:FC:D4:78:C5:A1:C7:04:78:5F:73"
+      ]
+    }
+  }
+]

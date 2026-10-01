@@ -1,0 +1,758 @@
+========================================================================
+GAIN EX — ADMIN CUSTOM HTML EMAIL BROADCAST SYSTEM SETUP GUIDE
+========================================================================
+
+This file contains the complete instructions, configurations, and code blocks
+required to re-implement the Admin Custom HTML Email Broadcast & Targeted Delivery system.
+
+---
+SECTION 1: ARCHITECTURAL OVERVIEW
+---
+
+1. Frontend UI:
+   An "Email Events" section is added to the Staff Panel under Admin Tools. 
+   It has a split editor-preview layout (HTML input on the left, sandboxed iframe on the right).
+   It contains button options to broadcast to all active users, or to search and choose
+   specific recipients from a modal checklist.
+
+2. Backend routes:
+   Two admin-only endpoints are registered in server/routes.js:
+   - POST /admin/email/send (targeted list of user IDs)
+   - POST /admin/email/send-all (bulk active users broadcast)
+   These fetch emails from the DB and invoke the Supabase Edge Function to deliver them.
+   A 100ms throttle is enforced during loops to prevent Resend API rate limits.
+
+3. Deno Edge Function:
+   The send-system-email function deployed on Supabase handles API connections, retrieves the
+   RESEND_API_KEY secret from the vault, formats the email template, and posts to Resend.
+
+---
+SECTION 2: SUPABASE EDGE FUNCTION CODE
+---
+File Location: supabase/functions/send-system-email/index.ts
+Deploy command: supabase functions deploy send-system-email
+Secret command: supabase secrets set RESEND_API_KEY="your-resend-api-key"
+
+[CODE START]
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
+  try {
+    const { to_email, email_type, template_vars } = await req.json();
+
+    if (!to_email || !email_type) {
+      return new Response(JSON.stringify({ error: "Missing required fields: to_email or email_type" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    if (!resendApiKey) {
+      return new Response(JSON.stringify({ error: "RESEND_API_KEY secret is not set in Supabase" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    let subject = "";
+    let htmlContent = "";
+
+    const row = (label: string, value: string) => `
+      <tr>
+        <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: #94a3b8; font-size: 14px;">${label}</td>
+        <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: #f8fafc; font-size: 14px; font-weight: 600; text-align: right;">${value}</td>
+      </tr>
+    `;
+
+    const wrapTemplate = (title: string, bodyText: string, contentTable: string = "", actionUrl: string = "", actionText: string = "") => {
+      const buttonHtml = actionUrl ? `
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${actionUrl}" style="background-color: #1ab76d; color: #ffffff; padding: 12px 30px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; display: inline-block; box-shadow: 0 4px 12px rgba(26,183,109,0.3);">${actionText}</a>
+        </div>
+      ` : "";
+
+      const tableHtml = contentTable ? `
+        <div style="background-color: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 15px 20px; margin: 25px 0;">
+          <table style="width: 100%; border-collapse: collapse;">
+            ${contentTable}
+          </table>
+        </div>
+      ` : "";
+
+      return `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${title}</title></head><body style="margin: 0; padding: 0; background-color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; color: #f8fafc;"><table role="presentation" style="width: 100%; background-color: #0f172a; padding: 40px 20px;"><tr><td align="center"><table role="presentation" style="width: 100%; max-width: 580px; background-color: #1e293b; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: left;"><tr><td style="text-align: center; padding-bottom: 30px;"><div style="font-size: 24px; font-weight: 800; letter-spacing: 1px; color: #1ab76d;">GAIN EX <span style="color: #ffffff; font-weight: 400;">MARKET</span></div></td></tr><tr><td><h2 style="margin: 0 0 15px 0; font-size: 20px; font-weight: 700; color: #ffffff;">${title}</h2><div style="font-size: 15px; line-height: 1.6; color: #cbd5e1; margin-bottom: 20px;">${bodyText}</div>${tableHtml}${buttonHtml}</td></tr><tr><td style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 25px; margin-top: 30px; text-align: center; color: #64748b; font-size: 11px; line-height: 1.5;"><p style="margin: 0 0 10px 0;">This email is sent automatically by Gain EX Market Security System.</p><p style="margin: 0 0 10px 0;">If you did not request this email or have any security concerns, please contact our support team immediately.</p><p style="margin: 0;">&copy; 2026 Gain EX Market. All rights reserved.</p></td></tr></table></td></tr></table></body></html>`;
+    };
+
+    const vars = template_vars || {};
+    const uName = vars.full_name || vars.username || "Trader";
+
+    switch (email_type) {
+      case "custom_email":
+        subject = vars.subject || "Message from Gain EX Market";
+        htmlContent = vars.html_content || wrapTemplate("Message from Gain EX Market", "You have a new message from Gain EX Market.");
+        break;
+
+      case "signup_success":
+        subject = "Welcome to Gain EX Market! Verification Complete";
+        htmlContent = wrapTemplate("Email Verified Successfully", `Hello ${uName},<br><br>Thank you for verifying your email address. Your account registration is now fully complete! You have gained access to all the trading platforms, real-time charts, and market indicators.<br><br>Start your trading journey by making a deposit or practicing with your demo account.`, "", "https://gainexmarket.com/login", "Login to Dashboard");
+        break;
+
+      case "kyc_submitted":
+        subject = "KYC Documents Submitted Successfully";
+        htmlContent = wrapTemplate("KYC Verification Pending", `Hello ${uName},<br><br>Your identity verification (KYC) documents have been received successfully. Our compliance team is currently reviewing your submission. You will receive an email update as soon as the review is complete (usually within 12-24 hours).`, row("Submitted By", uName) + row("Verification Status", "Pending Review") + row("Submitted Time", new Date().toLocaleString()));
+        break;
+
+      case "kyc_under_review":
+        subject = "KYC Documents Under Review";
+        htmlContent = wrapTemplate("KYC Review in Progress", `Hello ${uName},<br><br>We wanted to let you know that your identity verification documents are now actively under review by our compliance desk. No further action is required from your side at this moment.`);
+        break;
+
+      case "kyc_verified":
+        subject = "KYC Verification Approved!";
+        htmlContent = wrapTemplate("Account Verified Successfully", `Hello ${uName},<br><br>Congratulations! Your identity verification (KYC) has been fully approved by our security and compliance team. Your account limits have been updated, and you can now perform withdrawals and real-account trading without restrictions.`, row("Verification Status", "APPROVED") + row("Limit Level", "Full Unrestricted Access"), "https://gainexmarket.com/dashboard", "Go to Trading Desk");
+        break;
+
+      case "kyc_rejected":
+        subject = "KYC Verification Rejected";
+        const rejectReason = vars.reason || "The uploaded documents were unclear or did not match the profile details.";
+        htmlContent = wrapTemplate("KYC Review Failed", `Hello ${uName},<br><br>Unfortunately, your identity verification (KYC) application was rejected. Please review the reason below and submit valid documents to verify your account.`, row("Verification Status", "REJECTED") + row("Rejection Reason", rejectReason), "https://gainexmarket.com/kyc", "Re-submit KYC Documents");
+        break;
+
+      case "deposit_created":
+        subject = `Pending Deposit Request Created - $${vars.amount}`;
+        htmlContent = wrapTemplate("Deposit Request Initiated", `Hello ${uName},<br><br>You have successfully initiated a pending deposit request. Please make the payment according to the selected method instructions. Once completed, our staff will verify and credit your account.`, row("Transaction ID", vars.transaction_id || "N/A") + row("Method", vars.method || "N/A") + row("Amount Requested", `$${vars.amount} ${vars.currency || "USD"}`) + row("Status", "Pending Verification"));
+        break;
+
+      case "deposit_approved":
+        subject = `Deposit Approved & Credited - $${vars.amount}`;
+        htmlContent = wrapTemplate("Deposit Successfully Credited", `Hello ${uName},<br><br>Great news! Your deposit request has been approved and credited to your account balance. You can start trading on your Real Account immediately.`, row("Transaction ID", vars.transaction_id || "N/A") + row("Amount Credited", `$${vars.amount} ${vars.currency || "USD"}`) + row("Status", "COMPLETED") + row("New Balance", `$${vars.new_balance || "N/A"}`), "https://gainexmarket.com/dashboard", "Start Trading");
+        break;
+
+      case "deposit_rejected":
+        subject = `Deposit Request Rejected - $${vars.amount}`;
+        const depReason = vars.reason || "Payment proof was missing, incorrect, or could not be verified.";
+        htmlContent = wrapTemplate("Deposit Verification Failed", `Hello ${uName},<br><br>We were unable to verify your deposit request. The transaction has been rejected.`, row("Transaction ID", vars.transaction_id || "N/A") + row("Amount", `$${vars.amount} ${vars.currency || "USD"}`) + row("Rejection Reason", depReason));
+        break;
+
+      case "withdrawal_code":
+        subject = `${vars.code} is your Withdrawal Verification Code`;
+        htmlContent = wrapTemplate("Withdrawal Security Code", `Hello ${uName},<br><br>You requested a verification code to authorize a withdrawal. Please enter the code below on the withdrawal page to submit your request.<br><br>This code is valid for **5 minutes** only. If you did not initiate this request, please secure your account immediately.`, `<tr><td colspan="2" style="text-align: center; padding: 20px 0;"><span style="font-size: 32px; font-weight: 800; letter-spacing: 6px; color: #1ab76d; background-color: rgba(26,183,109,0.1); border: 1px dashed #1ab76d; padding: 10px 25px; border-radius: 8px;">${vars.code}</span></td></tr>`);
+        break;
+
+      case "withdrawal_submitted":
+        subject = `Withdrawal Request Received - $${vars.amount}`;
+        htmlContent = wrapTemplate("Withdrawal Pending Approval", `Hello ${uName},<br><br>Your withdrawal request has been successfully submitted and is now pending review by our financial desk. Approvals are processed within 1 to 3 business hours.`, row("Transaction ID", vars.transaction_id || "N/A") + row("Requested Amount", `$${vars.amount} ${vars.currency || "USD"}`) + row("Withdrawal Method", vars.method || "N/A") + row("Destination", vars.destination || "N/A") + row("Status", "Pending Review"));
+        break;
+
+      case "withdrawal_approved":
+        subject = `Withdrawal Approved & Processed - $${vars.amount}`;
+        htmlContent = wrapTemplate("Withdrawal Request Completed", `Hello ${uName},<br><br>Your withdrawal request has been approved and successfully processed. The funds have been sent to your designated destination.`, row("Transaction ID", vars.transaction_id || "N/A") + row("Amount Sent", `$${vars.amount} ${vars.currency || "USD"}`) + row("Destination Wallet", vars.destination || "N/A") + row("Status", "SUCCESSFUL"));
+        break;
+
+      case "withdrawal_rejected":
+        subject = `Withdrawal Request Rejected - $${vars.amount}`;
+        const withReason = vars.reason || "Incorrect wallet address details or insufficient trading volume.";
+        htmlContent = wrapTemplate("Withdrawal Request Denied", `Hello ${uName},<br><br>Your withdrawal request has been rejected by our compliance/financial desk. The funds have been refunded back to your account balance.`, row("Transaction ID", vars.transaction_id || "N/A") + row("Amount Refunded", `$${vars.amount} ${vars.currency || "USD"}`) + row("Rejection Reason", withReason));
+        break;
+
+      case "bonus_claim":
+        subject = `Bonus Successfully Claimed - $${vars.amount}`;
+        htmlContent = wrapTemplate("Promo Bonus Credited", `Hello ${uName},<br><br>You have successfully claimed a bonus on our platform! The bonus amount has been credited to your balance.`, row("Bonus Program", vars.bonus_name || "Promotion") + row("Bonus Amount", `$${vars.amount}`) + row("Description", vars.description || "N/A"));
+        break;
+
+      default:
+        return new Response(JSON.stringify({ error: `Unsupported email_type: ${email_type}` }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+    }
+
+    const resendRes = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${resendApiKey}`,
+      },
+      body: JSON.stringify({
+        from: "Gain EX Market <noreply@gainexmarket.com>",
+        to: [to_email],
+        subject: subject,
+        html: htmlContent,
+      }),
+    });
+
+    const resendData = await resendRes.json();
+
+    if (!resendRes.ok) {
+      return new Response(JSON.stringify({ error: "Resend API Error", details: resendData }), {
+        status: resendRes.status,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    return new Response(JSON.stringify({ success: true, message: "Email sent successfully", id: resendData.id }), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+});
+[CODE END]
+
+---
+SECTION 3: BACKEND API ENDPOINTS
+---
+File Location: server/routes.js
+Insert position: Before the closing module.exports statement
+
+[CODE START]
+// --- ADMIN: SEND CUSTOM EMAIL TO SPECIFIC USERS ---
+router.post('/admin/email/send', authenticateToken, requireRole(['admin']), async (req, res) => {
+  try {
+    const { subject, html_content, user_ids } = req.body;
+    if (!subject || !html_content) {
+      return res.status(400).json({ error: 'Subject and HTML content are required.' });
+    }
+    if (!user_ids || !Array.isArray(user_ids) || user_ids.length === 0) {
+      return res.status(400).json({ error: 'At least one user must be selected.' });
+    }
+
+    const db = await getDB();
+    const placeholders = user_ids.map(() => '?').join(',');
+    const users = await db.all(`SELECT id, email, username, full_name FROM users WHERE id IN (${placeholders}) AND email IS NOT NULL`, user_ids);
+
+    let sent = 0, failed = 0;
+    for (const user of users) {
+      try {
+        const ok = await sendSystemEmail(user.email, 'custom_email', {
+          subject,
+          html_content,
+          username: user.username,
+          full_name: user.full_name
+        });
+        if (ok) sent++; else failed++;
+      } catch (e) {
+        console.error(`[EMAIL] Failed to send custom email to ${user.email}:`, e.message);
+        failed++;
+      }
+      // Small delay to respect rate limits
+      await new Promise(r => setTimeout(r, 100));
+    }
+
+    res.json({ success: true, sent, failed, total: users.length });
+  } catch (err) {
+    console.error('[EMAIL] Error sending custom emails:', err.message);
+    res.status(500).json({ error: 'Failed to send emails: ' + err.message });
+  }
+});
+
+// --- ADMIN: SEND CUSTOM EMAIL TO ALL ACTIVE USERS ---
+router.post('/admin/email/send-all', authenticateToken, requireRole(['admin']), async (req, res) => {
+  try {
+    const { subject, html_content } = req.body;
+    if (!subject || !html_content) {
+      return res.status(400).json({ error: 'Subject and HTML content are required.' });
+    }
+
+    const db = await getDB();
+    const users = await db.all(`SELECT id, email, username, full_name FROM users WHERE status = 'active' AND email IS NOT NULL`);
+
+    if (!users || users.length === 0) {
+      return res.json({ success: true, sent: 0, failed: 0, total: 0, message: 'No active users with email addresses found.' });
+    }
+
+    let sent = 0, failed = 0;
+    for (const user of users) {
+      try {
+        const ok = await sendSystemEmail(user.email, 'custom_email', {
+          subject,
+          html_content,
+          username: user.username,
+          full_name: user.full_name
+        });
+        if (ok) sent++; else failed++;
+      } catch (e) {
+        console.error(`[EMAIL] Failed to send bulk email to ${user.email}:`, e.message);
+        failed++;
+      }
+      // Rate limit: 100ms between each send
+      await new Promise(r => setTimeout(r, 100));
+    }
+
+    res.json({ success: true, sent, failed, total: users.length });
+  } catch (err) {
+    console.error('[EMAIL] Error sending bulk emails:', err.message);
+    res.status(500).json({ error: 'Failed to send bulk emails: ' + err.message });
+  }
+});
+[CODE END]
+
+---
+SECTION 4: STAFF UI HTML
+---
+File Location: staff/index.html
+
+A. Sidebar Link: Insert under sidebar nav (e.g. after Trade Options navlink)
+[CODE START]
+<a class="nav-link" id="navlink-email-events" data-section="email-events" onclick="panel.show('email-events')">
+  <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+  Email Events
+</a>
+[CODE END]
+
+B. Main Composer Section: Insert before "GLOBAL MODALS CONTAINER"
+[CODE START]
+<!-- ======== EMAIL EVENTS SECTION ======== -->
+<section id="section-email-events" class="panel-section">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Email Events</h1>
+      <p class="page-subtitle">Compose and broadcast custom HTML emails to users</p>
+    </div>
+  </div>
+
+  <!-- Subject Input -->
+  <div class="panel-card" style="margin-bottom: 16px;">
+    <div class="form-group" style="margin: 0;">
+      <label class="form-label" style="font-weight: 600;">Email Subject</label>
+      <input type="text" id="email-subject" class="form-control" placeholder="Enter email subject line..." style="font-size: 15px; padding: 12px 16px;">
+    </div>
+  </div>
+
+  <!-- Editor + Preview Split -->
+  <div class="email-composer">
+    <!-- Left: HTML Editor -->
+    <div class="email-editor-panel">
+      <div class="panel-card" style="height: 100%; display: flex; flex-direction: column;">
+        <div class="card-header" style="display: flex; align-items: center; justify-content: space-between;">
+          <h3 style="margin: 0;">✏️ HTML Code</h3>
+          <span style="font-size: 11px; color: var(--text-muted);">Paste raw HTML email code</span>
+        </div>
+        <textarea id="email-html-editor" class="email-editor-textarea" placeholder="Paste your raw HTML email code here..." spellcheck="false"></textarea>
+      </div>
+    </div>
+
+    <!-- Right: Live Preview -->
+    <div class="email-preview-panel">
+      <div class="panel-card" style="height: 100%; display: flex; flex-direction: column;">
+        <div class="card-header" style="display: flex; align-items: center; justify-content: space-between;">
+          <h3 style="margin: 0;">👁️ Live Preview</h3>
+          <span style="font-size: 11px; color: var(--text-muted);" id="email-preview-status">Waiting for HTML...</span>
+        </div>
+        <div class="email-preview-wrapper">
+          <iframe id="email-preview-frame" class="email-preview-frame" sandbox="allow-same-origin" title="Email Preview"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="panel-card" style="margin-top: 16px;">
+    <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+      <button class="btn btn-primary" style="padding: 12px 28px; font-size: 14px; font-weight: 600;" onclick="panel.sendEmailToAll()">
+        <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: currentColor; vertical-align: middle; margin-right: 6px;"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        Send to All Users
+      </button>
+      <button class="btn" style="padding: 12px 28px; font-size: 14px; font-weight: 600; background: var(--info); color: #fff;" onclick="panel.openEmailUserSelector()">
+        <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: currentColor; vertical-align: middle; margin-right: 6px;"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        Send to Specific Users
+      </button>
+      <div id="email-send-progress" style="display: none; margin-left: auto; font-size: 13px; color: var(--primary); font-weight: 600;">
+        <span class="spinner" style="display: inline-block; width: 14px; height: 14px; border: 2px solid var(--primary); border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 6px;"></span>
+        <span id="email-send-progress-text">Sending...</span>
+      </div>
+    </div>
+  </div>
+</section>
+[CODE END]
+
+C. User Selector Modal: Insert inside "global-modals-container"
+[CODE START]
+<!-- Email User Selector Modal -->
+<div id="email-select-users-modal" class="modal hidden">
+  <div class="modal-overlay" onclick="panel.closeModal('email-select-users-modal')"></div>
+  <div class="modal-box" style="max-width: 580px; max-height: 85vh; display: flex; flex-direction: column;">
+    <div class="modal-header">
+      <h3>Select Recipients</h3>
+      <button class="modal-close" onclick="panel.closeModal('email-select-users-modal')">✕</button>
+    </div>
+    <div class="modal-body" style="padding: 16px 20px; display: flex; flex-direction: column; overflow: hidden; flex: 1;">
+      <!-- Search -->
+      <div class="form-group" style="margin-bottom: 12px;">
+        <input type="text" id="email-user-search" class="form-control" placeholder="🔍 Search users..." oninput="panel.searchEmailUsers(this.value)" style="font-size: 14px; padding: 10px 14px;">
+      </div>
+      <!-- Selection counter -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13px;">
+        <span style="color: var(--primary); font-weight: 600;">Selected: <span id="email-selected-count">0</span> users</span>
+        <a href="#" onclick="panel.clearEmailSelection(); return false;" style="color: var(--danger); font-size: 12px; text-decoration: none;">Clear All</a>
+      </div>
+      <!-- User list -->
+      <div id="email-user-list" class="email-user-selector" style="flex: 1; overflow-y: auto; min-height: 200px; max-height: 400px;">
+        <div style="text-align: center; color: var(--text-muted); padding: 40px;">Loading users...</div>
+      </div>
+    </div>
+    <div style="padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px;">
+      <button type="button" class="btn" style="flex: 1; background: #2a3a32; color: #fff;" onclick="panel.closeModal('email-select-users-modal')">Cancel</button>
+      <button type="button" id="email-send-selected-btn" class="btn btn-primary" style="flex: 2;" onclick="panel.sendEmailToSelected()" disabled>Send to 0 Users</button>
+    </div>
+  </div>
+</div>
+[CODE END]
+
+---
+SECTION 5: STAFF UI SCRIPT
+---
+File Location: staff/staff.js
+
+A. Show Switch Hook: Inside panel.show() switch case statement
+[CODE START]
+case 'email-events': this.loadEmailEvents(); break;
+[CODE END]
+
+B. Methods Array: Insert before closing statement (panel object final curly brace)
+[CODE START]
+  // ==================== EMAIL EVENTS ====================
+  _emailPreviewTimer: null,
+  _emailAllUsers: [],
+  _emailSelectedIds: new Set(),
+
+  loadEmailEvents() {
+    const editor = document.getElementById('email-html-editor');
+    if (!editor._listenerAttached) {
+      editor.addEventListener('input', () => this.updateEmailPreview());
+      editor._listenerAttached = true;
+    }
+    this.updateEmailPreview();
+  },
+
+  updateEmailPreview() {
+    clearTimeout(this._emailPreviewTimer);
+    this._emailPreviewTimer = setTimeout(() => {
+      const html = document.getElementById('email-html-editor').value;
+      const frame = document.getElementById('email-preview-frame');
+      const status = document.getElementById('email-preview-status');
+      if (!html.trim()) {
+        status.textContent = 'Waiting for HTML...';
+        frame.srcdoc = '<html><body style="display:flex;align-items:center;justify-content:center;height:100%;margin:0;font-family:Outfit,sans-serif;color:#999;"><p>Your email preview will appear here</p></body></html>';
+        return;
+      }
+      frame.srcdoc = html;
+      status.textContent = 'Preview updated';
+      setTimeout(() => { status.textContent = 'Live'; }, 1500);
+    }, 300);
+  },
+
+  _validateEmailForm() {
+    const subject = document.getElementById('email-subject').value.trim();
+    const htmlContent = document.getElementById('email-html-editor').value.trim();
+    if (!subject) {
+      this.toast('Please enter an email subject.', 'error');
+      document.getElementById('email-subject').focus();
+      return null;
+    }
+    if (!htmlContent) {
+      this.toast('Please enter HTML email content.', 'error');
+      document.getElementById('email-html-editor').focus();
+      return null;
+    }
+    return { subject, html_content: htmlContent };
+  },
+
+  async sendEmailToAll() {
+    const formData = this._validateEmailForm();
+    if (!formData) return;
+
+    let userCount = '?';
+    try {
+      const countRes = await fetch('/api/admin/users', { credentials: 'include' });
+      const countData = await countRes.json();
+      userCount = (countData.users || countData).filter(u => u.status === 'active' && u.email).length;
+    } catch(e) {}
+
+    if (!confirm(`⚠️ BROADCAST EMAIL\n\nThis will send the email to ALL ${userCount} active users.\n\nSubject: "${formData.subject}"\n\nAre you absolutely sure?`)) {
+      return;
+    }
+
+    const progress = document.getElementById('email-send-progress');
+    const progressText = document.getElementById('email-send-progress-text');
+    progress.style.display = 'flex';
+    progressText.textContent = `Sending to ${userCount} users...`;
+
+    try {
+      const res = await fetch('/api/admin/email/send-all', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(formData)
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        this.toast(`✅ Broadcast complete! Sent: ${data.sent}, Failed: ${data.failed}`, 'success');
+      } else {
+        this.toast(data.error || 'Failed to send emails.', 'error');
+      }
+    } catch (err) {
+      this.toast('Network error sending emails.', 'error');
+    } finally {
+      progress.style.display = 'none';
+    }
+  },
+
+  async openEmailUserSelector() {
+    const formData = this._validateEmailForm();
+    if (!formData) return;
+
+    this._emailSelectedIds.clear();
+    this.openModal('email-select-users-modal');
+    document.getElementById('email-user-search').value = '';
+
+    const listEl = document.getElementById('email-user-list');
+    listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:40px;">Loading users...</div>';
+
+    try {
+      const res = await fetch('/api/admin/users', { credentials: 'include' });
+      const data = await res.json();
+      this._emailAllUsers = (data.users || data).filter(u => u.email);
+      this._renderEmailUserList(this._emailAllUsers);
+    } catch (e) {
+      listEl.innerHTML = '<div style="text-align:center;color:var(--danger);padding:40px;">Failed to load users.</div>';
+    }
+  },
+
+  _renderEmailUserList(users) {
+    const listEl = document.getElementById('email-user-list');
+    if (!users.length) {
+      listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:30px;">No users found.</div>';
+      return;
+    }
+    listEl.innerHTML = users.map(u => {
+      const checked = this._emailSelectedIds.has(u.id) ? 'checked' : '';
+      const selectedClass = this._emailSelectedIds.has(u.id) ? ' selected' : '';
+      const displayName = u.full_name || u.username || 'Unknown';
+      const emailTrunc = (u.email || '').length > 30 ? u.email.substring(0, 27) + '...' : u.email;
+      return `<div class="email-user-item${selectedClass}" onclick="panel.toggleEmailUser(${u.id}, this)">
+        <input type="checkbox" ${checked} onclick="event.stopPropagation(); panel.toggleEmailUser(${u.id}, this.parentElement)">
+        <div class="user-info">
+          <div class="username">${displayName}</div>
+          <div class="user-email">${emailTrunc}</div>
+        </div>
+      </div>`;
+    }).join('');
+  },
+
+  searchEmailUsers(query) {
+    const q = query.toLowerCase().trim();
+    if (!q) {
+      this._renderEmailUserList(this._emailAllUsers);
+      return;
+    }
+    const filtered = this._emailAllUsers.filter(u =>
+      (u.username || '').toLowerCase().includes(q) ||
+      (u.email || '').toLowerCase().includes(q) ||
+      (u.full_name || '').toLowerCase().includes(q)
+    );
+    this._renderEmailUserList(filtered);
+  },
+
+  toggleEmailUser(id, rowEl) {
+    if (this._emailSelectedIds.has(id)) {
+      this._emailSelectedIds.delete(id);
+    } else {
+      this._emailSelectedIds.add(id);
+    }
+    if (rowEl) {
+      const cb = rowEl.querySelector('input[type="checkbox"]');
+      if (cb) cb.checked = this._emailSelectedIds.has(id);
+      rowEl.classList.toggle('selected', this._emailSelectedIds.has(id));
+    }
+    this._updateEmailSelectionUI();
+  },
+
+  clearEmailSelection() {
+    this._emailSelectedIds.clear();
+    document.querySelectorAll('.email-user-item').forEach(el => {
+      el.classList.remove('selected');
+      const cb = el.querySelector('input[type="checkbox"]');
+      if (cb) cb.checked = false;
+    });
+    this._updateEmailSelectionUI();
+  },
+
+  _updateEmailSelectionUI() {
+    const count = this._emailSelectedIds.size;
+    document.getElementById('email-selected-count').textContent = count;
+    const btn = document.getElementById('email-send-selected-btn');
+    btn.textContent = `Send to ${count} User${count !== 1 ? 's' : ''}`;
+    btn.disabled = count === 0;
+  },
+
+  async sendEmailToSelected() {
+    if (this._emailSelectedIds.size === 0) return;
+
+    const formData = this._validateEmailForm();
+    if (!formData) return;
+
+    const count = this._emailSelectedIds.size;
+    if (!confirm(`Send this email to ${count} selected user${count !== 1 ? 's' : ''}?`)) return;
+
+    this.closeModal('email-select-users-modal');
+    const progress = document.getElementById('email-send-progress');
+    const progressText = document.getElementById('email-send-progress-text');
+    progress.style.display = 'flex';
+    progressText.textContent = `Sending to ${count} users...`;
+
+    try {
+      const res = await fetch('/api/admin/email/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          ...formData,
+          user_ids: Array.from(this._emailSelectedIds)
+        })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        this.toast(`✅ Sent: ${data.sent}, Failed: ${data.failed}`, 'success');
+      } else {
+        this.toast(data.error || 'Failed to send emails.', 'error');
+      }
+    } catch (err) {
+      this.toast('Network error sending emails.', 'error');
+    } finally {
+      progress.style.display = 'none';
+    }
+  }
+[CODE END]
+
+---
+SECTION 6: STAFF UI CSS
+---
+File Location: staff/staff.css
+Insert position: Append to the end of the stylesheet
+
+[CODE START]
+/* ============================
+   EMAIL EVENTS — Composer
+   ============================ */
+.email-composer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  min-height: 480px;
+}
+@media (max-width: 900px) {
+  .email-composer { grid-template-columns: 1fr; min-height: auto; }
+}
+.email-editor-panel,
+.email-preview-panel {
+  min-height: 460px;
+}
+.email-editor-textarea {
+  flex: 1;
+  width: 100%;
+  min-height: 380px;
+  padding: 16px;
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #0c1a14;
+  color: #a5f3c4;
+  font-family: 'Courier New', Consolas, 'Fira Code', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+  tab-size: 2;
+}
+.email-editor-textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+.email-editor-textarea::placeholder {
+  color: #3d6b4f;
+}
+.email-preview-wrapper {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: #ffffff;
+  min-height: 380px;
+}
+.email-preview-frame {
+  width: 100%;
+  height: 100%;
+  min-height: 380px;
+  border: none;
+  background: #ffffff;
+}
+
+/* ============================
+   EMAIL — User Selector Modal
+   ============================ */
+.email-user-selector {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+.email-user-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.email-user-item:last-child {
+  border-bottom: none;
+}
+.email-user-item:hover {
+  background: var(--card-hover);
+}
+.email-user-item.selected {
+  background: var(--success-bg);
+}
+.email-user-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.email-user-item .user-info {
+  flex: 1;
+  min-width: 0;
+}
+.email-user-item .user-info .username {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text);
+}
+.email-user-item .user-info .user-email {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+[CODE END]
+========================================================================

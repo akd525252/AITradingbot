@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <circle cx="50" cy="50" r="48" fill="#FFFFFF" stroke="#EAEAEA" stroke-width="2"/>
+  <g transform="translate(14, 18) scale(0.72)">
+    <!-- Yellow shape -->
+    <path d="M 46.8 6.5 C 46.8 6.5 28.2 8 20 22.5 C 13.5 34 20 48.5 29.5 56.5 C 37.5 63 47.5 63 56.5 56.5 C 47.5 54.5 40 47.5 37.5 38 C 34.5 26.5 40 13.5 46.8 6.5 Z" fill="#FFC107"/>
+    <!-- Red shape -->
+    <path d="M 46.8 6.5 C 46.8 6.5 57 10 65 19.5 C 73 29 73 43 65 52.5 C 57 62 44.5 63 35.5 58 C 45 57.5 53 50.5 55.5 41 C 58.5 29.5 52.5 14.5 46.8 6.5 Z" fill="#F44336"/>
+  </g>
+</svg>

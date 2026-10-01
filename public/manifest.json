@@ -1,0 +1,22 @@
+{
+  "name": "Gain EX Trading Platform",
+  "short_name": "Gain EX",
+  "description": "Premium Binary Options Trading Platform",
+  "start_url": "/index.html?pwa=true",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#07090f",
+  "theme_color": "#1ab76d",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

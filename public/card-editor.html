@@ -1,0 +1,323 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Card Layout Editor</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#080b12;--bg-panel:#0d1120;--bg-card:#111827;--bg-hover:#1a2235;--border:rgba(255,255,255,0.08);--primary:#1ab76d;--pdim:rgba(26,183,109,0.15);--text:#f0f4ff;--muted:#6b7a99;--accent:#4f8ef7;--red:#ef4444;--warn:#f59e0b;--r:12px}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:var(--bg-panel);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:100}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.logo{font-size:16px;font-weight:800;color:var(--primary)}
+.title{font-size:13px;color:var(--muted);padding-left:10px;border-left:1px solid var(--border)}
+.actions{display:flex;gap:8px;align-items:center}
+.btn{padding:7px 16px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all .18s}
+.btn-p{background:var(--primary);color:#000}.btn-p:hover{background:#22d87e;transform:translateY(-1px)}
+.btn-g{background:transparent;color:var(--muted);border:1px solid var(--border)}.btn-g:hover{background:var(--bg-hover);color:var(--text)}
+.change-pill{display:none;align-items:center;gap:4px;background:rgba(245,158,11,.12);color:var(--warn);border:1px solid rgba(245,158,11,.25);border-radius:100px;font-size:11px;font-weight:700;padding:2px 8px}
+.main{display:flex;flex:1;overflow:hidden;height:calc(100vh - 53px)}
+.ep{width:410px;min-width:300px;max-width:500px;background:var(--bg-panel);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;resize:horizontal}
+.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg)}
+.tab{flex:1;padding:10px 6px;text-align:center;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;text-transform:uppercase;letter-spacing:.5px}
+.tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+.tab:hover:not(.active){color:var(--text);background:var(--bg-hover)}
+.pb{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:12px}
+.pg{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.pgt{padding:9px 13px;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;background:var(--bg-hover);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.pgt .dot{width:6px;height:6px;border-radius:50%}
+.pr{display:flex;align-items:center;padding:8px 13px;border-bottom:1px solid rgba(255,255,255,.04);gap:8px}
+.pr:last-child{border-bottom:none}
+.pl{flex:1;font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;white-space:nowrap}
+.pi{background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 8px;width:105px;transition:border-color .15s}
+.pi:focus{outline:none;border-color:var(--primary)}
+.pi.ch{border-color:var(--warn);color:var(--warn)}
+.rng{display:flex;align-items:center;gap:6px;flex:1}
+.rng input[type=range]{flex:1;accent-color:var(--primary);cursor:pointer}
+.rv{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--primary);min-width:42px;text-align:right}
+.jr{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:#a8d4a8;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.6;padding:12px;resize:none;white-space:pre;overflow:auto}
+.jr:focus{outline:none;border-color:var(--primary)}
+.jr.err{border-color:var(--red)}
+.jst{font-size:10px;padding:4px 9px;border-radius:6px;font-weight:600;display:none}
+.jst.ok{background:rgba(26,183,109,.12);color:var(--primary);display:inline-flex}
+.jst.er{background:rgba(239,68,68,.12);color:var(--red);display:inline-flex}
+.pp{flex:1;display:flex;flex-direction:column;overflow:auto;background:#060911}
+.ph{padding:14px 20px 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.phtitle{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700}
+.szbtns{display:flex;gap:5px}
+.szb{padding:4px 10px;font-size:10px;border-radius:6px;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:inherit;font-weight:600;transition:all .15s}
+.szb.active,.szb:hover{background:var(--pdim);color:var(--primary);border-color:rgba(26,183,109,.35)}
+.pv{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:20px}
+.df{background:#0a0e1a;border:1px solid var(--border);border-radius:18px;overflow:hidden;box-shadow:0 20px 70px rgba(0,0,0,.6);transition:all .3s}
+.df.mobile{width:390px}.df.tablet{width:600px}.df.wide{width:100%;max-width:880px}
+.pc{padding:14px;display:flex;flex-direction:column;gap:14px}
+.clt{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;padding-left:2px}
+/* BALANCE CARD */
+.bcw{position:relative;overflow:visible}
+.bc{background:linear-gradient(135deg,#0d1a2a 0%,#091324 60%,#0a1f18 100%);border:1px solid rgba(255,255,255,.08);border-radius:20px;position:relative;overflow:visible;display:flex;align-items:stretch;box-shadow:0 8px 32px rgba(0,0,0,.6)}
+.bcc{padding:18px 16px;display:flex;flex-direction:column;align-items:flex-start;width:100%;box-sizing:border-box}
+.bcl{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:5px;font-weight:600}
+.bca{font-size:32px;font-weight:800;color:#fff;line-height:1;margin-bottom:4px}
+.bcs{display:flex;align-items:center;gap:5px;font-size:12px;color:rgba(255,255,255,.35)}
+.sdot{width:7px;height:7px;border-radius:50%;background:#1ab76d;box-shadow:0 0 8px #1ab76d;display:inline-block;flex-shrink:0}
+.bcact{display:flex;gap:10px;width:100%;margin-top:12px}
+.bb{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 0;border-radius:12px;font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+.bb-d{background:#1ab76d;color:#000}
+.bb-w{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.15)}
+.bcimg{position:absolute;top:-20px;right:-6px;height:65%;width:auto;z-index:1;pointer-events:none}
+/* VISA CARD */
+.vc{position:relative;width:100%;aspect-ratio:1.58/1;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#0d1f3a 0%,#0a1628 50%,#091c22 100%);border:1px solid rgba(255,255,255,.12);box-shadow:0 16px 40px rgba(0,0,0,.6);padding:20px;color:#fff;display:flex;flex-direction:column;justify-content:space-between;font-family:'Outfit',sans-serif;container-type:inline-size}
+.vcs{position:absolute;top:0;left:-150%;width:60%;height:100%;background:linear-gradient(90deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.08) 50%,rgba(255,255,255,0) 100%);pointer-events:none}
+.vtr{display:flex;justify-content:space-between;align-items:flex-start}
+.vbrand{font-size:5.5cqw;font-weight:800;letter-spacing:-.5px}
+.vbrand span{color:#1ab76d}
+.vdl{font-size:3cqw;color:rgba(255,255,255,.5);font-weight:600;letter-spacing:1px}
+.vchip{width:12cqw;height:9cqw;border-radius:2cqw;background:linear-gradient(135deg,#d4a843 0%,#f0c060 40%,#c8952e 100%);border:1px solid rgba(255,255,255,.2)}
+.vsl{position:absolute;right:5cqw;top:5cqw;font-size:3cqw;font-weight:700;text-transform:uppercase;padding:1cqw 2.2cqw;border-radius:4cqw;display:inline-flex;align-items:center;gap:1.2cqw;background:rgba(239,68,68,.25);border:1px solid rgba(239,68,68,.4);color:#ef4444;z-index:5}
+.vsl .dot{width:1.6cqw;height:1.6cqw;border-radius:50%;background:#ef4444;display:inline-block}
+.vnum{font-size:6cqw;letter-spacing:.6cqw;font-family:'JetBrains Mono',monospace;font-weight:700;color:#fff;text-shadow:1px 2px 4px rgba(0,0,0,.8)}
+.vbr{display:flex;justify-content:space-between;align-items:flex-end}
+.vhi{display:flex;flex-direction:column;gap:2px}
+.vexp{font-size:3.2cqw;color:rgba(255,255,255,.6)}
+.vnm{font-size:3.8cqw;font-weight:700;letter-spacing:.5cqw;text-transform:uppercase}
+.vlogo{font-size:7cqw;font-weight:900;font-style:italic;color:#fff;letter-spacing:-1px;opacity:.9}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+#toast{position:fixed;bottom:20px;right:20px;z-index:9999;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-size:12px;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,.5);display:none;align-items:center;gap:7px}
+#toast.show{display:flex;animation:su .3s ease}
+@keyframes su{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo">⬡ GainEX</div>
+    <div class="title">Card Layout Editor</div>
+  </div>
+  <div class="actions">
+    <span id="cpill" class="change-pill">⚡ Unsaved changes</span>
+    <button class="btn btn-g" onclick="resetAll()">↺ Reset</button>
+    <button class="btn btn-g" onclick="copyJ()">⎘ Copy JSON</button>
+    <button class="btn btn-p" onclick="dlJSON()">↓ Export JSON</button>
+  </div>
+</div>
+<div class="main">
+  <div class="ep">
+    <div class="tabs">
+      <div class="tab active" id="tv" onclick="showTab('v')">🎨 Visual</div>
+      <div class="tab" id="tj" onclick="showTab('j')">{ } JSON</div>
+    </div>
+    <div id="pv" class="pb">
+      <div class="pg">
+        <div class="pgt"><span class="dot" style="background:#1ab76d"></span>Balance Card — Shape</div>
+        <div class="pr"><span class="pl">aspect-ratio</span><div class="rng"><input type="range" min="1.2" max="2.5" step="0.01" value="1.58" oninput="sl('bc','aspectRatio',this.value+' / 1',this,'rv_bar')"><span class="rv" id="rv_bar">1.58</span></div></div>
+        <div class="pr"><span class="pl">border-radius</span><div class="rng"><input type="range" min="0" max="40" step="1" value="20" oninput="sl('bc','borderRadius',this.value+'px',this,'rv_bbr')"><span class="rv" id="rv_bbr">20px</span></div></div>
+        <div class="pr"><span class="pl">min-height</span><input class="pi" id="pi_bmh" value="auto" oninput="pi('bc','minHeight',this.value,this)"></div>
+      </div>
+      <div class="pg">
+        <div class="pgt"><span class="dot" style="background:#1ab76d"></span>Balance Card — Spacing</div>
+        <div class="pr"><span class="pl">content padding</span><input class="pi" id="pi_bcp" value="18px 16px" oninput="pi('bcc','padding',this.value,this)"></div>
+        <div class="pr"><span class="pl">actions gap</span><div class="rng"><input type="range" min="0" max="30" step="1" value="10" oninput="sl('bcact','gap',this.value+'px',this,'rv_bag')"><span class="rv" id="rv_bag">10px</span></div></div>
+        <div class="pr"><span class="pl">actions margin-top</span><div class="rng"><input type="range" min="0" max="40" step="1" value="12" oninput="sl('bcact','marginTop',this.value+'px',this,'rv_bamt')"><span class="rv" id="rv_bamt">12px</span></div></div>
+      </div>
+      <div class="pg">
+        <div class="pgt"><span class="dot" style="background:#1ab76d"></span>Balance Card — Typography</div>
+        <div class="pr"><span class="pl">label font-size</span><div class="rng"><input type="range" min="8" max="18" step="0.5" value="11" oninput="sl('bcl','fontSize',this.value+'px',this,'rv_blfs')"><span class="rv" id="rv_blfs">11px</span></div></div>
+        <div class="pr"><span class="pl">label letter-spacing</span><div class="rng"><input type="range" min="0" max="5" step="0.1" value="1.2" oninput="sl('bcl','letterSpacing',this.value+'px',this,'rv_blls')"><span class="rv" id="rv_blls">1.2px</span></div></div>
+        <div class="pr"><span class="pl">amount font-size</span><div class="rng"><input type="range" min="16" max="60" step="0.5" value="32" oninput="sl('bca','fontSize',this.value+'px',this,'rv_bafs')"><span class="rv" id="rv_bafs">32px</span></div></div>
+        <div class="pr"><span class="pl">amount margin-bottom</span><div class="rng"><input type="range" min="0" max="20" step="1" value="4" oninput="sl('bca','marginBottom',this.value+'px',this,'rv_bamb')"><span class="rv" id="rv_bamb">4px</span></div></div>
+        <div class="pr"><span class="pl">btn font-size</span><div class="rng"><input type="range" min="10" max="20" step="0.5" value="14" oninput="sl('bb','fontSize',this.value+'px',this,'rv_bbfs')"><span class="rv" id="rv_bbfs">14px</span></div></div>
+        <div class="pr"><span class="pl">btn border-radius</span><div class="rng"><input type="range" min="0" max="30" step="1" value="12" oninput="sl('bb','borderRadius',this.value+'px',this,'rv_bbbr')"><span class="rv" id="rv_bbbr">12px</span></div></div>
+        <div class="pr"><span class="pl">btn padding-y</span><div class="rng"><input type="range" min="4" max="24" step="1" value="12" oninput="sl('bb','paddingTop',this.value+'px',this,'rv_bbpy');sl('bb','paddingBottom',this.value+'px',null,'')"><span class="rv" id="rv_bbpy">12px</span></div></div>
+      </div>
+      <div class="pg">
+        <div class="pgt"><span class="dot" style="background:#1ab76d"></span>Balance Card — Coins Image</div>
+        <div class="pr"><span class="pl">top offset</span><div class="rng"><input type="range" min="-80" max="30" step="1" value="-20" oninput="sl('bci','top',this.value+'px',this,'rv_bcit')"><span class="rv" id="rv_bcit">-20px</span></div></div>
+        <div class="pr"><span class="pl">right offset</span><div class="rng"><input type="range" min="-40" max="40" step="1" value="-6" oninput="sl('bci','right',this.value+'px',this,'rv_bcir')"><span class="rv" id="rv_bcir">-6px</span></div></div>
+        <div class="pr"><span class="pl">height</span><input class="pi" id="pi_bcih" value="65%" oninput="pi('bci','height',this.value,this)"></div>
+      </div>
+      <div class="pg">
+        <div class="pgt"><span class="dot" style="background:#4f8ef7"></span>Visa ATM Card — Shape</div>
+        <div class="pr"><span class="pl">aspect-ratio</span><div class="rng"><input type="range" min="1.2" max="2.5" step="0.01" value="1.58" oninput="sl('vc','aspectRatio',this.value+' / 1',this,'rv_var')"><span class="rv" id="rv_var">1.58</span></div></div>
+        <div class="pr"><span class="pl">border-radius</span><div class="rng"><input type="range" min="0" max="40" step="1" value="16" oninput="sl('vc','borderRadius',this.value+'px',this,'rv_vbr')"><span class="rv" id="rv_vbr">16px</span></div></div>
+        <div class="pr"><span class="pl">inner padding</span><input class="pi" id="pi_vcp" value="20px" oninput="pi('vc','padding',this.value,this)"></div>
+      </div>
+      <div class="pg">
+        <div class="pgt"><span class="dot" style="background:#4f8ef7"></span>Visa Card — Status Label</div>
+        <div class="pr"><span class="pl">top</span><input class="pi" id="pi_vst" value="5cqw" oninput="pi('vsl','top',this.value,this)"></div>
+        <div class="pr"><span class="pl">right</span><input class="pi" id="pi_vsr" value="5cqw" oninput="pi('vsl','right',this.value,this)"></div>
+        <div class="pr"><span class="pl">font-size</span><input class="pi" id="pi_vsfs" value="3cqw" oninput="pi('vsl','fontSize',this.value,this)"></div>
+        <div class="pr"><span class="pl">padding</span><input class="pi" id="pi_vsp" value="1cqw 2.2cqw" oninput="pi('vsl','padding',this.value,this)"></div>
+        <div class="pr"><span class="pl">border-radius</span><input class="pi" id="pi_vsrx" value="4cqw" oninput="pi('vsl','borderRadius',this.value,this)"></div>
+      </div>
+      <div class="pg">
+        <div class="pgt"><span class="dot" style="background:#4f8ef7"></span>Visa Card — Content</div>
+        <div class="pr"><span class="pl">card num font-size</span><input class="pi" id="pi_vnfs" value="6cqw" oninput="pi('vnum','fontSize',this.value,this)"></div>
+        <div class="pr"><span class="pl">name font-size</span><input class="pi" id="pi_vnmfs" value="3.8cqw" oninput="pi('vnm','fontSize',this.value,this)"></div>
+        <div class="pr"><span class="pl">expiry font-size</span><input class="pi" id="pi_vefs" value="3.2cqw" oninput="pi('vexp','fontSize',this.value,this)"></div>
+      </div>
+    </div>
+    <div id="pj" style="display:none;flex:1;flex-direction:column;padding:12px;gap:8px;overflow:hidden">
+      <textarea class="jr" id="jr" spellcheck="false" oninput="jrChg()"></textarea>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="btn btn-p" style="flex:1" onclick="applyJ()">Apply JSON</button>
+        <span class="jst" id="jst"></span>
+      </div>
+    </div>
+  </div>
+  <div class="pp">
+    <div class="ph">
+      <div class="phtitle">Live Preview</div>
+      <div class="szbtns">
+        <button class="szb active" onclick="setSz('mobile',this)">Mobile 390</button>
+        <button class="szb" onclick="setSz('tablet',this)">Tablet 600</button>
+        <button class="szb" onclick="setSz('wide',this)">Wide</button>
+      </div>
+    </div>
+    <div class="pv">
+      <div class="df mobile" id="df">
+        <div class="pc">
+          <div>
+            <div class="clt">Balance Card</div>
+            <div class="bcw">
+              <img class="bcimg" id="bci" src="/images/balance_card_coins.png" onerror="this.style.display='none'" alt="">
+              <div class="bc" id="bc">
+                <div class="bcc" id="bcc">
+                  <div class="bcl" id="bcl">Total Balance (USD)</div>
+                  <div class="bca" id="bca">$80.68</div>
+                  <div class="bcs"><span class="sdot"></span><span>Last updated just now</span></div>
+                  <div class="bcact" id="bcact">
+                    <button class="bb bb-d" id="bb">
+                      <svg viewBox="0 0 24 24" width="15" height="15"><path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z" fill="currentColor"/></svg>
+                      Deposit
+                    </button>
+                    <button class="bb bb-w">
+                      <svg viewBox="0 0 24 24" width="15" height="15"><path d="M12 8l5 5h-3v7h-4v-7H7l5-5zM5 18h14v2H5v-2z" fill="currentColor"/></svg>
+                      Withdraw
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="clt">Visa ATM Card</div>
+            <div class="vc" id="vc">
+              <div class="vcs"></div>
+              <div class="vsl" id="vsl"><span class="dot"></span>Non-Active</div>
+              <div class="vtr">
+                <div class="vbrand">G<span>X</span>M</div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
+                  <div class="vdl">DEBIT</div>
+                </div>
+              </div>
+              <div class="vchip"></div>
+              <div class="vnum" id="vnum">•••• •••• •••• 5465</div>
+              <div class="vbr">
+                <div class="vhi">
+                  <div class="vexp" id="vexp">12/36</div>
+                  <div class="vnm" id="vnm">ABDULLAH KARIM</div>
+                </div>
+                <div class="vlogo">VISA</div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:center;gap:8px;padding-top:4px">
+            <span style="width:20px;height:8px;border-radius:4px;background:#1ab76d;display:inline-block"></span>
+            <span style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2);display:inline-block"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="toast"><span id="ti">✓</span><span id="tm">Done</span></div>
+<script>
+const S={
+  bc:{aspectRatio:'1.58 / 1',borderRadius:'20px',minHeight:'auto'},
+  bcc:{padding:'18px 16px'},
+  bcl:{fontSize:'11px',letterSpacing:'1.2px'},
+  bca:{fontSize:'32px',marginBottom:'4px'},
+  bcact:{gap:'10px',marginTop:'12px'},
+  bb:{fontSize:'14px',borderRadius:'12px',paddingTop:'12px',paddingBottom:'12px'},
+  bci:{top:'-20px',right:'-6px',height:'65%'},
+  vc:{aspectRatio:'1.58 / 1',borderRadius:'16px',padding:'20px'},
+  vsl:{top:'5cqw',right:'5cqw',fontSize:'3cqw',padding:'1cqw 2.2cqw',borderRadius:'4cqw'},
+  vnum:{fontSize:'6cqw'},
+  vnm:{fontSize:'3.8cqw'},
+  vexp:{fontSize:'3.2cqw'}
+};
+const D=JSON.parse(JSON.stringify(S));
+
+function applyS(){for(const[id,st]of Object.entries(S)){const el=document.getElementById(id);if(!el)continue;for(const[p,v]of Object.entries(st))el.style[p]=v;}}
+
+function sl(id,prop,val,rng,rvId){S[id]=S[id]||{};S[id][prop]=val;if(rvId)document.getElementById(rvId).textContent=val;applyS();updJ();dirty();}
+function pi(id,prop,val,el){S[id]=S[id]||{};S[id][prop]=val;applyS();updJ();dirty();if(el)el.classList.add('ch');}
+
+function dirty(){document.getElementById('cpill').style.display='inline-flex';}
+
+function showTab(t){
+  document.getElementById('pv').style.display=t==='v'?'flex':'none';
+  document.getElementById('pj').style.display=t==='j'?'flex':'none';
+  document.getElementById('tv').classList.toggle('active',t==='v');
+  document.getElementById('tj').classList.toggle('active',t==='j');
+  if(t==='j')updJ();
+}
+
+function setSz(sz,btn){
+  document.querySelectorAll('.szb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('df').className='df '+sz;
+}
+
+function updJ(){const r=document.getElementById('jr');if(r)r.value=JSON.stringify(S,null,2);}
+
+function jrChg(){
+  const r=document.getElementById('jr'),st=document.getElementById('jst');
+  try{JSON.parse(r.value);r.classList.remove('err');st.className='jst ok';st.textContent='Valid JSON';}
+  catch{r.classList.add('err');st.className='jst er';st.textContent='Invalid JSON';}
+}
+
+function applyJ(){
+  const r=document.getElementById('jr'),st=document.getElementById('jst');
+  try{
+    const p=JSON.parse(r.value);
+    Object.assign(S,p);applyS();
+    r.classList.remove('err');st.className='jst ok';st.textContent='Applied!';
+    dirty();toast('JSON applied!','success');
+  }catch{
+    r.classList.add('err');st.className='jst er';st.textContent='Invalid JSON';
+    toast('Invalid JSON','error');
+  }
+}
+
+function resetAll(){
+  Object.keys(D).forEach(k=>{S[k]=JSON.parse(JSON.stringify(D[k]));});
+  applyS();updJ();
+  document.getElementById('cpill').style.display='none';
+  document.querySelectorAll('.pi').forEach(e=>e.classList.remove('ch'));
+  toast('Reset to defaults','success');
+}
+
+function dlJSON(){
+  const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='card-layout.json';a.click();
+  toast('card-layout.json downloaded!','success');
+}
+
+function copyJ(){
+  navigator.clipboard.writeText(JSON.stringify(S,null,2)).then(()=>toast('JSON copied!','success'));
+}
+
+let _tt;
+function toast(msg,type='success'){
+  const t=document.getElementById('toast'),m=document.getElementById('tm');
+  m.textContent=msg;t.className='show';clearTimeout(_tt);_tt=setTimeout(()=>{t.className='';},3000);
+}
+
+window.addEventListener('DOMContentLoaded',()=>{applyS();updJ();document.getElementById('pj').style.display='none';});
+</script>
+</body>
+</html>

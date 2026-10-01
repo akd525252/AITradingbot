@@ -1,0 +1,3406 @@
+#chart-live-clock-overlay {
+  display: none;
+}
+
+.charts {
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    left: 0;
+    user-select: none;
+    width: 100%;
+}
+.charts {
+    height: 100%;
+    position: absolute;
+    top: 0;
+}
+
+.layout-container {
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    height: 100%;
+}
+.layout-container {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+}
+
+.layout-container .chart-item {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1 1 100%;
+    flex: 1 1 100%;
+    height: 100%;
+    position: relative;
+}
+
+.charts.single .chart {
+    height: 100%;
+    width: 100%;
+}
+.charts .chart {
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    cursor: default;
+    display: block;
+    position: absolute;
+    user-select: none;
+}
+
+.charts .chart .chart-container {
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+.drop-down-modal-wrap {
+    background: transparent;
+    bottom: 0;
+    content: "";
+    cursor: default;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 11;
+}
+
+.chart,
+.chart-container {
+    width: 100%;
+    height: 100%;
+}
+
+.input-control__hint p {
+    margin-top: 0;
+}
+
+.overlay {
+    opacity: 0.3;
+}
+
+/* Sleek Chart blink effect when toggling between Live & Demo */
+@keyframes chartBlinkEffect {
+  0% {
+    opacity: 1;
+    filter: brightness(1) blur(0px);
+  }
+  35% {
+    opacity: 0.25;
+    filter: brightness(1.4) blur(1.5px);
+  }
+  100% {
+    opacity: 1;
+    filter: brightness(1) blur(0px);
+  }
+}
+
+.chart-blink-active {
+  animation: chartBlinkEffect 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes chartSpinnerSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   WALLET PAGE REDESIGN STYLES — Gain EX Theme Compatible
+   ============================================================ */
+
+/* ── Available Balances Card Left-Alignment and Layout ── */
+.wallet-balance-card {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  padding: 24px 28px !important;
+  min-height: 110px !important;
+}
+
+.wallet-balance-banner-left {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+}
+
+.wallet-balance-sub {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  font-size: 13px !important;
+  color: var(--text-secondary) !important;
+}
+
+.wallet-balance-divider {
+  width: 1px !important;
+  height: 14px !important;
+  background-color: var(--border-color) !important;
+  display: inline-block !important;
+  flex-shrink: 0 !important;
+}
+
+.wallet-balance-icon-wrap {
+  position: absolute !important;
+  right: 28px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 60px !important;
+  height: 60px !important;
+  background-color: var(--primary-light) !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: var(--primary) !important;
+  flex-shrink: 0 !important;
+}
+
+/* ── Form Steps and Vertical Spacing ── */
+.wallet-form-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.wallet-step-group {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+
+.wallet-step-label {
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  color: var(--text-primary) !important;
+  margin-bottom: 2px !important;
+  display: block !important;
+}
+
+/* ── Mode Selection Buttons (Dark/Light Responsive) ── */
+.wallet-mode-row {
+  display: flex !important;
+  gap: 14px !important;
+  width: 100% !important;
+}
+
+.wallet-mode-btn {
+  flex: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 12px 18px !important;
+  border-radius: var(--radius-sm) !important;
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  border: 1.5px solid var(--border-color) !important;
+  color: var(--text-secondary) !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: var(--transition) !important;
+  font-family: var(--font-family) !important;
+  outline: none !important;
+}
+
+/* Dark active mode */
+.wallet-mode-btn.wallet-mode-btn--active {
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+  background-color: var(--primary-light) !important;
+}
+
+/* Light theme button background overrides */
+body.light-theme .wallet-mode-btn {
+  background-color: rgba(0, 0, 0, 0.02) !important;
+  border: 1.5px solid rgba(0, 0, 0, 0.08) !important;
+  color: #64748b !important;
+}
+
+body.light-theme .wallet-mode-btn.wallet-mode-btn--active {
+  background-color: rgba(26, 183, 109, 0.06) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+}
+
+.wallet-mode-btn:hover:not(.wallet-mode-btn--active) {
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  color: var(--text-primary) !important;
+}
+
+body.light-theme .wallet-mode-btn:hover:not(.wallet-mode-btn--active) {
+  border-color: rgba(0, 0, 0, 0.18) !important;
+  color: #0f172a !important;
+}
+
+/* Radio buttons nested inside mode buttons */
+.wallet-mode-radio {
+  width: 17px !important;
+  height: 17px !important;
+  border-radius: 50% !important;
+  border: 2px solid var(--text-muted) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  transition: var(--transition) !important;
+}
+
+.wallet-mode-radio--active {
+  border-color: var(--primary) !important;
+}
+
+body.light-theme .wallet-mode-radio {
+  border-color: #cbd5e1 !important;
+}
+
+body.light-theme .wallet-mode-radio--active {
+  border-color: var(--primary) !important;
+}
+
+.wallet-mode-radio-dot {
+  width: 7px !important;
+  height: 7px !important;
+  border-radius: 50% !important;
+  background-color: transparent !important;
+  transition: background-color 0.2s !important;
+}
+
+.wallet-mode-radio--active .wallet-mode-radio-dot {
+  background-color: var(--primary) !important;
+}
+
+/* ── Amount Input Suffix ── */
+.wallet-amount-input-wrap {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+.wallet-amount-input {
+  width: 100% !important;
+  padding-right: 56px !important;
+}
+
+.wallet-amount-suffix {
+  position: absolute !important;
+  right: 16px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: var(--text-secondary) !important;
+  pointer-events: none !important;
+  user-select: none !important;
+}
+
+/* ── Info Hint Box ── */
+.wallet-info-hint {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  background-color: var(--primary-light) !important;
+  border: 1px solid rgba(26, 183, 109, 0.18) !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 13px 15px !important;
+  font-size: 13px !important;
+  color: var(--text-secondary) !important;
+  line-height: 1.5 !important;
+}
+
+body.light-theme .wallet-info-hint {
+  background-color: rgba(26, 183, 109, 0.05) !important;
+  border-color: rgba(26, 183, 109, 0.15) !important;
+  color: #334155 !important;
+}
+
+.wallet-info-hint svg {
+  flex-shrink: 0 !important;
+  margin-top: 1px !important;
+  color: var(--primary) !important;
+}
+
+/* Hide broken QR Code box on initial invoice render */
+#invoice-qr-code[src=""] {
+  display: none !important;
+}
+
+/* ── Cancel Button Overrides ── */
+.wallet-cancel-btn {
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  transition: var(--transition) !important;
+}
+
+.wallet-cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+body.light-theme .wallet-cancel-btn {
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+body.light-theme .wallet-cancel-btn:hover {
+  background: #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+/* ── Centered and Constrained Profile Tabs on Desktop ── */
+@media (min-width: 768px) {
+  .profile-main-tabs {
+    justify-content: center !important;
+  }
+  
+  .profile-tab-pill {
+    flex: none !important;
+    width: auto !important;
+    min-width: 140px !important;
+    max-width: 180px !important;
+  }
+}
+
+/* ── Google Sign-in SDK Centering overrides ── */
+#google-signin-btn-login iframe,
+#google-signin-btn-signup iframe {
+  margin: 0 auto !important;
+  display: block !important;
+}
+
+/* ── Prevent Mobile Double-Tap Zoom ── */
+html, body {
+  touch-action: pan-x pan-y !important;
+}
+
+/* ── Notifications Dropdown Popup ── */
+.notifications-dropdown {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.1) transparent;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.notifications-dropdown::-webkit-scrollbar {
+  width: 4px;
+}
+.notifications-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+.notifications-dropdown::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+}
+.notification-history-item {
+  transition: background-color 0.2s ease;
+  cursor: default;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  border-bottom: 1px solid rgba(255,255,255,0.03) !important;
+  background: transparent !important;
+}
+.notification-history-item:hover {
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* Light theme overrides for dropdown */
+body.light-theme .notifications-dropdown {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+}
+body.light-theme .notifications-dropdown > div {
+  background: #ffffff !important;
+  border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+}
+body.light-theme .notifications-dropdown span {
+  color: #0f172a !important;
+}
+body.light-theme .notifications-dropdown-list div {
+  color: #64748b !important;
+}
+body.light-theme .notification-history-item {
+  border-bottom-color: rgba(0, 0, 0, 0.04) !important;
+}
+body.light-theme .notification-history-item:hover {
+  background: rgba(0, 0, 0, 0.02) !important;
+}
+
+/* ── Center and Constrain Logout Button on Desktop ── */
+@media (min-width: 768px) {
+  .settings-logout-btn {
+    width: 200px !important;
+    margin: 16px auto 24px auto !important;
+    display: flex !important;
+  }
+}
+
+@keyframes otp-digit-pop {
+  0% { transform: scale(1); box-shadow: none; }
+  50% { transform: scale(1.15); border-color: var(--primary) !important; box-shadow: 0 0 14px rgba(26, 183, 109, 0.3); text-shadow: 0 0 6px rgba(26, 183, 109, 0.5); }
+  100% { transform: scale(1); box-shadow: none; }
+}
+
+/* ── Modals Theme Adaptability and Contrast Fixes ── */
+#email-change-modal, 
+#password-change-modal {
+  color: var(--text-primary) !important;
+}
+#email-change-modal h3, 
+#password-change-modal h3 {
+  color: var(--text-primary) !important;
+  font-weight: 700 !important;
+}
+#email-change-modal p, 
+#password-change-modal p {
+  color: var(--text-secondary) !important;
+}
+#email-change-modal .form-label, 
+#password-change-modal .form-label {
+  color: var(--text-muted) !important;
+}
+
+/* ── Forgot Password Modal Explicit Dark Styling (Auth Screen Isolation) ── */
+#forgot-password-modal > div {
+  background: #111A13 !important;
+  border: 1px solid #1F3323 !important;
+}
+#forgot-password-modal h3 {
+  color: #D4EFD9 !important;
+  font-weight: 700 !important;
+}
+#forgot-password-modal p, 
+#forgot-password-modal p.text-secondary,
+#forgot-password-modal .text-secondary {
+  color: #8AADA0 !important; /* clear readable gray-green secondary text */
+}
+#forgot-password-modal .form-label {
+  color: #8AADA0 !important;
+}
+
+/* ── OTP Field Styling ── */
+.otp-field {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1.5px solid var(--border-color, rgba(255, 255, 255, 0.15)) !important;
+  color: var(--text-primary, #ffffff) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+body.light-theme .otp-field {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  color: #0c1a0f !important;
+}
+.otp-field:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 10px rgba(26, 183, 109, 0.25) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  transform: translateY(-2px);
+  color: var(--text-primary, #ffffff) !important;
+}
+body.light-theme .otp-field:focus {
+  background: #ffffff !important;
+  color: #0c1a0f !important;
+}
+.otp-field.has-value {
+  animation: otp-digit-pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  background: rgba(26, 183, 109, 0.1) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+}
+body.light-theme .otp-field.has-value {
+  background: rgba(26, 183, 109, 0.06) !important;
+  color: #1a7a4a !important;
+}
+
+/* Force dark style on Forgot Password inputs & OTP fields regardless of body theme */
+#forgot-password-modal .form-control {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+}
+#forgot-password-modal .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.3) !important;
+}
+#forgot-password-modal .otp-field {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+}
+#forgot-password-modal .otp-field:focus {
+  border-color: #22c55e !important;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.25) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+#forgot-password-modal .otp-field.has-value {
+  background: rgba(34, 197, 94, 0.1) !important;
+  border-color: #22c55e !important;
+  color: #22c55e !important;
+}
+
+@keyframes success-wave {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-8px) scale(1.05); border-color: #22c55e; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.45); }
+}
+.otp-inputs-wrapper.otp-complete .otp-field {
+  border-color: #22c55e !important;
+  background: rgba(34, 197, 94, 0.08) !important;
+  color: #22c55e !important;
+}
+body.light-theme .otp-inputs-wrapper.otp-complete .otp-field {
+  background: rgba(34, 197, 94, 0.04) !important;
+}
+.otp-inputs-wrapper.otp-complete .otp-field:nth-child(1) { animation: success-wave 0.45s ease 0s; }
+.otp-inputs-wrapper.otp-complete .otp-field:nth-child(2) { animation: success-wave 0.45s ease 0.05s; }
+.otp-inputs-wrapper.otp-complete .otp-field:nth-child(3) { animation: success-wave 0.45s ease 0.1s; }
+.otp-inputs-wrapper.otp-complete .otp-field:nth-child(4) { animation: success-wave 0.45s ease 0.15s; }
+.otp-inputs-wrapper.otp-complete .otp-field:nth-child(5) { animation: success-wave 0.45s ease 0.2s; }
+.otp-inputs-wrapper.otp-complete .otp-field:nth-child(6) { animation: success-wave 0.45s ease 0.25s; }
+
+@keyframes tick-pop-spin {
+  0% { transform: scale(0.3) rotate(-45deg); opacity: 0; }
+  70% { transform: scale(1.25) rotate(10deg); }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+.otp-success-badge {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  margin: 12px auto 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #22c55e;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  opacity: 0;
+  transform: scale(0.5);
+  box-shadow: 0 4px 10px rgba(34, 197, 94, 0.3);
+}
+.otp-inputs-wrapper.otp-complete + .otp-success-badge {
+  display: flex;
+  animation: tick-pop-spin 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ── Leaderboard Enhancements ── */
+.leaderboard-trader-name {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 140px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  vertical-align: middle !important;
+}
+.profile-streak-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  padding: 2px 5px !important;
+  border-radius: 5px !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  height: 14px !important;
+  vertical-align: middle !important;
+  line-height: 1 !important;
+}
+.user-rank-banner {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+.user-rank-banner:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2) !important;
+}
+body.light-theme .user-rank-banner {
+  background: rgba(26, 183, 109, 0.05) !important;
+  border-color: rgba(26, 183, 109, 0.25) !important;
+}
+
+/* Restrict padding and disable horizontal scrolling on desktop slide-out drawer */
+.desktop-leaderboard-drawer .drawer-content {
+  padding: 12px 8px !important;
+  overflow-x: hidden !important;
+}
+.desktop-leaderboard-drawer .leaderboard-trader-name {
+  max-width: 90px !important; /* truncate trader name dynamically in drawer view */
+}
+
+/* Responsive constraints on mobile viewports to prevent horizontal overflow */
+@media (max-width: 767px) {
+  .leaderboard-trader-name {
+    max-width: 90px !important;
+  }
+}
+
+/* ============================================================
+   REDESIGNED ACTIVE & CLOSED TRADES PANEL STYLES
+   ============================================================ */
+
+/* Outer tab button flex widths override */
+#tc-tab-active {
+  flex: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+}
+#tc-tab-pending {
+  flex: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+}
+
+/* Base Tab Button Styling Updates */
+.tc-tab-btn {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.1px !important;
+}
+
+.tab-badge {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 10px !important;
+  padding: 1px 5px !important;
+  border-radius: 8px !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+.tc-tab-btn.active .tab-badge {
+  background: rgba(255, 255, 255, 0.16) !important;
+  color: #ffffff !important;
+}
+body.light-theme .tab-badge {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: rgba(0, 0, 0, 0.5) !important;
+}
+body.light-theme .tc-tab-btn.active .tab-badge {
+  background: var(--primary) !important;
+  color: #ffffff !important;
+}
+
+/* Custom layout for trade rows */
+.tc-trade-row-new {
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 10px 12px !important;
+  background: transparent !important;
+  gap: 6px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.035) !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+body.light-theme .tc-trade-row-new {
+  border-bottom-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+.tc-trade-row-top,
+.tc-trade-row-bottom {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+.tc-trade-row-top-left,
+.tc-trade-row-bottom-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  min-width: 0 !important;
+}
+
+.tc-trade-row-top-right,
+.tc-trade-row-bottom-right {
+  display: flex !important;
+  align-items: center !important;
+  flex-shrink: 0 !important;
+}
+
+/* Chevron caret dropdown arrow */
+.tc-trade-caret {
+  width: 13px !important;
+  height: 13px !important;
+  fill: rgba(255, 255, 255, 0.3) !important;
+  flex-shrink: 0 !important;
+  cursor: pointer !important;
+  margin-right: 2px !important;
+}
+body.light-theme .tc-trade-caret {
+  fill: rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Flags overlapping container */
+.tc-trade-flags-container {
+  display: flex !important;
+  align-items: center !important;
+  transform: scale(0.7) !important;
+  transform-origin: left center !important;
+  width: 30px !important;
+  height: 22px !important;
+  flex-shrink: 0 !important;
+  margin-right: -4px !important;
+}
+
+/* Asset name text */
+.tc-trade-symbol-text {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  letter-spacing: -0.15px !important;
+}
+body.light-theme .tc-trade-symbol-text {
+  color: #0f172a !important;
+}
+
+/* Time/countdown text format 00:00:05 */
+.tc-trade-time-text {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-variant-numeric: tabular-nums !important;
+  font-size: 12px !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.1px !important;
+}
+body.light-theme .tc-trade-time-text {
+  color: #334155 !important;
+}
+
+/* Arrow indicator inside circle */
+.tc-trade-arrow-circle {
+  width: 16px !important;
+  height: 16px !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #ffffff !important;
+  flex-shrink: 0 !important;
+}
+.tc-trade-arrow-circle.dir-up {
+  background-color: #16c784 !important;
+}
+.tc-trade-arrow-circle.dir-down {
+  background-color: #ff5252 !important;
+}
+
+/* Direction-colored stake amount */
+.tc-trade-stake {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+}
+.tc-trade-stake.text-green {
+  color: #16c784 !important;
+}
+.tc-trade-stake.text-danger {
+  color: #ff5252 !important;
+}
+
+/* Result text (loss/win) */
+.tc-trade-result-text {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+}
+.tc-trade-result-text.text-green {
+  color: #16c784 !important;
+}
+.tc-trade-result-text.text-danger {
+  color: #ff5252 !important;
+}
+.tc-trade-result-text.text-warning {
+  color: #ffb300 !important;
+}
+
+/* Date Grouping Dividers */
+.tc-trade-date-divider {
+  font-family: 'Inter', sans-serif !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 7px !important;
+  padding: 14px 10px 6px 10px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: rgba(255, 255, 255, 0.65) !important;
+  letter-spacing: 0.6px !important;
+  text-transform: uppercase !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+body.light-theme .tc-trade-date-divider {
+  color: rgba(0, 0, 0, 0.6) !important;
+}
+
+.tc-trade-date-badge {
+  font-family: 'Inter', sans-serif !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 10px !important;
+  padding: 1px 7px !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  flex-shrink: 0 !important;
+  min-width: 18px !important;
+  text-align: center !important;
+}
+body.light-theme .tc-trade-date-badge {
+  background: rgba(0, 0, 0, 0.07) !important;
+  color: #1e293b !important;
+}
+
+/* Hide original trade styles in .tc-trade-row to allow our new structure to take over */
+.tc-trade-row {
+  padding: 0 !important;
+  border: none !important;
+}
+.tc-trade-row-left, .tc-trade-row-right {
+  display: none !important;
+}
+
+/* ============================================================
+   DESKTOP TOP BAR TABS AND PLUS BUTTON LAYOUT UPDATES
+   ============================================================ */
+
+@media (min-width: 768px) {
+  /* Tab Row container height */
+  .trade-asset-tabs-row.desktop-only {
+    height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 12px 0 32px !important;
+  }
+
+  /* Plus button: fixed first position, larger size, margin right */
+  .asset-add-btn-desktop {
+    width: 28px !important;
+    height: 28px !important;
+    margin-left: 0 !important;
+    margin-right: 12px !important;
+    border-radius: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Align and stretch tabs list height */
+  .asset-tabs-list {
+    height: 100% !important;
+    align-items: flex-end !important;
+    gap: 6px !important;
+  }
+
+  /* Increase height of dynamic asset tabs */
+  .asset-tab {
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 0 12px !important;
+    background: #161c28 !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 6px 6px 0 0 !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    border-bottom: none !important;
+    transition: all 0.2s !important;
+    margin-top: 12px !important;
+  }
+
+  .asset-tab:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+  }
+
+  .asset-tab.active {
+    background: #06070a !important; /* matches main trade body background */
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    height: 40px !important;
+    margin-top: 8px !important;
+  }
+
+  /* Custom Overlapping Flag Wrapper inside desktop tabs */
+  .tc-desktop-tab-icon-wrap {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 32px !important;
+    height: 22px !important;
+    transform: scale(0.65) !important;
+    transform-origin: center center !important;
+    flex-shrink: 0 !important;
+    margin-right: -4px !important;
+    margin-left: -4px !important;
+  }
+
+  /* Light theme support override */
+  body.light-theme .asset-tab {
+    background: #e2e8f0 !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    color: var(--text-secondary) !important;
+    border-bottom: none !important;
+  }
+
+  body.light-theme .asset-tab.active {
+    background: #ffffff !important;
+    color: var(--primary) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    border-bottom: none !important;
+  }
+
+  body.light-theme .asset-tab:hover:not(.active) {
+    background: #cbd5e1 !important;
+    color: var(--text-primary) !important;
+  }
+}
+
+/* ============================================================
+   QUOTEX-STYLE ASSET PICKER DROPDOWN (DESKTOP)
+   ============================================================ */
+@media (min-width: 768px) {
+  /* Overlay directly below the tab row, aligned to the left of the chart area */
+  #asset-picker-modal.asset-picker-modal {
+    position: absolute !important;
+    top: 48px !important; /* right below the 48px tab row */
+    left: 0 !important;
+    right: auto !important;
+    bottom: 0 !important; /* stretch to bottom */
+    width: 650px !important; /* fixed Quotex width */
+    max-width: 90vw !important;
+    height: calc(100% - 48px) !important; /* stretches to fill the rest of the chart container height */
+    max-height: none !important;
+    padding: 0 !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+    background: transparent !important; /* transparent wrapper */
+    backdrop-filter: none !important;
+    z-index: 250 !important;
+  }
+
+  /* The actual asset picker panel becomes the dropdown card */
+  .asset-picker-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    border-radius: 0 !important; /* flat edges matching leaderboard style */
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-top: none !important; /* blends with the tab row */
+    background: #161c28 !important; /* slightly lighter than trade background to pop out */
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+    padding: 20px 24px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* Header inside panel */
+  .asset-picker-header {
+    margin-bottom: 10px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+
+  .asset-picker-title {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+  }
+
+  /* Search input layout */
+  .asset-picker-search-container {
+    max-width: 100% !important;
+    margin: 10px 0 !important;
+    background: #0b0e14 !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 6px !important;
+    height: 36px !important;
+  }
+  .asset-picker-search {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 13px !important;
+    color: #ffffff !important;
+  }
+
+  /* Categories selection links */
+  .asset-picker-categories {
+    display: flex !important;
+    gap: 6px !important;
+    margin-bottom: 12px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+    padding-bottom: 8px !important;
+  }
+  
+  .category-btn {
+    background: transparent !important;
+    border: none !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    text-transform: uppercase !important;
+    padding: 6px 12px !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+  }
+  
+  .category-btn.active {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: none !important;
+    color: #ffffff !important;
+  }
+
+  body.light-theme .category-btn.active {
+    background: rgba(0, 0, 0, 0.06) !important;
+    border: none !important;
+    color: #0f172a !important;
+  }
+
+  /* Recent selected pills styling */
+  .recent-assets-label {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 10px !important;
+    color: rgba(255, 255, 255, 0.35) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    margin-bottom: 6px !important;
+  }
+  
+  .asset-picker-pills {
+    margin-bottom: 14px !important;
+    gap: 6px !important;
+  }
+
+  /* Single-column vertical list layout matching Quotex */
+  .asset-picker-list {
+    flex: 1 !important;
+    max-height: none !important; /* override global 380px height limit */
+    overflow-y: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    padding-right: 4px !important;
+    padding-bottom: 10px !important; /* override the 90px padding-bottom gap */
+  }
+
+  /* Asset card row styling */
+  .asset-picker-row {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 8px 12px !important;
+    transition: all 0.15s ease !important;
+    box-sizing: border-box !important;
+  }
+  
+  .asset-picker-row:hover {
+    background: rgba(255, 255, 255, 0.04) !important;
+  }
+
+  /* Name formatting */
+  .asset-row-symbol {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+  }
+  
+  .asset-row-fullname {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 10.5px !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+  }
+
+  /* Payout percentage alignment */
+  .asset-row-payout {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 12.5px !important;
+    font-weight: 700 !important;
+    color: #16c784 !important;
+  }
+}
+
+/* Global Category Button Override - No borders, no green background, clean highlight shade */
+.asset-picker-categories {
+  padding: 0 !important;
+  overflow: hidden !important;
+  border-radius: 30px !important; /* smooth outer capsule curve */
+}
+
+.category-btn {
+  border: none !important;
+  border-radius: 0 !important; /* removes curved inner box shade */
+  padding: 9px 12px !important;
+  transition: all 0.2s ease !important;
+}
+
+.category-btn.active {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+body.light-theme .category-btn.active {
+  background: rgba(0, 0, 0, 0.06) !important;
+  border: none !important;
+  color: #0f172a !important;
+}
+
+/* ============================================================
+   SIDEBAR TIMEFRAME SELECTOR STYLING & POSITIONING
+   ============================================================ */
+.chart-floating-left-bar .chart-timeframes,
+.chart-floating-left-bar .chart-style-wrap {
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  position: relative !important;
+}
+
+.chart-floating-left-bar .tf-dropdown-wrap {
+  width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  position: relative !important;
+}
+
+.chart-floating-left-bar #tf-dropdown-btn.tf-dropdown-btn {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2) !important;
+  font-family: 'Outfit', sans-serif !important;
+  border-radius: 8px !important;
+}
+
+.chart-floating-left-bar #tf-dropdown-btn.tf-dropdown-btn span {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: inherit !important;
+}
+
+/* ============================================================
+   SIDEBAR & TIMEFRAME LAYOUT OVERRIDES
+   ============================================================ */
+
+/* Ensure timeframe and chart style menus render in front of the clock overlay */
+.tf-dropdown-menu,
+.chart-style-menu {
+  z-index: 100000 !important;
+}
+
+/* Global Rules (Mobile-first / Hidden by default) */
+#chart-pressure-bar-wrapper,
+.chart-pressure-bar-wrapper {
+  display: none !important; /* hidden on mobile viewports */
+}
+
+/* Global Backdrop Styles for Pair Information Modal (both mobile & desktop) */
+.pair-info-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(10, 12, 18, 0.75) !important;
+  z-index: 999999;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', 'Outfit', sans-serif !important;
+}
+
+body.light-theme .pair-info-backdrop {
+  background: rgba(15, 23, 42, 0.4) !important;
+}
+
+/* Desktop-only viewport overrides */
+@media (min-width: 768px) {
+  /* Remove default border and shadow from app sidebar to merge with pressure wrapper */
+  .app-nav {
+    border-right: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Show vertical sentiment pressure bar wrapper as a dedicated sidebar strip */
+  #chart-pressure-bar-wrapper,
+  .chart-pressure-bar-wrapper {
+    display: flex !important;
+    position: absolute !important;
+    left: 0 !important; /* flush to the far left of the chart area */
+    top: 0 !important; /* stretches full height */
+    bottom: 0 !important;
+    width: 24px !important; /* dedicated narrow strip width */
+    background: var(--bg-card) !important; /* matches app navigation sidebar background */
+    border-right: 1px solid var(--border-color) !important; /* matches app navigation sidebar border */
+    box-shadow: 2px 0 16px rgba(0, 0, 0, 0.03) !important; /* transfers sidebar shadow to the outer edge */
+    flex-direction: column !important;
+    align-items: center !important;
+    z-index: 200 !important;
+    box-sizing: border-box !important;
+    padding: 12px 0 !important; /* top and bottom padding for spacing */
+  }
+
+  /* Percentage text labels above and below the bar */
+  .pressure-percentage-label {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 9px !important;
+    font-weight: 800 !important;
+    text-align: center !important;
+    line-height: 1 !important;
+    width: 100% !important;
+  }
+
+  .pressure-percentage-label.label-red {
+    color: #ff4a5a !important;
+    margin-bottom: 5px !important;
+  }
+
+  .pressure-percentage-label.label-green {
+    color: #16c784 !important;
+    margin-top: 5px !important;
+  }
+
+  /* The actual bar container */
+  .chart-pressure-bar-container {
+    flex: 1 !important;
+    width: 8px !important; /* bold vertical bar */
+    border-radius: 4px !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  .pressure-bar-red {
+    width: 100% !important;
+    background: #ff4a5a !important; /* red top */
+    transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  .pressure-bar-green {
+    width: 100% !important;
+    background: #16c784 !important; /* green bottom */
+    transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  body.light-theme .chart-pressure-bar-container {
+    background: rgba(0, 0, 0, 0.08) !important;
+  }
+
+  /* Position timeframe button absolutely at the bottom left corner */
+  #chart-timeframes.chart-timeframes {
+    position: absolute !important;
+    left: 32px !important;
+    bottom: 24px !important;
+    top: auto !important;
+    right: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    z-index: 200 !important;
+  }
+
+  #chart-timeframes.chart-timeframes .tf-dropdown-wrap {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    position: relative !important;
+  }
+
+  #chart-timeframes.chart-timeframes #tf-dropdown-btn.tf-dropdown-btn {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2) !important;
+    font-family: 'Outfit', sans-serif !important;
+    border-radius: 8px !important;
+    background: rgba(255,255,255,0.06) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    color: rgba(255,255,255,0.75) !important;
+  }
+
+  body.light-theme #chart-timeframes.chart-timeframes #tf-dropdown-btn.tf-dropdown-btn {
+    background: #ffffff !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    color: var(--text-secondary) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  #chart-timeframes.chart-timeframes #tf-dropdown-btn.tf-dropdown-btn:hover {
+    background: rgba(255,255,255,0.12) !important;
+    color: #fff !important;
+  }
+
+  body.light-theme #chart-timeframes.chart-timeframes #tf-dropdown-btn.tf-dropdown-btn:hover {
+    background: #f1f5f9 !important;
+    color: var(--text-primary) !important;
+  }
+
+  #chart-timeframes.chart-timeframes #tf-dropdown-btn.tf-dropdown-btn span {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: inherit !important;
+    margin: 0 !important;
+  }
+
+  #chart-timeframes.chart-timeframes #tf-dropdown-btn.tf-dropdown-btn svg {
+    display: none !important; /* Hide dropdown arrow on desktop */
+  }
+
+  /* Align timeframe dropdown menu upwards and to the right of the button */
+  #chart-timeframes.chart-timeframes .tf-dropdown-menu {
+    position: absolute !important;
+    left: calc(100% + 10px) !important;
+    bottom: 0 !important;
+    top: auto !important;
+    right: auto !important;
+    z-index: 10000 !important;
+    margin-top: 0 !important;
+  }
+
+  /* Align chart style menu upwards and to the right of the button */
+  .chart-floating-left-bar .chart-style-menu {
+    position: absolute !important;
+    left: calc(100% + 10px) !important;
+    bottom: 0 !important;
+    top: auto !important;
+    right: auto !important;
+    z-index: 10000 !important;
+    margin-top: 0 !important;
+  }
+
+  /* Position the floating sidebar tools above the timeframe button */
+  .chart-floating-left-bar {
+    left: 32px !important;
+    top: auto !important;
+    bottom: 64px !important; /* exactly 6px gap above the 34px button at bottom: 24px */
+  }
+
+  /* Reset margin on sidebar children wraps to use flex gap */
+  .chart-floating-left-bar .chart-style-wrap {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Update main trade body height calculation based on taller tab row */
+  .trade-body {
+    height: calc(100vh - 98px) !important;
+  }
+
+  /* Live Clock Overlay inside Chart canvas wrap (Desktop Only) */
+  #chart-live-clock-overlay {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+    position: absolute !important;
+    left: 42px !important;
+    top: 14px !important;
+    z-index: 40 !important;
+    font-family: 'Inter', 'Outfit', sans-serif !important;
+    font-size: 11px !important;
+    background: transparent !important;
+    pointer-events: auto !important;
+  }
+
+  #chart-live-clock-overlay .clock-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    pointer-events: none !important;
+  }
+
+  #pair-info-trigger-btn {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+    font-family: 'Inter', 'Outfit', sans-serif !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+    transition: color 0.2s ease !important;
+    outline: none !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.3px !important;
+  }
+
+  #pair-info-trigger-btn:hover {
+    color: rgba(255, 255, 255, 0.85) !important;
+  }
+
+  #pair-info-trigger-btn svg {
+    width: 12px !important;
+    height: 12px !important;
+    fill: currentColor !important;
+  }
+
+  body.light-theme #pair-info-trigger-btn {
+    color: rgba(0, 0, 0, 0.45) !important;
+  }
+
+  body.light-theme #pair-info-trigger-btn:hover {
+    color: rgba(0, 0, 0, 0.8) !important;
+  }
+
+  /* ================= PAIR INFORMATION MODAL STYLES ================= */
+
+  /* Backdrop styles moved to global section */
+
+  /* Modal Window */
+  .pair-info-window {
+    position: relative;
+    width: 720px;
+    background: #1c2030 !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4) !important;
+    padding: 28px !important;
+    color: #ffffff !important;
+  }
+
+  body.light-theme .pair-info-window {
+    background: #ffffff !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.08) !important;
+    color: #1e293b !important;
+  }
+
+  /* Header Row */
+  .pair-info-header-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 20px !important;
+  }
+
+  .pair-info-title {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+  }
+
+  body.light-theme .pair-info-title {
+    color: #1e293b !important;
+  }
+
+  .pair-info-payout {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    color: #ff9f43 !important;
+    margin-left: 4px !important;
+  }
+
+  .pair-info-subtitle {
+    font-size: 12px !important;
+    color: rgba(255, 255, 255, 0.45) !important;
+    font-weight: 500 !important;
+  }
+
+  body.light-theme .pair-info-subtitle {
+    color: rgba(30, 41, 59, 0.55) !important;
+  }
+
+  .pair-info-sep {
+    margin: 0 6px !important;
+    color: rgba(255, 255, 255, 0.25) !important;
+  }
+
+  body.light-theme .pair-info-sep {
+    color: rgba(0, 0, 0, 0.15) !important;
+  }
+
+  /* Section Rows */
+  .pair-info-section-row {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.03) !important;
+    border-radius: 12px !important;
+    padding: 18px !important;
+    margin-bottom: 20px !important;
+  }
+
+  body.light-theme .pair-info-section-row {
+    background: #f8fafc !important;
+    border: 1px solid #f1f5f9 !important;
+  }
+
+  .pair-info-price-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+
+  /* Label & Values */
+  .pair-info-label {
+    font-size: 11px !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    margin-bottom: 6px !important;
+    letter-spacing: 0.5px !important;
+  }
+
+  body.light-theme .pair-info-label {
+    color: rgba(30, 41, 59, 0.5) !important;
+  }
+
+  .pair-info-value {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+  }
+
+  body.light-theme .pair-info-value {
+    color: #0f172a !important;
+  }
+
+  .pair-info-price {
+    font-size: 22px !important;
+  }
+
+  .pair-info-change {
+    font-size: 22px !important;
+  }
+
+  /* Trade button */
+  .pair-info-trade-btn {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    background: #1ab76d !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 10px 20px !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    transition: background 0.2s !important;
+  }
+
+  .pair-info-trade-btn:hover {
+    background: #1ed780 !important;
+  }
+
+  .pair-info-trade-btn svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  /* Traders' Sentiment Bar */
+  .pair-info-sentiment-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 12px !important;
+  }
+
+  .pair-info-sentiment-buy-title {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+  }
+
+  body.light-theme .pair-info-sentiment-buy-title {
+    color: #1e293b !important;
+  }
+
+  .pair-info-sentiment-sell-title {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+  }
+
+  body.light-theme .pair-info-sentiment-sell-title {
+    color: #1e293b !important;
+  }
+
+  .pair-info-sentiment-buy-label {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #16c784 !important;
+    width: 30px !important;
+    text-align: left !important;
+  }
+
+  .pair-info-sentiment-sell-label {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #ef4444 !important;
+    width: 30px !important;
+    text-align: right !important;
+  }
+
+  .pair-info-sentiment-bar-track {
+    flex-grow: 1 !important;
+    height: 6px !important;
+    background: #ef4444 !important;
+    border-radius: 3px !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .pair-info-sentiment-bar-fill {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    height: 100% !important;
+    width: 3%;
+    background: #16c784 !important;
+    transition: width 0.5s ease !important;
+  }
+
+  /* Grid Boxes */
+  .pair-info-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 16px !important;
+    margin-bottom: 24px !important;
+  }
+
+  .pair-info-grid-box {
+    background: rgba(255, 255, 255, 0.015) !important;
+    border: 1px solid rgba(255, 255, 255, 0.02) !important;
+    border-radius: 10px !important;
+    padding: 14px !important;
+  }
+
+  body.light-theme .pair-info-grid-box {
+    background: #f8fafc !important;
+    border: 1px solid #f1f5f9 !important;
+  }
+
+  .pair-info-profit {
+    color: #16c784 !important;
+  }
+
+  /* Bottom Grid layout */
+  .pair-info-bottom-grid {
+    display: grid !important;
+    grid-template-columns: 300px 1fr !important;
+    gap: 24px !important;
+  }
+
+  /* Sparkline tabs */
+  .pair-info-tabs-container {
+    display: flex !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-radius: 6px !important;
+    padding: 2px !important;
+    margin-bottom: 12px !important;
+  }
+
+  body.light-theme .pair-info-tabs-container {
+    background: #f1f5f9 !important;
+  }
+
+  .pair-info-tab {
+    flex: 1 !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 6px 4px !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+    cursor: pointer !important;
+    border-radius: 4px !important;
+    text-align: center !important;
+    outline: none !important;
+    transition: all 0.2s !important;
+  }
+
+  .pair-info-tab.active {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+  }
+
+  body.light-theme .pair-info-tab {
+    color: rgba(30, 41, 59, 0.5) !important;
+  }
+
+  body.light-theme .pair-info-tab.active {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  /* Chart Canvas wrapping */
+  .pair-info-chart-wrap {
+    position: relative !important;
+    background: rgba(0, 0, 0, 0.15) !important;
+    border-radius: 8px !important;
+    border: 1px solid rgba(255, 255, 255, 0.02) !important;
+    padding: 12px !important;
+    height: 150px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+  }
+
+  body.light-theme .pair-info-chart-wrap {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+  }
+
+  .pair-info-spark-change {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    color: #ef4444 !important;
+  }
+
+  .pair-info-spark-range {
+    display: flex !important;
+    justify-content: space-between !important;
+    font-size: 9px !important;
+    color: rgba(255, 255, 255, 0.3) !important;
+    font-weight: 500 !important;
+  }
+
+  body.light-theme .pair-info-spark-range {
+    color: rgba(30, 41, 59, 0.45) !important;
+  }
+
+  .pair-info-spark-stats {
+    display: flex !important;
+    justify-content: space-between !important;
+    font-size: 10px !important;
+    color: rgba(255, 255, 255, 0.35) !important;
+    font-weight: 500 !important;
+    margin-top: 10px !important;
+    padding: 0 4px !important;
+  }
+
+  body.light-theme .pair-info-spark-stats {
+    color: rgba(30, 41, 59, 0.55) !important;
+  }
+
+  /* Schedule Table */
+  .pair-info-schedule-title {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    margin-bottom: 12px !important;
+  }
+
+  body.light-theme .pair-info-schedule-title {
+    color: #1e293b !important;
+  }
+
+  .pair-info-schedule-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 11px !important;
+  }
+
+  .pair-info-th {
+    padding: 6px 0 !important;
+    font-weight: 600 !important;
+    color: rgba(255, 255, 255, 0.3) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    text-align: left !important;
+  }
+
+  body.light-theme .pair-info-th {
+    color: rgba(30, 41, 59, 0.4) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+  }
+
+  /* Close Button overrides */
+  .pair-info-close-btn {
+    position: absolute !important;
+    top: -14px !important;
+    left: -14px !important;
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 50% !important;
+    background: #ffffff !important;
+    color: #1b2030 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+    border: none !important;
+    font-size: 11px !important;
+    font-weight: bold !important;
+    z-index: 10 !important;
+    outline: none !important;
+    transition: transform 0.2s !important;
+  }
+
+  .pair-info-close-btn:hover {
+    transform: scale(1.1) !important;
+  }
+
+  body.light-theme .pair-info-close-btn {
+    background: #1c2030 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  #chart-live-clock-overlay #live-clock-time-text {
+    font-weight: 700 !important;
+    color: #ffffff !important;
+  }
+
+  body.light-theme #chart-live-clock-overlay #live-clock-time-text {
+    color: #1e293b !important;
+  }
+
+  #chart-live-clock-overlay #live-clock-tz-text {
+    font-weight: 500 !important;
+    color: rgba(255, 255, 255, 0.45) !important;
+    margin-left: 2px !important;
+  }
+
+  body.light-theme #chart-live-clock-overlay #live-clock-tz-text {
+    color: rgba(0, 0, 0, 0.45) !important;
+  }
+
+  #chart-live-clock-overlay .clock-status-dot-wrap {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 14px !important;
+    height: 14px !important;
+    background-color: rgba(22, 199, 132, 0.15) !important;
+    border-radius: 50% !important;
+  }
+
+  #chart-live-clock-overlay .clock-status-dot {
+    width: 6px !important;
+    height: 6px !important;
+    background-color: #16c784 !important; /* Quotex active green status dot */
+    border-radius: 50% !important;
+    display: inline-block !important;
+  }
+}
+
+/* Mobile viewports layout for Live Clock & Pair Info */
+@media (max-width: 767px) {
+  #chart-live-clock-overlay {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 8px !important;
+    position: absolute !important;
+    left: 54px !important;
+    top: 8px !important;
+    bottom: auto !important;
+    z-index: 40 !important;
+    background: transparent !important;
+    pointer-events: auto !important;
+  }
+
+  #chart-live-clock-overlay .clock-row {
+    display: grid !important;
+    grid-template-columns: auto 1fr !important;
+    align-items: center !important;
+    row-gap: 0 !important;
+    column-gap: 4px !important;
+    pointer-events: none !important;
+  }
+
+  #chart-live-clock-overlay .clock-status-dot-wrap {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 12px !important;
+    height: 12px !important;
+    background-color: rgba(22, 199, 132, 0.15) !important;
+    border-radius: 50% !important;
+  }
+
+  #chart-live-clock-overlay .clock-status-dot {
+    width: 5px !important;
+    height: 5px !important;
+    background-color: #16c784 !important;
+    border-radius: 50% !important;
+    display: inline-block !important;
+  }
+
+  #chart-live-clock-overlay #live-clock-time-text {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    line-height: 1.1 !important;
+  }
+
+  body.light-theme #chart-live-clock-overlay #live-clock-time-text {
+    color: #1e293b !important;
+  }
+
+  #chart-live-clock-overlay #live-clock-tz-text {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    font-size: 9px !important;
+    font-weight: 500 !important;
+    color: rgba(255, 255, 255, 0.45) !important;
+    line-height: 1.1 !important;
+  }
+
+  body.light-theme #chart-live-clock-overlay #live-clock-tz-text {
+    color: rgba(0, 0, 0, 0.45) !important;
+  }
+
+  /* Style trigger button as transparent icon on mobile */
+  #pair-info-trigger-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 24px !important;
+    height: 24px !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+    outline: none !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+    box-shadow: none !important;
+  }
+
+  body.light-theme #pair-info-trigger-btn {
+    color: rgba(0, 0, 0, 0.45) !important;
+  }
+
+  #pair-info-trigger-btn span {
+    display: none !important; /* Hide label text on mobile */
+  }
+
+  #pair-info-trigger-btn svg {
+    width: 14px !important;
+    height: 14px !important;
+    fill: currentColor !important;
+    margin: 0 !important;
+  }
+
+  /* Mobile layout styling for Pair Info Modal Window */
+  .pair-info-window {
+    position: relative !important;
+    width: 92% !important;
+    max-width: 440px !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    padding: 20px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25) !important;
+    background: #1c2030 !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  }
+
+  body.light-theme .pair-info-window {
+    background: #ffffff !important;
+    color: #1e293b !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  }
+
+  /* Close button - Flat transparent ✖ in top-right */
+  .pair-info-close-btn {
+    position: absolute !important;
+    top: 18px !important;
+    right: 18px !important;
+    left: auto !important;
+    width: auto !important;
+    height: auto !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    font-size: 18px !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    outline: none !important;
+  }
+
+  body.light-theme .pair-info-close-btn {
+    background: transparent !important;
+    color: rgba(30, 41, 59, 0.55) !important;
+    box-shadow: none !important;
+  }
+
+  /* Header - Stack title on top and subtitle below with a dashed border */
+  .pair-info-header-row {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+    margin-bottom: 16px !important;
+    padding-bottom: 12px !important;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.08) !important;
+    width: 100% !important;
+  }
+
+  body.light-theme .pair-info-header-row {
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.08) !important;
+  }
+
+  .pair-info-header-row > div:first-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    width: 100% !important;
+    padding-right: 32px !important; /* leaves space for close button */
+  }
+
+  .pair-info-title {
+    font-size: 16px !important;
+  }
+
+  .pair-info-payout {
+    font-size: 14px !important;
+  }
+
+  .pair-info-subtitle {
+    font-size: 11px !important;
+    margin-top: 2px !important;
+  }
+
+  /* Section Rows - Horizontal price row */
+  .pair-info-section-row {
+    padding: 12px 14px !important;
+    margin-bottom: 14px !important;
+    border-radius: 8px !important;
+    background: #23283d !important;
+    border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  }
+
+  body.light-theme .pair-info-section-row {
+    background: #f8fafc !important;
+    border: 1px solid rgba(0, 0, 0, 0.04) !important;
+  }
+
+  .pair-info-price-row {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+
+  .pair-info-price-row > div:first-child {
+    display: flex !important;
+    gap: 20px !important;
+  }
+
+  .pair-info-price-row .pair-info-label {
+    font-size: 10px !important;
+    white-space: nowrap !important;
+  }
+
+  .pair-info-price {
+    font-size: 14px !important;
+  }
+
+  .pair-info-change {
+    font-size: 14px !important;
+  }
+
+  .pair-info-trade-btn {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    background: #1ab76d !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 8px 16px !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    outline: none !important;
+  }
+
+  .pair-info-trade-btn svg {
+    width: 12px !important;
+    height: 12px !important;
+    fill: none !important;
+    stroke: currentColor !important;
+    stroke-width: 2.5 !important;
+    margin: 0 !important;
+  }
+
+  body.light-theme .pair-info-trade-btn {
+    background: #1ab76d !important;
+    color: #ffffff !important;
+  }
+
+  /* Horizontal Traders' Sentiment styling */
+  .pair-info-sentiment-row {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+
+  .pair-info-sentiment-header {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 2px !important;
+    margin: 0 !important;
+  }
+
+  .pair-info-sentiment-buy-title {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+  }
+
+  .pair-info-sentiment-sell-title {
+    display: none !important; /* hide sell title on left side */
+  }
+
+  .pair-info-sentiment-row .pair-info-label {
+    margin: 0 !important;
+    font-size: 9px !important;
+    text-transform: capitalize !important;
+  }
+
+  /* Right-align percentage labels and progress bar */
+  .pair-info-sentiment-row > div:last-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex-grow: 1 !important;
+    max-width: 60% !important;
+    justify-content: flex-end !important;
+  }
+
+  .pair-info-sentiment-bar-track {
+    position: relative !important;
+    width: 90px !important;
+    height: 4px !important;
+    background: #ef4444 !important; /* red track representing sell */
+    border-radius: 2px !important;
+    overflow: hidden !important;
+    flex-grow: 0 !important;
+  }
+
+  .pair-info-sentiment-bar-fill {
+    height: 100% !important;
+    background: #16c784 !important; /* green fill representing buy */
+    border-radius: 2px !important;
+    transition: width 0.3s ease !important;
+  }
+
+  .tc-trades-panel-mobile-container {
+    z-index: 200000 !important;
+    transform: translateY(100%) !important;
+  }
+  .tc-trades-panel-mobile-container.expanded {
+    transform: translateY(0) !important;
+  }
+
+  /* Hide Sparkline Widget and Grid details on mobile */
+  .pair-info-sparkline-section {
+    display: none !important;
+  }
+
+  .pair-info-grid {
+    display: none !important;
+  }
+
+  /* Stack bottom grid elements (schedule) */
+  .pair-info-bottom-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+    margin-top: 16px !important;
+  }
+
+  .pair-info-schedule-title {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    margin-bottom: 12px !important;
+  }
+
+  .pair-info-schedule-table th, 
+  .pair-info-schedule-table td {
+    padding: 8px 0 !important;
+  }
+}
+
+/* ============================================================
+   PENDING TRADE SYSTEM STYLES
+   ============================================================ */
+
+/* Set Button */
+.tc-pending-set-btn {
+  background: #1ab76d !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 4px !important;
+  padding: 4px 12px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  transition: opacity 0.2s !important;
+}
+
+.tc-pending-set-btn:hover {
+  opacity: 0.9 !important;
+}
+
+body.light-theme .tc-pending-set-btn {
+  background: #1ab76d !important;
+  color: #ffffff !important;
+}
+
+/* Drawer Close Button */
+.pending-drawer-close-btn {
+  background: transparent !important;
+  border: none !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  font-size: 14px !important;
+  cursor: pointer !important;
+  padding: 4px 8px !important;
+  margin-left: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+body.light-theme .pending-drawer-close-btn {
+  color: rgba(30, 41, 59, 0.55) !important;
+}
+
+/* Toggle Switch Row */
+.tc-pending-trade-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 12px 14px !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-radius: 8px !important;
+  margin-bottom: 14px !important;
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+}
+
+body.light-theme .tc-pending-trade-row {
+  background: #f8fafc !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  color: #1e293b !important;
+}
+
+.tc-pending-label-wrap {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.tc-pending-clock-icon {
+  width: 14px !important;
+  height: 14px !important;
+  fill: #0088ff !important;
+}
+
+.tc-pending-label {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+  color: #0088ff !important;
+}
+
+/* Pending Trade Drawer */
+.pending-trade-drawer {
+  position: fixed !important;
+  width: 260px;
+  background: #0e111a !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6) !important;
+  padding: 16px !important;
+  z-index: 500000 !important;
+  display: none;
+  flex-direction: column !important;
+  gap: 14px !important;
+  border-radius: 12px !important;
+  height: auto !important;
+  max-height: 85vh !important;
+  overflow-y: auto !important;
+}
+
+body.light-theme .pending-trade-drawer {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Tabs */
+.pending-drawer-tabs {
+  display: flex !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-radius: 6px !important;
+  padding: 2px !important;
+}
+
+body.light-theme .pending-drawer-tabs {
+  background: #f1f5f9 !important;
+}
+
+.pending-tab-btn {
+  flex: 1 !important;
+  background: transparent !important;
+  border: none !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  padding: 6px 0 !important;
+  cursor: pointer !important;
+  border-radius: 4px !important;
+  text-align: center !important;
+  transition: all 0.2s !important;
+}
+
+body.light-theme .pending-tab-btn {
+  color: rgba(30, 41, 59, 0.55) !important;
+}
+
+.pending-tab-btn.active {
+  background: #1ab76d !important;
+  color: #ffffff !important;
+}
+
+body.light-theme .pending-tab-btn.active {
+  background: #1ab76d !important;
+  color: #ffffff !important;
+}
+
+/* Drawer Body */
+.pending-drawer-body {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  overflow-y: auto !important;
+  flex: 1 !important;
+  padding-bottom: 4px !important;
+}
+
+/* Input Box */
+/* ── PDC Card System (matches main panel tc-mobile-col style) ── */
+.pdc-card {
+  position: relative !important;
+  background: rgba(255, 255, 255, 0.025) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  border-radius: 9px !important;
+  padding: 14px 10px 10px 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 5px !important;
+  margin-top: 8px !important;
+}
+
+body.light-theme .pdc-card {
+  background: #f8fafc !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Floating label — same as tc-card-label */
+.pdc-card-label {
+  position: absolute !important;
+  top: -8px !important;
+  left: 10px !important;
+  background: #0e111a !important;
+  padding: 0 5px !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.8px !important;
+  z-index: 1 !important;
+}
+
+body.light-theme .pdc-card-label {
+  background: #ffffff !important;
+  color: rgba(30, 41, 59, 0.55) !important;
+}
+
+/* Input row — same as tc-input-row */
+.pdc-input-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  justify-content: space-between !important;
+}
+
+/* Step buttons — same as tc-step-btn */
+.pdc-step-btn {
+  width: 28px !important;
+  height: 28px !important;
+  font-size: 18px !important;
+  font-weight: 300 !important;
+  border-radius: 6px !important;
+  background: rgba(255,255,255,0.06) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  color: white !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  transition: background 0.15s !important;
+}
+
+.pdc-step-btn:hover {
+  background: rgba(255,255,255,0.12) !important;
+}
+
+body.light-theme .pdc-step-btn {
+  background: rgba(0,0,0,0.04) !important;
+  border-color: rgba(0,0,0,0.10) !important;
+  color: #1e293b !important;
+}
+
+/* Value input — same as tc-amount-input */
+.pdc-value-input {
+  flex: 1 !important;
+  height: 28px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+  border-radius: 5px !important;
+  margin: 0 !important;
+  padding: 0 4px !important;
+  background: rgba(255,255,255,0.03) !important;
+  border: 1px solid rgba(255,255,255,0.09) !important;
+  color: #ffffff !important;
+  outline: none !important;
+  width: 0 !important;
+  min-width: 0 !important;
+}
+
+body.light-theme .pdc-value-input {
+  background: rgba(0,0,0,0.03) !important;
+  border-color: rgba(0,0,0,0.09) !important;
+  color: #1e293b !important;
+}
+
+/* Full-width time input (no step buttons) */
+.pdc-time-input {
+  width: 100% !important;
+  flex: unset !important;
+  height: 32px !important;
+  font-size: 15px !important;
+  letter-spacing: 1px !important;
+}
+
+/* Custom Dropdown Container */
+.pdc-dropdown-trigger {
+  position: relative !important;
+}
+
+.pdc-value-display {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  text-align: center !important;
+}
+
+body.light-theme .pdc-value-display {
+  color: #1e293b !important;
+}
+
+.pdc-arrow {
+  font-size: 8px !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  margin-left: 6px !important;
+  transition: transform 0.2s !important;
+}
+
+body.light-theme .pdc-arrow {
+  color: rgba(30, 41, 59, 0.55) !important;
+}
+
+.pdc-custom-dropdown {
+  position: absolute !important;
+  top: 105% !important;
+  left: 0 !important;
+  right: 0 !important;
+  background: #0e111a !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+  z-index: 10000 !important;
+  display: none;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  padding: 4px 0 !important;
+}
+
+body.light-theme .pdc-custom-dropdown {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
+}
+
+.pdc-dropdown-option {
+  padding: 8px 16px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  cursor: pointer !important;
+  text-align: center !important;
+  transition: all 0.15s !important;
+}
+
+.pdc-dropdown-option:first-child {
+  border-top-left-radius: 7px !important;
+  border-top-right-radius: 7px !important;
+}
+
+.pdc-dropdown-option:last-child {
+  border-bottom-left-radius: 7px !important;
+  border-bottom-right-radius: 7px !important;
+}
+
+body.light-theme .pdc-dropdown-option {
+  color: rgba(30, 41, 59, 0.7) !important;
+}
+
+.pdc-dropdown-option:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
+}
+
+body.light-theme .pdc-dropdown-option:hover {
+  background: rgba(0, 0, 0, 0.03) !important;
+  color: #1e293b !important;
+}
+
+.pdc-dropdown-option.active {
+  background: #1ab76d !important;
+  color: #ffffff !important;
+}
+
+body.light-theme .pdc-dropdown-option.active {
+  background: #1ab76d !important;
+  color: #ffffff !important;
+}
+
+/* Subtext */
+.pdc-subtext {
+  font-size: 9px !important;
+  color: rgba(255,255,255,0.35) !important;
+  text-align: center !important;
+  margin-top: 1px !important;
+}
+
+body.light-theme .pdc-subtext {
+  color: rgba(30,41,59,0.45) !important;
+}
+
+/* SWITCH label row */
+.pdc-switch-row {
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  color: #1ab76d !important;
+  text-align: center !important;
+  letter-spacing: 0.5px !important;
+  cursor: pointer !important;
+  margin-top: 2px !important;
+}
+
+/* Action Buttons */
+.pending-action-buttons {
+  display: flex !important;
+  gap: 10px !important;
+  margin-top: 6px !important;
+}
+
+.pending-action-btn {
+  flex: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 10px 14px !important;
+  border: none !important;
+  border-radius: 8px !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  cursor: pointer !important;
+  transition: opacity 0.2s !important;
+}
+
+.pending-action-btn:hover {
+  opacity: 0.9 !important;
+}
+
+.pending-action-btn.btn-up {
+  background: #16c784 !important;
+}
+
+.pending-action-btn.btn-down {
+  background: #ef4444 !important;
+}
+
+.pending-action-icon {
+  width: 14px !important;
+  height: 14px !important;
+  fill: #ffffff !important;
+}
+
+.pending-arrow-icon {
+  width: 12px !important;
+  height: 12px !important;
+  fill: #ffffff !important;
+}
+
+.pending-how-it-works {
+  text-align: center !important;
+  margin-top: 4px !important;
+}
+
+.pending-how-it-works a {
+  font-size: 10px !important;
+  color: #0088ff !important;
+  text-decoration: none !important;
+  font-weight: 700 !important;
+}
+
+/* Pending Trade Card */
+.pending-trade-card {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  border-radius: 8px !important;
+  padding: 10px 12px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  position: relative !important;
+}
+
+body.light-theme .pending-trade-card {
+  background: #f8fafc !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+.pending-card-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+.pending-card-asset {
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+
+body.light-theme .pending-card-asset {
+  color: #0f172a !important;
+}
+
+.pending-card-cancel {
+  background: transparent !important;
+  border: none !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  font-size: 12px !important;
+  cursor: pointer !important;
+  padding: 2px !important;
+}
+
+body.light-theme .pending-card-cancel {
+  color: rgba(15, 23, 42, 0.6) !important;
+}
+
+.pending-card-info {
+  display: flex !important;
+  justify-content: space-between !important;
+  font-size: 11px !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.pending-card-info span {
+  font-weight: 600 !important;
+}
+
+.pending-card-info .text-green {
+  font-weight: 700 !important;
+  color: #1ab76d !important;
+}
+
+.pending-card-info .text-danger {
+  font-weight: 700 !important;
+  color: #ef4444 !important;
+}
+
+body.light-theme .pending-card-info {
+  color: #1e293b !important;
+}
+
+/* Compact Pending Toggle Hidden by default on desktop */
+.tc-mobile-pending-toggle {
+  display: none !important;
+}
+
+/* Mobile responsive override */
+@media (max-width: 767px) {
+  /* Hide the large pending trade card box on mobile view to maximize chart space */
+  .tc-pending-trade-row {
+    display: none !important;
+  }
+
+  /* Compact Pending Toggle in Asset Selector Row */
+  .tc-mobile-pending-toggle {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+    user-select: none !important;
+  }
+
+  body.light-theme .tc-mobile-pending-toggle {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  .tc-pending-toggle-label {
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    color: #38bdf8 !important;
+    letter-spacing: 0.5px !important;
+    text-transform: uppercase !important;
+  }
+
+  body.light-theme .tc-pending-toggle-label {
+    color: #0284c7 !important;
+  }
+
+  .tc-pending-switch {
+    width: 28px !important;
+    height: 16px !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-radius: 10px !important;
+    position: relative !important;
+    transition: background 0.2s ease !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  }
+
+  body.light-theme .tc-pending-switch {
+    background: rgba(0, 0, 0, 0.08) !important;
+    border-color: rgba(0, 0, 0, 0.04) !important;
+  }
+
+  .tc-pending-switch-handle {
+    width: 12px !important;
+    height: 12px !important;
+    background: #94a3b8 !important;
+    border-radius: 50% !important;
+    position: absolute !important;
+    top: 1px !important;
+    left: 2px !important;
+    transition: transform 0.2s ease, background 0.2s ease !important;
+  }
+
+  body.light-theme .tc-pending-switch-handle {
+    background: #64748b !important;
+  }
+
+  /* Active toggled state colors and position shift */
+  .tc-mobile-pending-toggle.active {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  .tc-mobile-pending-toggle.active .tc-pending-switch {
+    background: #0088ff !important;
+  }
+
+  .tc-mobile-pending-toggle.active .tc-pending-switch-handle {
+    transform: translateX(12px) !important;
+    background: #ffffff !important;
+  }
+
+  .pending-trade-drawer {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    top: auto !important;
+    height: 80vh !important;
+    width: 100% !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-left: none !important;
+    border-radius: 16px 16px 0 0 !important;
+    z-index: 500000 !important;
+  }
+
+  body.light-theme .pending-trade-drawer {
+    background: #ffffff !important;
+    border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+  }
+}
+
+/* Guidance Modal Backdrop */
+.pending-guide-modal-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: rgba(0, 0, 0, 0.6) !important;
+  display: none;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 9999999 !important; /* extremely high to cover everything */
+  backdrop-filter: blur(4px) !important;
+}
+
+/* Modal Content Box */
+.pending-guide-modal-content {
+  background: #252a37 !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  width: 90% !important;
+  max-width: 500px !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+  padding: 24px !important;
+  position: relative !important;
+  animation: modalFadeIn 0.25s ease-out !important;
+}
+
+body.light-theme .pending-guide-modal-content {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15) !important;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header & Title */
+.pending-guide-modal-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.pending-guide-modal-title-wrap {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.pending-guide-clock-icon-wrap {
+  width: 28px !important;
+  height: 28px !important;
+  background: rgba(255, 152, 0, 0.15) !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.pending-guide-clock-icon {
+  width: 18px !important;
+  height: 18px !important;
+  fill: #ff9800 !important;
+}
+
+.pending-guide-modal-title {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+}
+
+body.light-theme .pending-guide-modal-title {
+  color: #1e293b !important;
+}
+
+.pending-guide-modal-close {
+  background: transparent !important;
+  border: none !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  font-size: 16px !important;
+  cursor: pointer !important;
+  transition: color 0.15s !important;
+  padding: 4px !important;
+}
+
+.pending-guide-modal-close:hover {
+  color: #ffffff !important;
+}
+
+body.light-theme .pending-guide-modal-close {
+  color: rgba(30, 41, 59, 0.4) !important;
+}
+
+body.light-theme .pending-guide-modal-close:hover {
+  color: #1e293b !important;
+}
+
+/* Divider */
+.pending-guide-modal-divider {
+  height: 1px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  margin: 16px 0 !important;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.12) !important;
+}
+
+body.light-theme .pending-guide-modal-divider {
+  background: rgba(0, 0, 0, 0.08) !important;
+  border-bottom-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Modal Body / Text Content */
+.pending-guide-modal-body {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+}
+
+.pending-guide-modal-body p {
+  font-size: 12.5px !important;
+  line-height: 1.55 !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  margin: 0 !important;
+}
+
+body.light-theme .pending-guide-modal-body p {
+  color: rgba(30, 41, 59, 0.8) !important;
+}
+
+.pending-guide-modal-body strong {
+  color: #ff9800 !important;
+  font-weight: 700 !important;
+}
+
+/* Prevent main page scrolling/rubber-banding when overlay is open on mobile */
+html.gxm-overlay-open,
+body.gxm-overlay-open {
+  overflow: hidden !important;
+  position: fixed !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Ensure smooth WebKit scroll inside mobile popup container lists */
+.gxm-mo-body,
+.asset-picker-list {
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: contain !important;
+}
+
+/* Timezone Settings Dropdown styles */
+.settings-select {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: var(--text-primary) !important;
+  font-family: inherit !important;
+  font-size: 13px !important;
+  padding: 4px 8px !important;
+  border-radius: 8px !important;
+  outline: none !important;
+  cursor: pointer !important;
+  max-width: 140px !important;
+  transition: all 0.2s ease !important;
+}
+
+.settings-select:focus {
+  border-color: var(--primary) !important;
+}
+
+.settings-select option {
+  background: #0f172a !important;
+  color: #ffffff !important;
+}
+
+body.light-theme .settings-select {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+body.light-theme .settings-select option {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* Light Theme Circular Buttons Contrast Overrides */
+body.light-theme .profile-header-back-btn,
+body.light-theme .profile-cog-btn,
+body.light-theme .profile-add-btn {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  color: #0f172a !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06) !important;
+}
+
+body.light-theme .profile-header-back-btn:hover,
+body.light-theme .profile-cog-btn:hover,
+body.light-theme .profile-add-btn:hover {
+  background: rgba(18, 130, 76, 0.08) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+}
+
+/* Glassmorphic KYC Lock Modal */
+.kyc-lock-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 2000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  animation: kycFadeIn 0.3s forwards cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kyc-lock-modal {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 32px 24px;
+  width: 90%;
+  max-width: 420px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  transform: scale(0.9);
+  animation: kycPopIn 0.35s forwards cubic-bezier(0.34, 1.56, 0.64, 1);
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+}
+
+.kyc-lock-icon-wrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(245, 158, 11, 0.1);
+  border: 2px solid #f59e0b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  color: #f59e0b;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+}
+
+.kyc-lock-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  color: #ffffff;
+}
+
+.kyc-lock-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 28px;
+  padding: 0 10px;
+}
+
+.kyc-lock-btn-primary {
+  width: 100%;
+  height: 46px;
+  border-radius: 23px;
+  background: linear-gradient(90deg, #10b981, #059669);
+  background-color: #10b981 !important;
+  color: #ffffff !important;
+  font-weight: 700;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+  transition: all 0.25s ease;
+  margin-bottom: 12px;
+}
+
+.kyc-lock-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
+  background-color: #059669 !important;
+}
+
+.kyc-lock-btn-secondary {
+  width: 100%;
+  height: 44px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kyc-lock-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+/* Light Theme overrides */
+body.light-theme .kyc-lock-modal {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  color: #0f172a;
+}
+
+body.light-theme .kyc-lock-title {
+  color: #0f172a;
+}
+
+body.light-theme .kyc-lock-text {
+  color: rgba(15, 23, 42, 0.7);
+}
+
+body.light-theme .kyc-lock-btn-secondary {
+  background: rgba(0, 0, 0, 0.03);
+  color: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+body.light-theme .kyc-lock-btn-secondary:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: #0f172a;
+}
+
+@keyframes kycFadeIn {
+  to { opacity: 1; }
+}
+
+@keyframes kycPopIn {
+  to { transform: scale(1); }
+}
+
+/* ==========================================================================
+   QUOTEX-STYLE PAYMENT METHOD BOX BUTTONS (DEPOSIT & WITHDRAWAL)
+   ========================================================================== */
+.payment-methods-grid,
+#deposit-methods-grid,
+#withdraw-methods-grid,
+#deposit-custom-select-options,
+#withdraw-custom-select-options {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 12px !important;
+  width: 100% !important;
+  margin-top: 10px !important;
+  margin-bottom: 16px !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+@media (max-width: 640px) {
+  .payment-methods-grid,
+  #deposit-methods-grid,
+  #withdraw-methods-grid,
+  #deposit-custom-select-options,
+  #withdraw-custom-select-options {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+}
+
+/* Quotex Box Button Card */
+.payment-method-btn {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 14px 16px !important;
+  background: #ffffff !important;
+  border: 1.5px solid #e2e8f0 !important;
+  border-radius: 14px !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  user-select: none !important;
+  position: relative !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03) !important;
+  text-decoration: none !important;
+  margin: 0 !important;
+}
+
+body:not(.light-theme) .payment-method-btn {
+  background: #191e29 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.payment-method-btn:hover {
+  border-color: #10b981 !important;
+  background: rgba(16, 185, 129, 0.05) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.15) !important;
+}
+
+.payment-method-btn.selected,
+.payment-method-btn--active {
+  border: 2px solid #10b981 !important;
+  background: #f0fdf4 !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15) !important;
+}
+
+body:not(.light-theme) .payment-method-btn.selected,
+body:not(.light-theme) .payment-method-btn--active {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.16), rgba(16, 185, 129, 0.05)) !important;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.25) !important;
+}
+
+/* Left Section Inside Box Button */
+.payment-method-btn-left {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 14px !important;
+  min-width: 0 !important;
+}
+
+/* Icon Wrap Container */
+.payment-method-icon-wrap {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  border: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  transition: transform 0.2s ease !important;
+}
+
+.payment-method-icon-wrap img,
+.payment-method-icon-wrap svg {
+  width: 36px !important;
+  height: 36px !important;
+  object-fit: contain !important;
+  display: block !important;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.12)) !important;
+}
+
+.payment-method-btn:hover .payment-method-icon-wrap,
+.payment-method-btn.selected .payment-method-icon-wrap {
+  background: transparent !important;
+  border-color: transparent !important;
+  transform: scale(1.08) !important;
+}
+
+/* Info Text Block */
+.payment-method-info {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  min-width: 0 !important;
+  text-align: left !important;
+}
+
+.payment-method-title {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: #0f172a !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.2 !important;
+}
+
+body:not(.light-theme) .payment-method-title {
+  color: #ffffff !important;
+}
+
+.payment-method-sub {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-size: 11.5px !important;
+  font-weight: 500 !important;
+  color: #64748b !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.2 !important;
+}
+
+body:not(.light-theme) .payment-method-sub {
+  color: #94a3b8 !important;
+}
+
+/* Arrow Icon Right */
+.payment-method-arrow {
+  display: block !important;
+  width: 16px !important;
+  height: 16px !important;
+  color: #94a3b8 !important;
+  flex-shrink: 0 !important;
+  margin-left: 8px !important;
+  transition: all 0.2s ease !important;
+}
+
+.payment-method-btn:hover .payment-method-arrow,
+.payment-method-btn.selected .payment-method-arrow {
+  color: #10b981 !important;
+  transform: translateX(3px) !important;
+}
