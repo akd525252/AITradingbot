@@ -455,29 +455,38 @@ app.use(async (req, res, next) => {
 
 // ─── Domain-Based Routing ───────────────────────────────────────────────────
 // Bot site (bestaccuracy.com) → serves bot.html
-// Main platform (all other domains) → serves index.html
+// Main platform (all other domains) → serves index.html (Gain EX)
 // ─────────────────────────────────────────────────────────────────────────────
 const BOT_DOMAIN_KEYWORD = 'bestaccuracy';
 
-// Block /bot.html from being accessed directly on the main platform domain
+// Block bot pages from being accessed directly on the main platform domain
 app.use((req, res, next) => {
   const hostname = (req.hostname || '').toLowerCase();
   const isBotDomain = hostname.includes(BOT_DOMAIN_KEYWORD);
-  if (!isBotDomain && req.path === '/bot.html') {
-    // Redirect stray requests for bot page to the bot domain
+  if (!isBotDomain && (req.path === '/bot.html' || req.path === '/buy.html' || req.path === '/launch.html')) {
     return res.redirect(301, 'https://bestaccuracy.com/');
   }
   next();
 });
 
-// Serve root '/' and legacy landing paths — domain-aware
-app.get(['/', '/index.html', '/landing', '/landing.html'], (req, res) => {
+// Serve landing page explicitly
+app.get(['/landing', '/landing.html'], (req, res) => {
+  return res.sendFile(path.join(__dirname, '..', 'public', 'landing.html'));
+});
+
+// Serve root '/' and '/index.html' — domain-aware & session-aware
+app.get(['/', '/index.html'], (req, res) => {
   const hostname = (req.hostname || '').toLowerCase();
   const isBotDomain = hostname.includes(BOT_DOMAIN_KEYWORD);
   if (isBotDomain) {
     return res.sendFile(path.join(__dirname, '..', 'public', 'bot.html'));
   }
-  return res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+  // On main platform: If logged in, open trading dashboard; if not logged in, open landing page
+  const hasToken = req.cookies && req.cookies.token;
+  if (hasToken) {
+    return res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+  }
+  return res.sendFile(path.join(__dirname, '..', 'public', 'landing.html'));
 });
 
 // Serve static public assets

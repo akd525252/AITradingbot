@@ -1367,15 +1367,13 @@ const app = {
         const isPwa = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone || window.location.search.includes('pwa=true');
         if (path === 'signup') {
           this.showScreen('signup');
-        } else if (path === 'login') {
-          this.showScreen('login');
         } else {
-          this.showScreen('onboarding');
+          this.showScreen('login');
         }
       }
     } catch (err) {
       console.error('Session check failed with exception:', err);
-      this.showScreen('onboarding');
+      this.showScreen('login');
     } finally {
       this.hideGlobalLoader();
     }
@@ -2704,9 +2702,9 @@ const app = {
       this.prevTab = this.activeTab;
     }
 
-    const isAuthTab = tabName === 'login' || tabName === 'signup' || tabName === 'onboarding';
+    const isAuthTab = tabName === 'login' || tabName === 'signup';
     if (!this.user && !isAuthTab) {
-      this.showScreen('onboarding');
+      this.showScreen('login');
       return;
     }
 
@@ -3170,13 +3168,13 @@ const app = {
       this.activeTradeIntervals = {};
       this.loadNotificationsFromStorage();
       this.showToast('Logged out successfully.');
-      this.showScreen('onboarding');
+      this.showScreen('login');
     } catch (err) {
       localStorage.removeItem('token');
       this.user = null;
       this.permissions = null;
       this.loadNotificationsFromStorage();
-      this.showScreen('onboarding');
+      this.showScreen('login');
     }
   },
 
