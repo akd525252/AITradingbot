@@ -173,6 +173,19 @@ const ALL_CRYPTO = [
   'BTC','ETH','SOL','BNB','DOGE','XRP','ADA','AVAX','MATIC','LINK','LTC','DOT','TRX','UNI','ATOM'
 ];
 
+const ALL_COMMODITY_PAIRS = [
+  'GOLD', 'SILVER', 'GOLD/USDT', 'SILVER/USDT', 'GOLD/USD', 'SILVER/USD'
+];
+
+const COMMODITY_BASE_PRICES = {
+  'GOLD': 2695.50,
+  'GOLD/USDT': 2695.50,
+  'GOLD/USD': 2695.50,
+  'SILVER': 32.25,
+  'SILVER/USDT': 32.25,
+  'SILVER/USD': 32.25
+};
+
 // Active manipulation cleaning worker (runs every 30s)
 setInterval(() => {
   const now = Date.now();
@@ -189,10 +202,18 @@ function cleanSymbol(symbol) {
   return symbol.replace(/\s*\(OTC\)/gi, '').trim().toUpperCase();
 }
 
+function isCommodity(symbol) {
+  if (!symbol) return false;
+  const cleaned = cleanSymbol(symbol).toUpperCase();
+  const base = cleaned.replace('/USDT', '').replace('/USD', '');
+  return ALL_COMMODITY_PAIRS.includes(cleaned) || base === 'GOLD' || base === 'SILVER';
+}
+
 function isForexPair(symbol) {
   if (!symbol) return false;
   const cleaned = cleanSymbol(symbol);
-  return ALL_FOREX_PAIRS.includes(cleaned) || cleaned.includes('/');
+  if (isCommodity(cleaned)) return false;
+  return ALL_FOREX_PAIRS.includes(cleaned) || (cleaned.includes('/') && !cleaned.endsWith('/USDT'));
 }
 
 function getCoinBaseSymbol(symbol) {
@@ -243,13 +264,17 @@ function initCandleStore(asset, timeframe = '1m') {
   const key = `${asset}_${timeframe}`;
   if (candleStore[key] && candleStore[key].length >= 3000) return;
   const isForex = isForexPair(asset);
+  const isComm = isCommodity(asset);
+  const cleanSym = cleanSymbol(asset);
   const coinKey = getCoinBaseSymbol(asset).toUpperCase();
-  const basePrice = isForex ? (FOREX_BASE_PRICES[cleanSymbol(asset)] || 1.0) : (
-    priceCache[coinKey] || {
-      BTC: 64000, ETH: 3400, SOL: 135, BNB: 575, DOGE: 0.125,
-      XRP: 0.50, ADA: 0.40, AVAX: 30.0, MATIC: 0.60,
-      LINK: 14.0, LTC: 75.0, DOT: 6.0, TRX: 0.11, UNI: 8.0, ATOM: 7.0
-    }[coinKey] || 100
+  const basePrice = isForex ? (FOREX_BASE_PRICES[cleanSym] || 1.0) : (
+    isComm ? (COMMODITY_BASE_PRICES[cleanSym] || COMMODITY_BASE_PRICES[coinKey] || 2695.50) : (
+      priceCache[coinKey] || {
+        BTC: 64000, ETH: 3400, SOL: 135, BNB: 575, DOGE: 0.125,
+        XRP: 0.50, ADA: 0.40, AVAX: 30.0, MATIC: 0.60,
+        LINK: 14.0, LTC: 75.0, DOT: 6.0, TRX: 0.11, UNI: 8.0, ATOM: 7.0
+      }[coinKey] || 100
+    )
   );
 
   let tfMs = 60000;
@@ -385,6 +410,36 @@ async function getLivePrice(coin) {
   }
   const now = Date.now();
   
+  if (isCommodity(coinKey)) {
+    const baseSym = coinKey.replace('/USDT', '').replace('/USD', '');
+    const defaultPrice = COMMODITY_BASE_PRICES[coinKey] || COMMODITY_BASE_PRICES[baseSym] || 2695.50;
+    
+    if (priceCache[coinKey] && priceCacheTime[coinKey] && (now - priceCacheTime[coinKey] < 400)) {
+      return priceCache[coinKey];
+    }
+    
+    if (baseSym === 'GOLD') {
+      try {
+        const pResponse = await fetch('https://data-api.binance.vision/api/v3/ticker/price?symbol=PAXGUSDT');
+        if (pResponse.ok) {
+          const pData = await pResponse.json();
+          const pVal = parseFloat(pData.price);
+          if (!isNaN(pVal) && pVal > 0) {
+            priceCache[coinKey] = pVal;
+            priceCacheTime[coinKey] = now;
+            return pVal;
+          }
+        }
+      } catch (e) {}
+    }
+    
+    const current = priceCache[coinKey] || defaultPrice;
+    const nextPrice = current + (current * (Math.random() * 0.0004 - 0.0002));
+    priceCache[coinKey] = nextPrice;
+    priceCacheTime[coinKey] = now;
+    return nextPrice;
+  }
+
   // Return cached price if it is fresh (within 400ms) to prevent stale 2-second leap jumps
   if (priceCache[coinKey] && priceCacheTime[coinKey] && (now - priceCacheTime[coinKey] < 400)) {
     return priceCache[coinKey];
@@ -4784,7 +4839,7 @@ router.get('/client/coins', authenticateToken, async (req, res) => {
     console.error('Failed to load OTC pairs from DB:', e);
   }
 
-  res.json({ coins, forex, otc });
+  res.json({ coins, forex, otc, stocks: ['Gold', 'Silver'] });
 });
 
 router.get('/client/price/:coin', authenticateToken, async (req, res) => {
@@ -4792,7 +4847,7 @@ router.get('/client/price/:coin', authenticateToken, async (req, res) => {
     const asset = decodeURIComponent(req.params.coin);
     const db = await getDB();
 
-    // Check if coin is visible in either crypto, forex, or otc_pairs
+    // Check if coin is visible in either crypto, forex, commodities, or otc_pairs
     const visibleCoinsRow = await db.get("SELECT value FROM settings WHERE key = 'crypto_visible_coins'");
     const visibleCoins = visibleCoinsRow ? JSON.parse(visibleCoinsRow.value) : [];
     const visibleForexRow = await db.get("SELECT value FROM settings WHERE key = 'forex_visible_pairs'");
@@ -4807,7 +4862,8 @@ router.get('/client/price/:coin', authenticateToken, async (req, res) => {
       }
     }
 
-    if (!isOtcEnabled && !visibleCoins.includes(assetUpper) && !visibleForex.includes(assetUpper)) {
+    const isComm = isCommodity(assetUpper);
+    if (!isOtcEnabled && !isComm && !visibleCoins.includes(assetUpper) && !visibleForex.includes(assetUpper)) {
       return res.status(400).json({ error: 'Trading is not enabled for this coin.' });
     }
 
@@ -4816,6 +4872,8 @@ router.get('/client/price/:coin', authenticateToken, async (req, res) => {
     if (asset.toUpperCase().includes('OTC')) {
       const otcEngine = require('./services/otcEngine');
       realPrice = otcEngine.getPrice(asset) || 100.0;
+    } else if (isCommodity(asset)) {
+      realPrice = await getLivePrice(asset);
     } else if (isForexPair(asset)) {
       // For forex, get latest close from candle store
       const candles = getForexCandles(cleanSymbol(asset), '1m');
@@ -4844,6 +4902,13 @@ router.get('/client/candles/:asset', authenticateToken, async (req, res) => {
     if (asset.toUpperCase().includes('OTC')) {
       const otcEngine = require('./services/otcEngine');
       const candles = otcEngine.getCandles(asset, timeframe);
+      const mappedCandles = candles.map(c => ({ time: c.time, open: c.open, high: c.high, low: c.low, close: c.close }));
+      const finalCandles = await applyHistoricalManipulations(db, req.user.id, asset, mappedCandles, timeframe);
+      return res.json({ candles: finalCandles });
+    }
+
+    if (isCommodity(asset)) {
+      const candles = getForexCandles(cleanSymbol(asset), timeframe);
       const mappedCandles = candles.map(c => ({ time: c.time, open: c.open, high: c.high, low: c.low, close: c.close }));
       const finalCandles = await applyHistoricalManipulations(db, req.user.id, asset, mappedCandles, timeframe);
       return res.json({ candles: finalCandles });
@@ -5169,7 +5234,7 @@ router.post('/client/trade', authenticateToken, async (req, res) => {
     effectiveCommissionPct = option.commission_pct;
   }
 
-  // Check if coin is visible in either crypto or forex or is an enabled OTC pair
+  // Check if coin is visible in either crypto, forex, commodities, or is an enabled OTC pair
   const visibleCoinsRow = await db.get("SELECT value FROM settings WHERE key = 'crypto_visible_coins'");
   const visibleCoins = visibleCoinsRow ? JSON.parse(visibleCoinsRow.value) : [];
   const visibleForexRow = await db.get("SELECT value FROM settings WHERE key = 'forex_visible_pairs'");
@@ -5184,7 +5249,8 @@ router.post('/client/trade', authenticateToken, async (req, res) => {
     }
   }
 
-  if (!isOtcEnabled && !visibleCoins.includes(coinUpper) && !visibleForex.includes(coinUpper)) {
+  const isComm = isCommodity(coinUpper);
+  if (!isOtcEnabled && !isComm && !visibleCoins.includes(coinUpper) && !visibleForex.includes(coinUpper)) {
     return res.status(400).json({ error: 'Trading is not enabled for this coin.' });
   }
 
@@ -5213,6 +5279,8 @@ router.post('/client/trade', authenticateToken, async (req, res) => {
       if (openPrice === null) {
         return res.status(400).json({ error: 'Trading is currently paused for this OTC pair.' });
       }
+    } else if (isCommodity(coin)) {
+      openPrice = await getLivePrice(coin);
     } else if (isForexPair(coin)) {
       const candles = getForexCandles(cleanSymbol(coin), '1m');
       const last = candles[candles.length - 1];
@@ -6862,7 +6930,7 @@ router.post('/public/bot/place-trade', async (req, res) => {
       effectiveCommissionPct = option ? option.commission_pct : 80.0;
     }
 
-    // Check if coin is visible in either crypto or forex or is an enabled OTC pair
+    // Check if coin is visible in either crypto, forex, commodities, or is an enabled OTC pair
     const visibleCoinsRow = await db.get("SELECT value FROM settings WHERE key = 'crypto_visible_coins'");
     const visibleCoins = visibleCoinsRow ? JSON.parse(visibleCoinsRow.value) : [];
     const visibleForexRow = await db.get("SELECT value FROM settings WHERE key = 'forex_visible_pairs'");
@@ -6876,7 +6944,8 @@ router.post('/public/bot/place-trade', async (req, res) => {
       }
     }
 
-    if (!isOtcEnabled && !visibleCoins.includes(coinUpper) && !visibleForex.includes(coinUpper)) {
+    const isComm = isCommodity(coinUpper);
+    if (!isOtcEnabled && !isComm && !visibleCoins.includes(coinUpper) && !visibleForex.includes(coinUpper)) {
       return res.status(400).json({ error: 'Trading is not enabled for this coin.' });
     }
 
@@ -6894,6 +6963,8 @@ router.post('/public/bot/place-trade', async (req, res) => {
       if (openPrice === null) {
         return res.status(400).json({ error: 'Trading is currently paused for this OTC pair.' });
       }
+    } else if (isCommodity(coin)) {
+      openPrice = await getLivePrice(coin);
     } else if (isForexPair(coin)) {
       const candles = getForexCandles(cleanSymbol(coin), '1m');
       const last = candles[candles.length - 1];
